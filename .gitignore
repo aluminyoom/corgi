@@ -37,6 +37,9 @@ coverage/
 # Research notes
 RESEARCH.md
 
+# Source dumps (do not commit)
+dump/
+
 # Safari build artifacts
 *.xcodeproj
 *.xcworkspace

@@ -3,6 +3,13 @@ import { defineConfig } from 'wxt';
 export default defineConfig({
   srcDir: 'src',
   modules: ['@wxt-dev/module-svelte'],
+  svelte: {
+    vite: {
+      compilerOptions: {
+        runes: true,
+      },
+    },
+  },
   manifest: {
     name: 'Kagistry',
     description: 'A theming engine for Kagi search',
