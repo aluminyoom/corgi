@@ -37,8 +37,9 @@ export default defineConfig({
           text: 'Architecture',
           items: [
             { text: 'Overview', link: '/architecture/overview' },
-            { text: 'Theming Engine', link: '/architecture/theming-engine' },
             { text: 'Content Scripts', link: '/architecture/content-scripts' },
+            { text: 'Hooks and Patches', link: '/architecture/hooks-and-patches' },
+            { text: 'Theming Engine', link: '/architecture/theming-engine' },
             { text: 'Extension Structure', link: '/architecture/extension-structure' },
           ],
         },
