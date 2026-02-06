@@ -1,0 +1,59 @@
+#kagistry-settings-page .switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+#kagistry-settings-page .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+#kagistry-settings-page .slider {
+  position: absolute;
+  inset: 0;
+  background: var(--input-bg, #ccc);
+  border-radius: 20px;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+
+#kagistry-settings-page .slider::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  bottom: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+#kagistry-settings-page .switch input:checked + .slider {
+  background: var(--primary, #6366f1);
+}
+
+#kagistry-settings-page .switch input:checked + .slider::before {
+  transform: translateX(16px);
+}
+
+#kagistry-settings-page .btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid var(--border-color, rgba(128, 128, 128, 0.2));
+  background: var(--input-bg, transparent);
+  color: var(--app-text, inherit);
+  transition: background 0.15s;
+}
+
+#kagistry-settings-page .btn:hover {
+  background: var(--hover-bg, rgba(128, 128, 128, 0.1));
+}
