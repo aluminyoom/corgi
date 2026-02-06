@@ -1,7 +1,8 @@
 import { bridgeRequest, onBridgePush } from '@/bridge/main-side';
 import { trapGlobal } from '@/hooks/traps';
 import { applyThemes, clearThemes, interceptKagiStylesheets } from '@/styles/injector';
-import { startAllPlugins, stopAllPlugins } from '@/plugins/registry';
+import { registerPlugin, startAllPlugins, stopAllPlugins, listPlugins } from '@/plugins/registry';
+import { searchCounterPlugin } from '@/plugins/builtins';
 import type { Theme } from '@/utils/types';
 
 const win = window as unknown as Record<string, unknown>;
@@ -44,6 +45,7 @@ export default defineUnlistedScript(() => {
 
   onBridgePush('ready', () => {
     loadThemes();
+    registerPlugin(searchCounterPlugin);
     startAllPlugins();
   });
 
@@ -79,6 +81,7 @@ export default defineUnlistedScript(() => {
       define: () => import('@/plugins/api').then((m) => m.definePlugin),
       install: () => import('@/plugins/api').then((m) => m.installPlugin),
       registry: () => import('@/plugins/registry'),
+      list: listPlugins,
     },
     styles: {
       variables: () => import('@/styles/variables'),
