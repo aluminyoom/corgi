@@ -12,9 +12,24 @@ export default defineConfig({
   },
   manifest: {
     name: 'Kagistry',
-    description: 'A theming engine for Kagi search',
-    permissions: ['storage'],
+    description: 'Theming engine and plugin API for Kagi',
+    permissions: ['storage', 'declarativeNetRequest'],
     host_permissions: ['*://*.kagi.com/*'],
+    web_accessible_resources: [
+      {
+        resources: ['kagistry-main.js'],
+        matches: ['*://*.kagi.com/*'],
+      },
+    ],
+    declarative_net_request: {
+      rule_resources: [
+        {
+          id: 'kagistry_rules',
+          enabled: true,
+          path: 'rules.json',
+        },
+      ],
+    },
   },
   webExt: {
     startUrls: ['https://kagi.com/search?q=test'],
