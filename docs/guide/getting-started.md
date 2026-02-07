@@ -39,7 +39,15 @@ Then load `extension/.output/firefox-mv3/` as a temporary add-on from `about:deb
 
 ## Verify Installation
 
-Once installed, navigate to `kagi.com/settings/kagistry`. You should see a "Kagistry" link in the settings sidebar. If the page loads with the Kagistry header and enable toggle, everything is working.
+Once installed, navigate to `kagi.com/settings/kagistry`. You should see a "Kagistry" link in the settings sidebar. If the page loads with the Kagistry header, enable toggle, and a list of built-in plugins, everything is working.
+
+Kagistry ships with three built-in plugins enabled by default:
+
+- **search-counter** shows a result count badge on search pages
+- **usage-counter** adds a search usage progress bar below filters
+- **midnight-theme** applies a dark purple color scheme
+
+You can toggle any of these from the Plugins section on the settings page. You can also open the Kagi Control Center (press `c` or click the gear icon) and find a Kagistry shortcut at the bottom.
 
 ## Development Mode
 

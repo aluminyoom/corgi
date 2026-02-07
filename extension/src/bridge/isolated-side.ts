@@ -5,7 +5,7 @@ import {
   type BridgePush,
   isBridgeRequest,
 } from './protocol';
-import { themeState, extensionEnabled } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates } from '@/utils/storage';
 import { getThemeId } from '@/utils/types';
 
 type ActionHandler = (payload: unknown) => Promise<unknown>;
@@ -60,6 +60,10 @@ handlers.set('theme:clear', async () => {
   return null;
 });
 
+handlers.set('plugin:state', async () => {
+  return pluginStates.getValue();
+});
+
 export function startBridge(): void {
   window.addEventListener('message', async (event) => {
     if (event.source !== window) return;
@@ -83,6 +87,8 @@ export function startBridge(): void {
 
   themeState.watch(() => pushToMain('theme:apply'));
   extensionEnabled.watch(() => pushToMain('theme:apply'));
+}
 
+export function pushReady(): void {
   pushToMain('ready');
 }

@@ -104,12 +104,19 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Kagistry ships with example plugins in `plugins/builtins/`:
+Kagistry ships with three built-in plugins in `plugins/builtins/`:
 
 - **search-counter**: Observes the DOM and shows a live count of search results in a floating badge. Demonstrates `observeElement`, `onProviderEvent`, and `injectCSS`.
-- **midnight-theme**: A dark purple theme defined as a `Theme` object. Shows the theme data structure.
+- **usage-counter**: Displays a progress bar of remaining free searches below the filter panel. Listens to the `provider:free_search_remaining` server-sent event and reads Kagi's own search limit DOM elements.
+- **midnight-theme**: A dark purple theme defined as a `Theme` object. Shows how themes can be packaged as plugins.
 
-Built-in plugins are registered in `kagistry-main.ts` and started when the bridge signals `ready`.
+Built-in plugins are registered in `kagistry-main.ts` and started when the bridge signals `ready`. Each built-in can be individually toggled from the settings page at `/settings/kagistry`.
+
+### Plugin State Persistence
+
+Plugin enabled/disabled state is stored in `pluginStates` (extension local storage). The settings page reads and writes this storage directly from the ISOLATED world. When plugins start in the MAIN world, they request the disabled list through a `plugin:state` bridge message and skip any plugins the user has turned off.
+
+Changes to plugin toggles take effect on the next page load because plugins initialize once during the bridge `ready` handshake.
 
 ## Error Isolation
 

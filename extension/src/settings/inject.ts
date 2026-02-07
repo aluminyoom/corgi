@@ -1,4 +1,4 @@
-import { injectNavLink, activateNavLink, isKagistryRoute } from './nav';
+import { injectNavLink, activateNavLink, deactivateNavLink, isKagistryRoute } from './nav';
 import { buildSettingsPage, isSettingsPageMounted } from './page';
 
 function isSettingsPage(): boolean {
@@ -9,17 +9,37 @@ function getMainElement(): HTMLElement | null {
   return document.querySelector('main');
 }
 
-function clearMainContent(main: HTMLElement): void {
-  main.innerHTML = '';
+function hideKagiContent(main: HTMLElement): void {
+  for (const child of Array.from(main.children)) {
+    if (child.id === 'kagistry-settings-page') continue;
+    (child as HTMLElement).style.display = 'none';
+  }
 }
 
+function showKagiContent(main: HTMLElement): void {
+  for (const child of Array.from(main.children)) {
+    if (child.id === 'kagistry-settings-page') continue;
+    (child as HTMLElement).style.display = '';
+  }
+}
+
+let mounted = false;
+
 async function mountSettingsPage(): Promise<void> {
-  if (isSettingsPageMounted()) return;
+  if (mounted) return;
+  mounted = true;
 
   const main = getMainElement();
-  if (!main) return;
+  if (!main) { mounted = false; return; }
 
-  clearMainContent(main);
+  hideKagiContent(main);
+
+  const existing = main.querySelector('#kagistry-settings-page');
+  if (existing) {
+    (existing as HTMLElement).style.display = '';
+    activateNavLink();
+    return;
+  }
 
   const page = await buildSettingsPage();
   main.appendChild(page);
@@ -27,17 +47,21 @@ async function mountSettingsPage(): Promise<void> {
 }
 
 function unmountSettingsPage(): void {
+  mounted = false;
   const main = getMainElement();
   if (!main) return;
 
   const page = main.querySelector('#kagistry-settings-page');
-  if (page) page.remove();
+  if (page) (page as HTMLElement).style.display = 'none';
+
+  showKagiContent(main);
+  deactivateNavLink();
 }
 
 function handleRouteChange(): void {
   if (isKagistryRoute()) {
     mountSettingsPage();
-  } else if (isSettingsPageMounted()) {
+  } else {
     unmountSettingsPage();
   }
 }
@@ -45,17 +69,22 @@ function handleRouteChange(): void {
 export function initSettingsIntegration(): void {
   if (!isSettingsPage()) return;
 
+  let linkWired = false;
+
   function tryInject(): void {
     const navLink = injectNavLink();
     if (!navLink) return;
 
-    handleRouteChange();
+    if (!linkWired) {
+      linkWired = true;
+      navLink.addEventListener('click', (event) => {
+        event.preventDefault();
+        window.history.pushState(null, '', '/settings/kagistry');
+        handleRouteChange();
+      });
+    }
 
-    navLink.addEventListener('click', (event) => {
-      event.preventDefault();
-      window.history.pushState(null, '', '/settings/kagistry');
-      handleRouteChange();
-    });
+    handleRouteChange();
   }
 
   if (document.readyState === 'loading') {
@@ -66,6 +95,7 @@ export function initSettingsIntegration(): void {
 
   const navObserver = new MutationObserver(() => {
     if (!document.getElementById('kagistry-nav-link')) {
+      linkWired = false;
       tryInject();
     }
   });

@@ -49,9 +49,21 @@ The page renders:
 - **Enable/disable toggle** for the entire extension
 - **Themes section** listing installed themes with per-theme enable/disable
 - **Import button** for loading theme JSON files
-- **Plugins section** listing active plugins
+- **Plugins section** listing built-in plugins with per-plugin enable/disable toggles
 
 All elements use Kagi's own CSS utility classes (`heading-2`, `text-sm`, `color-muted`, `rounded-lg`, `flex`, `align-center`) so they match the native look without custom styles. The only custom CSS is for toggle switches and buttons, scoped under `#kagistry-settings-page`.
+
+## Control Center Shortcut
+
+Kagi's Control Center is the quick-settings sidebar that opens when you press `c` or click the gear icon. Kagistry injects a link at the bottom of the Control Center nav that navigates to `/settings/kagistry`.
+
+The panel (`#quickSettings`) is lazily loaded. It does not exist in the DOM until the user opens it for the first time. Kagistry handles this with three detection strategies:
+
+1. **Direct check**: On injection, try to find the panel immediately
+2. **Event listener**: Listen for Kagi's `quick-settings-opened` custom event
+3. **MutationObserver**: Watch `document.body` for child additions in case the panel is created without the custom event
+
+The link uses the same `.nav-item-link` class as other Control Center items and navigates with a full page load (not `pushState`) since the Control Center is often opened from non-settings pages.
 
 ## History Management
 
@@ -63,4 +75,6 @@ When navigating away from `/settings/kagistry`, the Kagistry content is removed 
 
 The settings integration watches for DOM changes using a `MutationObserver`. If Kagi's page navigation removes the nav link (for example, during a soft navigation between settings pages), the observer re-injects it.
 
-The observer runs on `document.body` with `childList: true` and `subtree: true`, checking for the presence of the Kagistry nav link element by its ID.
+The observer runs on `document.body` with `childList: true` and `subtree: true`, checking for the presence of the Kagistry nav link element by its ID. When the nav link is re-injected, the click handler is re-wired to prevent duplicate navigations.
+
+When navigating between Kagi's settings tabs and the Kagistry tab, the extension hides Kagi's native content instead of destroying it. This avoids breaking Kagi's own page state and prevents the duplication issues that come from clearing `innerHTML`.

@@ -1,4 +1,4 @@
-import { themeState, extensionEnabled } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS } from '@/utils/storage';
 import { getThemeId, type Theme } from '@/utils/types';
 
 const PAGE_CONTAINER_ID = 'kagistry-settings-page';
@@ -202,6 +202,95 @@ async function handleImport(json: string, themeListContainer: HTMLElement): Prom
   }
 }
 
+function createPluginCard(
+  name: string,
+  version: string,
+  author: string,
+  description: string,
+  enabled: boolean,
+  onToggle: (enabled: boolean) => void,
+): HTMLElement {
+  const card = document.createElement('div');
+  card.className = 'p-16 rounded-lg mb-8';
+  card.style.cssText = 'border: 1px solid var(--border-color, rgba(128,128,128,0.2));';
+
+  const top = document.createElement('div');
+  top.className = 'flex align-center justify-between';
+
+  const info = document.createElement('div');
+
+  const nameEl = document.createElement('strong');
+  nameEl.className = 'text-sm';
+  nameEl.textContent = name;
+
+  const meta = document.createElement('div');
+  meta.className = 'text-xs color-muted mt-2';
+  meta.textContent = `${author} \u00B7 v${version}`;
+
+  info.appendChild(nameEl);
+  info.appendChild(meta);
+
+  const toggle = document.createElement('label');
+  toggle.className = 'switch';
+
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = enabled;
+  input.addEventListener('change', () => onToggle(input.checked));
+
+  const slider = document.createElement('span');
+  slider.className = 'slider round';
+
+  toggle.appendChild(input);
+  toggle.appendChild(slider);
+
+  top.appendChild(info);
+  top.appendChild(toggle);
+  card.appendChild(top);
+
+  if (description) {
+    const desc = document.createElement('div');
+    desc.className = 'text-xs color-muted mt-8';
+    desc.textContent = description;
+    card.appendChild(desc);
+  }
+
+  return card;
+}
+
+async function renderPluginList(container: HTMLElement): Promise<void> {
+  container.innerHTML = '';
+
+  const states = await pluginStates.getValue();
+  const disabledSet = new Set(states.disabled);
+
+  for (const plugin of BUILTIN_PLUGINS) {
+    const enabled = !disabledSet.has(plugin.name);
+
+    const card = createPluginCard(
+      plugin.name,
+      plugin.version,
+      plugin.author,
+      plugin.description,
+      enabled,
+      async (nowEnabled) => {
+        const current = await pluginStates.getValue();
+        const disabled = new Set(current.disabled);
+
+        if (nowEnabled) {
+          disabled.delete(plugin.name);
+        } else {
+          disabled.add(plugin.name);
+        }
+
+        await pluginStates.setValue({ disabled: [...disabled] });
+      },
+    );
+
+    container.appendChild(card);
+  }
+}
+
 export async function buildSettingsPage(): Promise<HTMLElement> {
   const container = document.createElement('div');
   container.id = PAGE_CONTAINER_ID;
@@ -234,7 +323,17 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
   container.appendChild(hr2);
 
   const pluginsSection = createSection('Plugins');
-  pluginsSection.appendChild(createEmptyState('No plugins installed. Plugins extend Kagi with new features.'));
+  const pluginList = document.createElement('div');
+  pluginList.id = 'kagistry-plugin-list';
+
+  await renderPluginList(pluginList);
+  pluginsSection.appendChild(pluginList);
+
+  const hint = document.createElement('div');
+  hint.className = 'text-xs color-muted mt-8';
+  hint.textContent = 'Changes take effect on next page load.';
+  pluginsSection.appendChild(hint);
+
   container.appendChild(pluginsSection);
 
   return container;

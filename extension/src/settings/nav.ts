@@ -11,7 +11,10 @@ function findSeparator(menu: HTMLElement): HTMLHRElement | null {
   return menu.querySelector('hr');
 }
 
-function deactivateAllLinks(menu: HTMLElement): void {
+function deactivateAllLinks(): void {
+  const menu = findNavMenu();
+  if (!menu) return;
+
   for (const link of menu.querySelectorAll<HTMLAnchorElement>('a.nav-link')) {
     link.classList.remove('active');
     link.removeAttribute('aria-current');
@@ -34,19 +37,12 @@ function createNavLink(): HTMLAnchorElement {
   link.appendChild(icon);
   link.appendChild(label);
 
-  link.addEventListener('click', (event) => {
-    event.preventDefault();
-    window.history.pushState(null, '', KAGISTRY_HREF);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  });
-
   return link;
 }
 
 export function injectNavLink(): HTMLAnchorElement | null {
-  if (document.getElementById(NAV_LINK_ID)) {
-    return document.getElementById(NAV_LINK_ID) as HTMLAnchorElement;
-  }
+  const existing = document.getElementById(NAV_LINK_ID) as HTMLAnchorElement | null;
+  if (existing) return existing;
 
   const menu = findNavMenu();
   if (!menu) return null;
@@ -64,15 +60,20 @@ export function injectNavLink(): HTMLAnchorElement | null {
 }
 
 export function activateNavLink(): void {
-  const menu = findNavMenu();
-  if (!menu) return;
-
-  deactivateAllLinks(menu);
+  deactivateAllLinks();
 
   const link = document.getElementById(NAV_LINK_ID) as HTMLAnchorElement | null;
   if (link) {
     link.classList.add('active');
     link.setAttribute('aria-current', 'page');
+  }
+}
+
+export function deactivateNavLink(): void {
+  const link = document.getElementById(NAV_LINK_ID) as HTMLAnchorElement | null;
+  if (link) {
+    link.classList.remove('active');
+    link.removeAttribute('aria-current');
   }
 }
 
