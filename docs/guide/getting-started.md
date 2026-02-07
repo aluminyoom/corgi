@@ -1,5 +1,52 @@
 # Getting Started
 
-::: warning Work in Progress
-This page is under construction.
-:::
+## Install from Source
+
+Kagistry is not yet published to browser extension stores. For now, install it from source.
+
+### Prerequisites
+
+- **Node.js** 18 or later
+- **pnpm** 8 or later
+- A Kagi account (you need to be signed in for the extension to work)
+
+### Clone and Build
+
+```bash
+git clone https://github.com/user/kagistry.git
+cd kagistry
+pnpm install
+pnpm --filter extension build
+```
+
+The build output is at `extension/.output/chrome-mv3/`.
+
+### Load in Chrome
+
+1. Open `chrome://extensions`
+2. Enable "Developer mode" in the top right
+3. Click "Load unpacked"
+4. Select the `extension/.output/chrome-mv3/` directory
+5. Navigate to [kagi.com](https://kagi.com) and sign in
+
+### Load in Firefox
+
+```bash
+pnpm --filter extension build --browser firefox
+```
+
+Then load `extension/.output/firefox-mv3/` as a temporary add-on from `about:debugging`.
+
+## Verify Installation
+
+Once installed, navigate to `kagi.com/settings/kagistry`. You should see a "Kagistry" link in the settings sidebar. If the page loads with the Kagistry header and enable toggle, everything is working.
+
+## Development Mode
+
+For active development with hot module replacement:
+
+```bash
+pnpm --filter extension dev
+```
+
+WXT will open a browser window with the extension loaded. Changes to source files trigger automatic rebuilds.
