@@ -23,13 +23,18 @@ extension/
   package.json            Dependencies and scripts
   src/
     entrypoints/
-      content.ts          ISOLATED world content script (bridge)
-      content-main.ts     MAIN world content script (hooks, CSS)
+      content.ts          ISOLATED world content script (bridge + settings)
+      kagistry-main.ts    MAIN world unlisted script (hooks, themes, plugins)
       background.ts       Service worker (storage, network rules)
       popup/
         index.html        Popup shell
         main.ts           Svelte mount point
-        App.svelte        Popup UI root component
+        App.svelte        Minimal launcher that opens /settings/kagistry
+    settings/
+      inject.ts           Settings page orchestrator (detect route, mount UI)
+      nav.ts              Nav link injection into Kagi sidebar
+      page.ts             Settings page content (themes, plugins, toggles)
+      settings.css        Minimal CSS for toggle switches and buttons
     hooks/
       traps.ts            Object.defineProperty traps for globals
       wrap.ts             Function wrapping utilities
@@ -40,6 +45,10 @@ extension/
       types.ts            Plugin type definitions
       registry.ts         Plugin loading and lifecycle
       api.ts              definePlugin() and plugin runtime API
+      builtins/
+        index.ts          Built-in plugin/theme exports
+        search-counter.ts Sample plugin: live search result counter
+        midnight-theme.ts Sample theme: deep dark purple
     styles/
       injector.ts         CSS injection and <kagistry-styles> management
       variables.ts        CSS variable override application
@@ -72,20 +81,31 @@ Key scripts:
 
 `wxt.config.ts` configures:
 - **Modules**: `@wxt-dev/module-svelte` for Svelte 5 support with runes
-- **Manifest overrides**: content script registration, permissions, CSP rules
+- **Manifest overrides**: permissions, CSP bypass rules, web-accessible resources
 - **Vite options**: Svelte compiler settings (runes mode)
 - **Web extension config**: match patterns (`*://*.kagi.com/*`)
 
 WXT generates `.wxt/tsconfig.json` with path aliases (`@/` and `~/` mapped to `src/`). The extension's `tsconfig.json` extends this generated config.
 
-## Content Script Registration
+## Content Script Architecture
 
-Two content scripts are registered in the manifest:
+A single content script runs in the ISOLATED world at `document_start`. It handles three responsibilities:
 
-1. **MAIN world** (`content-main.ts`): `world: "MAIN"`, `run_at: "document_start"`. Has access to page globals. No access to extension APIs.
-2. **ISOLATED world** (`content.ts`): Default world, `run_at: "document_start"`. Has access to `chrome.*` APIs. No access to page globals.
+1. **Bridge startup**: Opens the communication channel between worlds
+2. **MAIN world injection**: Injects `kagistry-main.js` as an unlisted script via `injectScript()`
+3. **Settings integration**: Detects `/settings/*` routes and injects the Kagistry nav link and settings page
 
-Both are restricted to `*://*.kagi.com/*` match patterns.
+The MAIN world script (`kagistry-main.ts`) is registered as an unlisted WXT script, not a separate content script. It runs with full access to page globals.
+
+## Settings Page Integration
+
+Kagistry embeds its management UI directly into Kagi's settings at `/settings/kagistry`. The popup exists only as a launcher that opens this page.
+
+The settings integration:
+- Injects a "Kagistry" link into `nav#settings-menu` before the `<hr>` separator
+- Detects the `/settings/kagistry` route and replaces `<main>` content with Kagistry's UI
+- Uses Kagi's own CSS classes (`nav-link`, `heading-2`, `text-sm`, `rounded-lg`) for a native look
+- Handles browser history (`pushState`/`popstate`) for proper back/forward navigation
 
 ## Permissions
 
@@ -93,7 +113,6 @@ Both are restricted to `*://*.kagi.com/*` match patterns.
 |------------|--------|
 | `storage` | Persist themes, plugins, and settings |
 | `declarativeNetRequest` | Modify response headers to bypass CSP for style injection |
-| `activeTab` | Access current tab for page interaction |
 
 ## Documentation Package
 

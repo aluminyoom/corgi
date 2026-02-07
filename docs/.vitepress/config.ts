@@ -40,6 +40,8 @@ export default defineConfig({
             { text: 'Content Scripts', link: '/architecture/content-scripts' },
             { text: 'Hooks and Patches', link: '/architecture/hooks-and-patches' },
             { text: 'Theming Engine', link: '/architecture/theming-engine' },
+            { text: 'Plugin System', link: '/architecture/plugin-system' },
+            { text: 'Settings Integration', link: '/architecture/settings-integration' },
             { text: 'Extension Structure', link: '/architecture/extension-structure' },
           ],
         },
