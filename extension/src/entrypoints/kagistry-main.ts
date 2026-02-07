@@ -2,7 +2,8 @@ import { bridgeRequest, onBridgePush } from '@/bridge/main-side';
 import { trapGlobal } from '@/hooks/traps';
 import { applyThemes, clearThemes, interceptKagiStylesheets } from '@/styles/injector';
 import { registerPlugin, startAllPlugins, stopAllPlugins, listPlugins } from '@/plugins/registry';
-import { searchCounterPlugin } from '@/plugins/builtins';
+import { searchCounterPlugin, usageCounterPlugin } from '@/plugins/builtins';
+import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
 
 const win = window as unknown as Record<string, unknown>;
@@ -46,7 +47,9 @@ export default defineUnlistedScript(() => {
   onBridgePush('ready', () => {
     loadThemes();
     registerPlugin(searchCounterPlugin);
+    registerPlugin(usageCounterPlugin);
     startAllPlugins();
+    injectControlCenterLink();
   });
 
   onBridgePush('theme:apply', () => {
