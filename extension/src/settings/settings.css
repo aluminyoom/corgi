@@ -1,3 +1,15 @@
+html.kagistry-active .cth_settings_nav_menu a.nav-link.active:not(#kagistry-nav-link) {
+  background: transparent !important;
+  color: var(--app-text-2, inherit) !important;
+  font-weight: normal !important;
+}
+
+html.kagistry-active #kagistry-nav-link {
+  background: var(--nav-active-bg, rgba(128, 128, 128, 0.1)) !important;
+  color: var(--app-text, inherit) !important;
+  font-weight: 600 !important;
+}
+
 #kagistry-settings-page .switch {
   position: relative;
   display: inline-block;

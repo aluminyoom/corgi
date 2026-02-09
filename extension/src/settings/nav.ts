@@ -60,7 +60,7 @@ export function injectNavLink(): HTMLAnchorElement | null {
 }
 
 export function activateNavLink(): void {
-  deactivateAllLinks();
+  document.documentElement.classList.add('kagistry-active');
 
   const link = document.getElementById(NAV_LINK_ID) as HTMLAnchorElement | null;
   if (link) {
@@ -70,6 +70,8 @@ export function activateNavLink(): void {
 }
 
 export function deactivateNavLink(): void {
+  document.documentElement.classList.remove('kagistry-active');
+
   const link = document.getElementById(NAV_LINK_ID) as HTMLAnchorElement | null;
   if (link) {
     link.classList.remove('active');

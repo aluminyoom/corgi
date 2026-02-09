@@ -92,8 +92,16 @@ export const usageCounterPlugin = definePlugin({
 
   onStart(api) {
     const cleanups: (() => void)[] = [];
+    let injecting = false;
 
-    inject(readCurrentRemaining());
+    function safeInject(): void {
+      if (injecting) return;
+      injecting = true;
+      inject(readCurrentRemaining());
+      injecting = false;
+    }
+
+    safeInject();
 
     cleanups.push(
       api.onProviderEvent('free_search_remaining', (payload: unknown) => {
@@ -109,18 +117,11 @@ export const usageCounterPlugin = definePlugin({
     );
 
     cleanups.push(
-      api.observeElement(FILTER_PANEL, () => inject(readCurrentRemaining()), {
+      api.observeElement(FILTER_PANEL, () => safeInject(), {
         childList: true,
         subtree: false,
       }),
     );
-
-    const bodyCleanup = api.observeElement('body', () => {
-      if (!document.getElementById(WIDGET_ID) && document.querySelector(FILTER_PANEL)) {
-        inject(readCurrentRemaining());
-      }
-    }, { childList: true, subtree: true });
-    cleanups.push(bodyCleanup);
 
     return () => {
       for (const fn of cleanups) fn();

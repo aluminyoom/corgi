@@ -31,11 +31,7 @@ function tryInject(): boolean {
   return true;
 }
 
-export function injectControlCenterLink(): void {
-  tryInject();
-
-  window.addEventListener('quick-settings-opened', () => tryInject());
-
+function observeBody(): void {
   const observer = new MutationObserver(() => {
     if (document.querySelector('#quickSettings') && !document.getElementById(LINK_ID)) {
       tryInject();
@@ -43,4 +39,16 @@ export function injectControlCenterLink(): void {
   });
 
   observer.observe(document.body, { childList: true, subtree: false });
+}
+
+export function injectControlCenterLink(): void {
+  tryInject();
+
+  window.addEventListener('quick-settings-opened', () => tryInject());
+
+  if (document.body) {
+    observeBody();
+  } else {
+    document.addEventListener('DOMContentLoaded', () => observeBody(), { once: true });
+  }
 }

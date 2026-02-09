@@ -27,17 +27,21 @@ export const searchCounterPlugin = definePlugin({
 
   onStart(api) {
     let counter: HTMLElement | null = null;
+    let updating = false;
 
     function updateCount(): void {
-      const results = document.querySelectorAll('.search-result, .__srgi');
-      if (!counter) return;
+      if (!counter || updating) return;
+      updating = true;
 
-      if (results.length > 0) {
-        counter.textContent = `${results.length} results`;
-        counter.style.display = 'block';
-      } else {
-        counter.style.display = 'none';
-      }
+      const results = document.querySelectorAll('.search-result, .__srgi');
+      const text = results.length > 0 ? `${results.length} results` : '';
+      const visible = results.length > 0;
+
+      if (counter.textContent !== text) counter.textContent = text;
+      const display = visible ? 'block' : 'none';
+      if (counter.style.display !== display) counter.style.display = display;
+
+      updating = false;
     }
 
     counter = document.createElement('div');
@@ -45,18 +49,28 @@ export const searchCounterPlugin = definePlugin({
     counter.style.display = 'none';
     document.body.appendChild(counter);
 
-    const cleanup = api.observeElement('body', () => updateCount(), {
+    let rafId = 0;
+    function scheduleUpdate(): void {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        updateCount();
+      });
+    }
+
+    const resultContainer = document.querySelector('.search-result')?.parentElement ?? null;
+    const observeTarget = resultContainer ? '.search-result' : 'body';
+    const cleanup = api.observeElement(observeTarget, () => scheduleUpdate(), {
       childList: true,
-      subtree: true,
+      subtree: observeTarget === 'body',
     });
 
-    api.onProviderEvent('search', () => {
-      requestAnimationFrame(updateCount);
-    });
+    api.onProviderEvent('search', () => scheduleUpdate());
 
     updateCount();
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       cleanup();
       counter?.remove();
     };
