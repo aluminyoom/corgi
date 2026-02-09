@@ -1,6 +1,6 @@
-# What is Kagistry?
+# What is Corgi?
 
-Kagistry is a browser extension that provides a theming engine and API for [Kagi search](https://kagi.com). Think [Vencord](https://vencord.dev/) for Discord, but for Kagi.
+Corgi is a browser extension that provides a theming engine and API for [Kagi search](https://kagi.com). Think [Vencord](https://vencord.dev/) for Discord, but for Kagi.
 
 ## Why?
 
@@ -12,7 +12,7 @@ Kagi has a built-in Custom CSS feature, but it comes with limitations:
 - **No theme management.** One theme at a time, manual copy-paste to switch.
 - **No composability.** You can't layer a color scheme on top of a layout mod.
 
-Kagistry removes all of these limitations.
+Corgi removes all of these limitations.
 
 ## What Can It Do?
 
@@ -26,7 +26,7 @@ Kagistry removes all of these limitations.
 
 ## How It Works
 
-Kagistry runs as a content script on `kagi.com`. When you load any Kagi page, the theming engine:
+Corgi runs as a content script on `kagi.com`. When you load any Kagi page, the theming engine:
 
 1. Detects which page you're on (search, settings, etc.)
 2. Loads your active themes from extension storage

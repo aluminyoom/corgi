@@ -33,7 +33,7 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     getComputedVariable,
     injectCSS(css: string): HTMLStyleElement {
       const style = document.createElement('style');
-      style.setAttribute('data-kagistry-plugin', instance.definition.name);
+      style.setAttribute('data-corgi-plugin', instance.definition.name);
       style.textContent = css;
       (document.head ?? document.documentElement).appendChild(style);
       instance.cleanups.push(() => style.remove());

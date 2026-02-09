@@ -1,6 +1,6 @@
 # Extension Structure
 
-This page documents the file layout, build system, and workspace organization of the Kagistry monorepo.
+This page documents the file layout, build system, and workspace organization of the Corgi monorepo.
 
 ## Monorepo Layout
 
@@ -24,12 +24,12 @@ extension/
   src/
     entrypoints/
       content.ts          ISOLATED world content script (bridge + settings)
-      kagistry-main.ts    MAIN world unlisted script (hooks, themes, plugins)
+      corgi-main.ts    MAIN world unlisted script (hooks, themes, plugins)
       background.ts       Service worker (storage, network rules)
       popup/
         index.html        Popup shell
         main.ts           Svelte mount point
-        App.svelte        Minimal launcher that opens /settings/kagistry
+        App.svelte        Minimal launcher that opens /settings/corgi
     settings/
       inject.ts           Settings page orchestrator (detect route, mount UI)
       nav.ts              Nav link injection into Kagi sidebar
@@ -50,7 +50,7 @@ extension/
         search-counter.ts Sample plugin: live search result counter
         usage-counter.ts  Account usage widget (scrapes billing page)
     styles/
-      injector.ts         CSS injection and <kagistry-styles> management
+      injector.ts         CSS injection and <corgi-styles> management
       variables.ts        CSS variable override application
     bridge/
       protocol.ts         Bridge message types and helpers
@@ -92,18 +92,18 @@ WXT generates `.wxt/tsconfig.json` with path aliases (`@/` and `~/` mapped to `s
 A single content script runs in the ISOLATED world at `document_start`. It handles three responsibilities:
 
 1. **Bridge startup**: Opens the communication channel between worlds
-2. **MAIN world injection**: Injects `kagistry-main.js` as an unlisted script via `injectScript()`
-3. **Settings integration**: Detects `/settings/*` routes and injects the Kagistry nav link and settings page
+2. **MAIN world injection**: Injects `corgi-main.js` as an unlisted script via `injectScript()`
+3. **Settings integration**: Detects `/settings/*` routes and injects the Corgi nav link and settings page
 
-The MAIN world script (`kagistry-main.ts`) is registered as an unlisted WXT script, not a separate content script. It runs with full access to page globals.
+The MAIN world script (`corgi-main.ts`) is registered as an unlisted WXT script, not a separate content script. It runs with full access to page globals.
 
 ## Settings Page Integration
 
-Kagistry embeds its management UI directly into Kagi's settings at `/settings/kagistry`. The popup exists only as a launcher that opens this page.
+Corgi embeds its management UI directly into Kagi's settings at `/settings/corgi`. The popup exists only as a launcher that opens this page.
 
 The settings integration:
-- Injects a "Kagistry" link into `nav#settings-menu` before the `<hr>` separator
-- Detects the `/settings/kagistry` route and replaces `<main>` content with Kagistry's UI
+- Injects a "Corgi" link into `nav#settings-menu` before the `<hr>` separator
+- Detects the `/settings/corgi` route and replaces `<main>` content with Corgi's UI
 - Uses Kagi's own CSS classes (`nav-link`, `heading-2`, `text-sm`, `rounded-lg`) for a native look
 - Handles browser history (`pushState`/`popstate`) for proper back/forward navigation
 

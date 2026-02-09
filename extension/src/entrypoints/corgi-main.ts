@@ -13,13 +13,13 @@ export default defineUnlistedScript(() => {
 
   trapGlobal('client', (client: unknown) => {
     if (client && typeof client === 'object') {
-      win.__kagistry_client = client;
+      win.__corgi_client = client;
     }
   });
 
   trapGlobal('kagiSettings', (settings: unknown) => {
     if (settings && typeof settings === 'object') {
-      win.__kagistry_settings = settings;
+      win.__corgi_settings = settings;
     }
   });
 
@@ -89,7 +89,7 @@ export default defineUnlistedScript(() => {
 
   cleanups.push(() => observer.disconnect());
 
-  win.__kagistry = {
+  win.__corgi = {
     hooks: {
       trapGlobal: () => import('@/hooks/traps').then((m) => m.trapGlobal),
       wrapFunction: () => import('@/hooks/wrap').then((m) => m.wrapFunction),

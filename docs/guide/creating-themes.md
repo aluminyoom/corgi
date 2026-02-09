@@ -1,6 +1,6 @@
 # Creating Themes
 
-A Kagistry theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools are needed.
+A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools are needed.
 
 ## Minimal Theme
 
@@ -20,7 +20,7 @@ A Kagistry theme is a JSON file that declares CSS variable overrides and optiona
 }
 ```
 
-Save this as a `.json` file and import it through the Kagistry settings page.
+Save this as a `.json` file and import it through the Corgi settings page.
 
 ## Variables
 
@@ -38,7 +38,7 @@ For changes that go beyond variables, use the `css` field:
 }
 ```
 
-Custom CSS is injected as a `<style>` element inside a `<kagistry-styles>` container that sits before Kagi's own stylesheets. This means your styles have the same specificity as Kagi's, so you may need to be specific with selectors.
+Custom CSS is injected as a `<style>` element inside a `<corgi-styles>` container that sits before Kagi's own stylesheets. This means your styles have the same specificity as Kagi's, so you may need to be specific with selectors.
 
 ## Page Overrides
 
@@ -67,18 +67,18 @@ The optional `meta` field provides hints to the engine:
 {
   "meta": {
     "kagiThemes": ["dark"],
-    "minKagistryVersion": "0.1.0"
+    "minCorgiVersion": "0.1.0"
   }
 }
 ```
 
 - `kagiThemes`: Which Kagi base themes this theme is designed for. Users can filter by this.
-- `minKagistryVersion`: The minimum Kagistry version needed for features this theme uses.
+- `minCorgiVersion`: The minimum Corgi version needed for features this theme uses.
 
 ## Testing Your Theme
 
 1. Save your theme JSON
-2. Open `kagi.com/settings/kagistry`
+2. Open `kagi.com/settings/corgi`
 3. Import the file
 4. Toggle it on
 5. Navigate to a search page to see the result

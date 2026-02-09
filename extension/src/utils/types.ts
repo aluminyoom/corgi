@@ -9,7 +9,7 @@ export interface Theme {
   pages?: Record<string, { variables?: Record<string, string>; css?: string }>;
   meta?: {
     kagiThemes?: string[];
-    minKagistryVersion?: string;
+    minCorgiVersion?: string;
   };
 }
 

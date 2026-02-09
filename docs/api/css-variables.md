@@ -1,8 +1,8 @@
 # CSS Variables
 
-Kagi uses CSS custom properties extensively. Overriding these variables is the primary way Kagistry themes change the page appearance.
+Kagi uses CSS custom properties extensively. Overriding these variables is the primary way Corgi themes change the page appearance.
 
-All variables are set on `:root` and cascade through the entire page. Kagistry applies overrides with `!important` to ensure they take priority over Kagi's defaults.
+All variables are set on `:root` and cascade through the entire page. Corgi applies overrides with `!important` to ensure they take priority over Kagi's defaults.
 
 ## Core
 
@@ -48,7 +48,7 @@ All variables are set on `:root` and cascade through the entire page. Kagistry a
 | `--hover-bg` | Hover state background |
 | `--inline-widget-bg` | Widget card background |
 | `--box-shadow` | Default box shadow |
-| `--border-color` | Border color (not always defined by Kagi, used by Kagistry) |
+| `--border-color` | Border color (not always defined by Kagi, used by Corgi) |
 
 ## Buttons
 

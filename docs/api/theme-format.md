@@ -1,6 +1,6 @@
 # Theme Format
 
-Complete reference for the Kagistry theme JSON structure.
+Complete reference for the Corgi theme JSON structure.
 
 ## Schema
 
@@ -19,7 +19,7 @@ interface Theme {
   }>;
   meta?: {
     kagiThemes?: string[];
-    minKagistryVersion?: string;
+    minCorgiVersion?: string;
   };
 }
 ```
@@ -59,7 +59,7 @@ Page keys match the `data-path` attribute on `<html>`.
 | Field | Type | Description |
 |-------|------|-------------|
 | `kagiThemes` | `string[]` | Kagi base themes this is designed for (`"dark"`, `"light"`) |
-| `minKagistryVersion` | `string` | Minimum Kagistry version required |
+| `minCorgiVersion` | `string` | Minimum Corgi version required |
 
 ## Theme ID
 
@@ -71,7 +71,7 @@ Themes are identified by `author/name`. Importing a theme with the same author a
 {
   "name": "Midnight",
   "version": "1.0.0",
-  "author": "kagistry",
+  "author": "corgi",
   "description": "A deep dark theme with purple accents",
   "tags": ["dark", "purple", "minimal"],
   "variables": {

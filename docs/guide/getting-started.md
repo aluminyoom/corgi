@@ -2,7 +2,7 @@
 
 ## Install from Source
 
-Kagistry is not yet published to browser extension stores. For now, install it from source.
+Corgi is not yet published to browser extension stores. For now, install it from source.
 
 ### Prerequisites
 
@@ -13,8 +13,8 @@ Kagistry is not yet published to browser extension stores. For now, install it f
 ### Clone and Build
 
 ```bash
-git clone https://github.com/user/kagistry.git
-cd kagistry
+git clone https://github.com/aluminyoom/corgi.git
+cd corgi
 pnpm install
 pnpm --filter extension build
 ```
@@ -39,14 +39,14 @@ Then load `extension/.output/firefox-mv3/` as a temporary add-on from `about:deb
 
 ## Verify Installation
 
-Once installed, navigate to `kagi.com/settings/kagistry`. You should see a "Kagistry" link in the settings sidebar. If the page loads with the Kagistry header, enable toggle, and a list of built-in plugins, everything is working.
+Once installed, navigate to `kagi.com/settings/corgi`. You should see a "Corgi" link in the settings sidebar. If the page loads with the Corgi header, enable toggle, and a list of built-in plugins, everything is working.
 
-Kagistry ships with two built-in plugins enabled by default:
+Corgi ships with two built-in plugins enabled by default:
 
 - **search-counter** shows a result count badge on search pages
 - **usage-counter** adds a search usage progress bar below filters
 
-You can toggle any of these from the Plugins section on the settings page. You can also open the Kagi Control Center (press `c` or click the gear icon) and find a Kagistry shortcut at the bottom.
+You can toggle any of these from the Plugins section on the settings page. You can also open the Kagi Control Center (press `c` or click the gear icon) and find a Corgi shortcut at the bottom.
 
 ## Development Mode
 

@@ -1,6 +1,6 @@
 # Plugin System
 
-Kagistry's plugin system lets developers extend Kagi with new features by hooking into the page's JavaScript, DOM, network requests, and styles. The design is inspired by Vencord's plugin architecture: each plugin declares what it needs, and the runtime handles lifecycle, dependency resolution, and cleanup.
+Corgi's plugin system lets developers extend Kagi with new features by hooking into the page's JavaScript, DOM, network requests, and styles. The design is inspired by Vencord's plugin architecture: each plugin declares what it needs, and the runtime handles lifecycle, dependency resolution, and cleanup.
 
 ## Defining a Plugin
 
@@ -104,12 +104,12 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Kagistry ships with two built-in plugins in `plugins/builtins/`:
+Corgi ships with two built-in plugins in `plugins/builtins/`:
 
 - **search-counter**: Observes the DOM and shows a live count of search results in a floating badge. Demonstrates `observeElement`, `onProviderEvent`, and `injectCSS`.
 - **usage-counter**: Fetches account usage data from the billing page and displays a progress bar of remaining searches below the filter panel. Uses `sessionStorage` caching to avoid redundant requests.
 
-Built-in plugins are registered in `kagistry-main.ts` and started when the bridge signals `ready`. Each built-in can be individually toggled from the settings page at `/settings/kagistry`.
+Built-in plugins are registered in `corgi-main.ts` and started when the bridge signals `ready`. Each built-in can be individually toggled from the settings page at `/settings/corgi`.
 
 ### Plugin State Persistence
 

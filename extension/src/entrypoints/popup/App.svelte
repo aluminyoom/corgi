@@ -1,13 +1,13 @@
 <script lang="ts">
   function openSettings() {
-    browser.tabs.create({ url: 'https://kagi.com/settings/kagistry' });
+    browser.tabs.create({ url: 'https://kagi.com/settings/corgi' });
     window.close();
   }
 </script>
 
 <main>
   <header>
-    <h1>Kagistry</h1>
+    <h1>Corgi</h1>
   </header>
   <p>Manage themes and plugins from Kagi settings.</p>
   <button onclick={() => openSettings()}>Open Settings</button>

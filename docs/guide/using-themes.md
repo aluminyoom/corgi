@@ -1,16 +1,16 @@
 # Using Themes
 
-Themes let you change how Kagi looks by overriding CSS variables and injecting custom styles. Kagistry applies themes at the stylesheet level, so they integrate with Kagi's existing dark/light mode system.
+Themes let you change how Kagi looks by overriding CSS variables and injecting custom styles. Corgi applies themes at the stylesheet level, so they integrate with Kagi's existing dark/light mode system.
 
 ## Managing Themes
 
-Open `kagi.com/settings/kagistry` to see your installed themes. Each theme has a toggle to enable or disable it. Multiple themes can be active at the same time; they layer on top of each other in the order they appear.
+Open `kagi.com/settings/corgi` to see your installed themes. Each theme has a toggle to enable or disable it. Multiple themes can be active at the same time; they layer on top of each other in the order they appear.
 
 ## Installing a Theme
 
 Themes are distributed as JSON files. To install one:
 
-1. Go to `kagi.com/settings/kagistry`
+1. Go to `kagi.com/settings/corgi`
 2. Click "Import Theme (JSON)"
 3. Select the `.json` file
 
@@ -18,7 +18,7 @@ The theme appears in your list immediately. Toggle it on to see the changes.
 
 ## Removing a Theme
 
-Theme removal is not yet available through the settings UI. To remove a theme, clear the extension's storage from `chrome://extensions` (click "Details" on the Kagistry extension, then "Clear data").
+Theme removal is not yet available through the settings UI. To remove a theme, clear the extension's storage from `chrome://extensions` (click "Details" on the Corgi extension, then "Clear data").
 
 ## Theme Layering
 

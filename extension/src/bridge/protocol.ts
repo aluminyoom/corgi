@@ -1,4 +1,4 @@
-export const BRIDGE_SOURCE = 'kagistry-bridge' as const;
+export const BRIDGE_SOURCE = 'corgi-bridge' as const;
 
 export type BridgeAction =
   | 'storage:get'

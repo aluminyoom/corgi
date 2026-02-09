@@ -38,14 +38,14 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
   {
     name: 'search-counter',
     version: '0.1.0',
-    author: 'kagistry',
+    author: 'corgi',
     description: 'Shows the number of results returned for each search.',
     builtin: true,
   },
   {
     name: 'usage-counter',
     version: '0.2.0',
-    author: 'kagistry',
+    author: 'corgi',
     description: 'Displays account usage stats (searches, AI, assistant) below the filter bar.',
     builtin: true,
   },

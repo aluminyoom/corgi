@@ -1,8 +1,8 @@
 import { definePlugin } from '../api';
 
 const FILTER_PANEL = '._0_filters-panel';
-const WIDGET_ID = 'kagistry-usage-counter';
-const CACHE_KEY = 'kagistry:billing';
+const WIDGET_ID = 'corgi-usage-counter';
+const CACHE_KEY = 'corgi:billing';
 const CACHE_TTL = 5 * 60 * 1000;
 
 interface BillingEntry {
@@ -101,10 +101,10 @@ function buildWidget(data: BillingData): HTMLElement {
   const pct = Math.min(Math.round((remaining / search.limit) * 100), 100);
 
   el.innerHTML =
-    `<div class="kagistry-usage-bar">` +
-    `<div class="kagistry-usage-fill" style="width:${pct}%"></div>` +
+    `<div class="corgi-usage-bar">` +
+    `<div class="corgi-usage-fill" style="width:${pct}%"></div>` +
     `</div>` +
-    `<span class="kagistry-usage-text">${remaining}/${search.limit} searches left</span>`;
+    `<span class="corgi-usage-text">${remaining}/${search.limit} searches left</span>`;
 
   return el;
 }
@@ -119,8 +119,8 @@ function updateWidget(data: BillingData): void {
   const remaining = search.limit - search.used;
   const pct = Math.min(Math.round((remaining / search.limit) * 100), 100);
 
-  const fill = existing.querySelector<HTMLElement>('.kagistry-usage-fill');
-  const text = existing.querySelector('.kagistry-usage-text');
+  const fill = existing.querySelector<HTMLElement>('.corgi-usage-fill');
+  const text = existing.querySelector('.corgi-usage-text');
 
   if (fill) fill.style.width = `${pct}%`;
   if (text) text.textContent = `${remaining}/${search.limit} searches left`;
@@ -129,7 +129,7 @@ function updateWidget(data: BillingData): void {
 export const usageCounterPlugin = definePlugin({
   name: 'usage-counter',
   version: '0.2.0',
-  author: 'kagistry',
+  author: 'corgi',
   description: 'Displays account usage stats below the filter bar',
 
   css: `
@@ -142,7 +142,7 @@ export const usageCounterPlugin = definePlugin({
       font-size: 12px;
       color: var(--search-result-sub, var(--app-text-2, #888));
     }
-    .kagistry-usage-bar {
+    .corgi-usage-bar {
       width: 120px;
       height: 4px;
       border-radius: 2px;
@@ -150,13 +150,13 @@ export const usageCounterPlugin = definePlugin({
       overflow: hidden;
       flex-shrink: 0;
     }
-    .kagistry-usage-fill {
+    .corgi-usage-fill {
       height: 100%;
       border-radius: 2px;
       background: var(--accent-color, var(--color-primary, #6366f1));
       transition: width 0.3s ease;
     }
-    .kagistry-usage-text {
+    .corgi-usage-text {
       white-space: nowrap;
     }
   `,

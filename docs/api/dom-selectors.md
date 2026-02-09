@@ -70,4 +70,4 @@ Kagi renders inline widgets for certain queries. These use `provider:widget_*` e
 
 ## Stability
 
-Kagi can change their DOM structure at any time. Kagistry cannot guarantee selector stability. If a theme or plugin breaks after a Kagi update, the selectors in this reference may need updating. File an issue if you notice a broken selector.
+Kagi can change their DOM structure at any time. Corgi cannot guarantee selector stability. If a theme or plugin breaks after a Kagi update, the selectors in this reference may need updating. File an issue if you notice a broken selector.

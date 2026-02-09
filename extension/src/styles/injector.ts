@@ -1,6 +1,6 @@
 import type { Theme } from '@/utils/types';
 
-const CONTAINER_TAG = 'kagistry-styles';
+const CONTAINER_TAG = 'corgi-styles';
 
 let container: HTMLElement | null = null;
 
@@ -11,7 +11,7 @@ function getContainer(): HTMLElement {
   if (container) return container;
 
   container = document.createElement(CONTAINER_TAG);
-  container.setAttribute('data-kagistry', 'true');
+  container.setAttribute('data-corgi', 'true');
 
   const target = document.head ?? document.documentElement;
   const firstLink = target.querySelector('link[rel="stylesheet"]');
@@ -25,7 +25,7 @@ function getContainer(): HTMLElement {
 }
 
 function buildThemeStyleId(index: number): string {
-  return `kagistry-theme-${index}`;
+  return `corgi-theme-${index}`;
 }
 
 export function applyThemes(themes: Theme[], pagePath: string | null): void {
@@ -83,7 +83,7 @@ export function interceptKagiStylesheets(): () => void {
         const href = node.getAttribute('href') ?? '';
         if (href.includes('/_s/custom_css')) {
           // Kagi's built-in custom CSS link. We can optionally disable it
-          // when Kagistry is managing styles, or leave it for composability.
+          // when Corgi is managing styles, or leave it for composability.
         }
       }
     }

@@ -1,19 +1,19 @@
 # Hooks and Patches
 
-Kagistry intercepts Kagi's runtime behavior through monkey-patching and event interception. This page documents the hooking layer that enables plugins to modify search results, settings, network requests, and UI behavior.
+Corgi intercepts Kagi's runtime behavior through monkey-patching and event interception. This page documents the hooking layer that enables plugins to modify search results, settings, network requests, and UI behavior.
 
 ## Hooking Strategy
 
 Kagi assigns all its core objects and functions to `window` as plain globals. There is no module system, no bundler, and no framework. This makes hooking straightforward compared to systems like Discord (which requires Webpack module factory interception).
 
-Kagistry's MAIN world script runs at `document_start`, before Kagi's scripts execute. This gives it two techniques:
+Corgi's MAIN world script runs at `document_start`, before Kagi's scripts execute. This gives it two techniques:
 
 1. **Pre-assignment traps**: Use `Object.defineProperty` to intercept globals that Kagi assigns during initialization (like `window.client` and `window.sseCache`).
 2. **Post-assignment patches**: Wrap functions on prototypes and globals that already exist or will exist after the trap fires.
 
 ## Object.defineProperty Traps
 
-Some globals are assigned by Kagi's scripts during execution. Kagistry intercepts these assignments:
+Some globals are assigned by Kagi's scripts during execution. Corgi intercepts these assignments:
 
 ```typescript
 let _client: Client | undefined
@@ -30,7 +30,7 @@ Object.defineProperty(window, 'client', {
 ```
 
 **Trapped globals:**
-| Global | Kagi Assignment | Kagistry Action |
+| Global | Kagi Assignment | Corgi Action |
 |--------|----------------|-----------------|
 | `window.client` | `new Client()` at script load | Wrap `.connect()`, `.onSocketMessage()`, `.reload()` |
 | `window.sseCache` | `new SSECache()` at script load | Wrap `.replayEvents()`, `.storeEvents()` |
@@ -39,7 +39,7 @@ Object.defineProperty(window, 'client', {
 
 ## Function Wrapping
 
-For functions that exist on `window` or on prototypes, Kagistry wraps them with before/after hooks:
+For functions that exist on `window` or on prototypes, Corgi wraps them with before/after hooks:
 
 ```typescript
 function wrapFunction<T extends (...args: any[]) => any>(
@@ -65,12 +65,12 @@ function wrapFunction<T extends (...args: any[]) => any>(
 | `SSECache.prototype.replayEvents` | Intercept cached result replay with the same hooks as live results. |
 | `window.getKagiSetting` | Override or extend Kagi settings. Return custom values for settings Kagi does not know about. |
 | `window.setKagiSetting` | Intercept setting changes. Trigger plugin reactions to preference changes. |
-| `window.updateTheme` | Hook theme application. Kagistry can suppress or redirect theme changes. |
+| `window.updateTheme` | Hook theme application. Corgi can suppress or redirect theme changes. |
 | `window.initPage` | Hook page initialization. Plugins can run setup before search begins. |
 
 ## Event Interception
 
-Kagi dispatches search results and UI state through `CustomEvent`s on `window`. Kagistry wraps `window.addEventListener` to intercept event registration for `provider:*` events:
+Kagi dispatches search results and UI state through `CustomEvent`s on `window`. Corgi wraps `window.addEventListener` to intercept event registration for `provider:*` events:
 
 ```typescript
 const originalAddEventListener = window.addEventListener.bind(window)
@@ -107,7 +107,7 @@ window.addEventListener = function(type: string, listener: EventListener, option
 
 ## Fetch Interception
 
-Kagistry wraps `window.fetch` to intercept API requests:
+Corgi wraps `window.fetch` to intercept API requests:
 
 ```typescript
 const originalFetch = window.fetch.bind(window)

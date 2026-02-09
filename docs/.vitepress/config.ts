@@ -1,8 +1,13 @@
 import { defineConfig } from 'vitepress'
 
+const kagiHelpLink = {
+  text: 'Kagi Help Docs',
+  link: 'https://help.kagi.com/kagi/',
+}
+
 export default defineConfig({
-  title: 'Kagistry',
-  description: 'A theming engine and API for Kagi search',
+  title: 'Corgi',
+  description: 'A theming engine and plugin API for Kagi search',
 
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
@@ -10,7 +15,7 @@ export default defineConfig({
 
   themeConfig: {
     nav: [
-      { text: 'Guide', link: '/guide/what-is-kagistry' },
+      { text: 'Guide', link: '/guide/what-is-corgi' },
       { text: 'Architecture', link: '/architecture/overview' },
       { text: 'API Reference', link: '/api/theme-format' },
     ],
@@ -20,7 +25,7 @@ export default defineConfig({
         {
           text: 'Introduction',
           items: [
-            { text: 'What is Kagistry?', link: '/guide/what-is-kagistry' },
+            { text: 'What is Corgi?', link: '/guide/what-is-corgi' },
             { text: 'Getting Started', link: '/guide/getting-started' },
           ],
         },
@@ -31,6 +36,7 @@ export default defineConfig({
             { text: 'Creating Themes', link: '/guide/creating-themes' },
           ],
         },
+        { text: '―', items: [kagiHelpLink] },
       ],
       '/architecture/': [
         {
@@ -45,6 +51,7 @@ export default defineConfig({
             { text: 'Extension Structure', link: '/architecture/extension-structure' },
           ],
         },
+        { text: '―', items: [kagiHelpLink] },
       ],
       '/api/': [
         {
@@ -55,11 +62,12 @@ export default defineConfig({
             { text: 'DOM Selectors', link: '/api/dom-selectors' },
           ],
         },
+        { text: '―', items: [kagiHelpLink] },
       ],
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/user/kagistry' },
+      { icon: 'github', link: 'https://github.com/aluminyoom/corgi' },
     ],
 
     search: {

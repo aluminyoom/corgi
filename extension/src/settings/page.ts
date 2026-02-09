@@ -1,7 +1,7 @@
 import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS } from '@/utils/storage';
 import { getThemeId, type Theme } from '@/utils/types';
 
-const PAGE_CONTAINER_ID = 'kagistry-settings-page';
+const PAGE_CONTAINER_ID = 'corgi-settings-page';
 
 function createHeader(): HTMLElement {
   const header = document.createElement('div');
@@ -9,7 +9,7 @@ function createHeader(): HTMLElement {
 
   const title = document.createElement('h1');
   title.className = 'heading-2';
-  title.textContent = 'Kagistry';
+  title.textContent = 'Corgi';
 
   const version = document.createElement('span');
   version.className = 'text-xs color-muted ml-8';
@@ -198,7 +198,7 @@ async function handleImport(json: string, themeListContainer: HTMLElement): Prom
     await themeState.setValue({ ...current, themes });
     renderThemeList(themeListContainer);
   } catch (err) {
-    console.error('[kagistry] failed to import theme:', err);
+    console.error('[corgi] failed to import theme:', err);
   }
 }
 
@@ -299,7 +299,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
   container.appendChild(header);
 
   const enabled = await extensionEnabled.getValue();
-  const enableRow = createToggleRow('Enable Kagistry', enabled, async (value) => {
+  const enableRow = createToggleRow('Enable Corgi', enabled, async (value) => {
     await extensionEnabled.setValue(value);
   });
   container.appendChild(enableRow);
@@ -310,7 +310,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
 
   const themesSection = createSection('Themes');
   const themeList = document.createElement('div');
-  themeList.id = 'kagistry-theme-list';
+  themeList.id = 'corgi-theme-list';
 
   await renderThemeList(themeList);
   themesSection.appendChild(themeList);
@@ -324,7 +324,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
 
   const pluginsSection = createSection('Plugins');
   const pluginList = document.createElement('div');
-  pluginList.id = 'kagistry-plugin-list';
+  pluginList.id = 'corgi-plugin-list';
 
   await renderPluginList(pluginList);
   pluginsSection.appendChild(pluginList);

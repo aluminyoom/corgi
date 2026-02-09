@@ -1,6 +1,6 @@
 # Content Scripts
 
-Kagistry uses two content scripts running in different execution contexts. This dual-world pattern is necessary because Chrome MV3 isolates content scripts from page JavaScript by default.
+Corgi uses two content scripts running in different execution contexts. This dual-world pattern is necessary because Chrome MV3 isolates content scripts from page JavaScript by default.
 
 ## MAIN World Script
 
@@ -58,11 +58,11 @@ export default defineContentScript({
 
 ## Bridge Protocol
 
-The two worlds communicate through `window.postMessage` with a structured message format. A `source` field prevents Kagistry from processing its own messages or unrelated postMessage traffic.
+The two worlds communicate through `window.postMessage` with a structured message format. A `source` field prevents Corgi from processing its own messages or unrelated postMessage traffic.
 
 ```typescript
 interface BridgeMessage {
-  source: 'kagistry'
+  source: 'corgi'
   direction: 'to-isolated' | 'to-main'
   id: string        // correlation ID for request/response pairing
   type: string      // 'storage-get' | 'storage-set' | 'theme-data' | ...
@@ -71,9 +71,9 @@ interface BridgeMessage {
 ```
 
 **Flow example (MAIN world requests theme data):**
-1. MAIN world posts `{ source: 'kagistry', direction: 'to-isolated', type: 'storage-get', id: 'abc', payload: { key: 'themes' } }`
+1. MAIN world posts `{ source: 'corgi', direction: 'to-isolated', type: 'storage-get', id: 'abc', payload: { key: 'themes' } }`
 2. ISOLATED world receives it, calls `chrome.storage.local.get('themes')`
-3. ISOLATED world posts back `{ source: 'kagistry', direction: 'to-main', type: 'storage-get', id: 'abc', payload: { themes: [...] } }`
+3. ISOLATED world posts back `{ source: 'corgi', direction: 'to-main', type: 'storage-get', id: 'abc', payload: { themes: [...] } }`
 4. MAIN world resolves the pending promise matched by `id: 'abc'`
 
 The MAIN world exposes a promise-based API wrapping this protocol, so plugin code never deals with raw postMessage.
@@ -85,21 +85,21 @@ The MAIN world exposes a promise-based API wrapping this protocol, so plugin cod
 2. MAIN world script executes (document_start, before <head>)
    - Install Object.defineProperty traps for window.client, window.sseCache
    - Wrap window.fetch, window.addEventListener
-   - Create <kagistry-styles> container element
+   - Create <corgi-styles> container element
 3. ISOLATED world script executes (document_start)
    - Set up postMessage bridge listener
    - Send stored theme/plugin data to MAIN world
 4. Kagi's <head> loads (stylesheets, meta tags)
    - MutationObserver catches <link> and <style> elements
-   - Kagistry can block, modify, or reorder stylesheets
+   - Corgi can block, modify, or reorder stylesheets
 5. Kagi's scripts execute
    - window.sseCache = new SSECache() triggers defineProperty trap
    - window.client = new Client() triggers defineProperty trap
-   - Kagistry wraps Client.prototype.onSocketMessage
+   - Corgi wraps Client.prototype.onSocketMessage
 6. DOMContentLoaded fires
    - Kagi calls setupSettings(), initPage(), setupResults()
-   - Kagistry plugin DOMContentLoaded hooks fire
+   - Corgi plugin DOMContentLoaded hooks fire
 7. SSE connection opens, search results stream in
-   - Each provider:* event passes through Kagistry's event interceptor
+   - Each provider:* event passes through Corgi's event interceptor
    - Plugins can modify, suppress, or inject result HTML
 ```

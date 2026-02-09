@@ -1,13 +1,13 @@
 {
-  "name": "kagistry",
+  "name": "corgi",
   "private": true,
   "description": "A theming engine and API for Kagi search",
   "license": "MIT",
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "pnpm --filter @kagistry/extension dev",
-    "build": "pnpm --filter @kagistry/extension build",
-    "docs:dev": "pnpm --filter @kagistry/docs dev",
-    "docs:build": "pnpm --filter @kagistry/docs build"
+    "dev": "pnpm --filter @corgi/extension dev",
+    "build": "pnpm --filter @corgi/extension build",
+    "docs:dev": "pnpm --filter @corgi/docs dev",
+    "docs:build": "pnpm --filter @corgi/docs build"
   }
 }

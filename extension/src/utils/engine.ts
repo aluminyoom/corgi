@@ -1,6 +1,6 @@
 import type { Theme } from './types';
 
-const STYLE_ELEMENT_ID = 'kagistry-theme-styles';
+const STYLE_ELEMENT_ID = 'corgi-theme-styles';
 
 export function buildThemeCSS(themes: Theme[], pagePath: string | null): string {
   const parts: string[] = [];
@@ -40,7 +40,7 @@ export function injectCSS(css: string): void {
   if (!styleEl) {
     styleEl = document.createElement('style');
     styleEl.id = STYLE_ELEMENT_ID;
-    styleEl.setAttribute('data-kagistry', 'true');
+    styleEl.setAttribute('data-corgi', 'true');
     (document.head ?? document.documentElement).appendChild(styleEl);
   }
 

@@ -1,14 +1,14 @@
 # Architecture Overview
 
-Kagistry runs as a browser extension that injects code into kagi.com pages. It provides two capabilities: a theming engine for visual customization and a plugin API for behavioral modification.
+Corgi runs as a browser extension that injects code into kagi.com pages. It provides two capabilities: a theming engine for visual customization and a plugin API for behavioral modification.
 
 ## Design Principles
 
-**Intercept, do not replace.** Kagistry hooks into Kagi's existing JavaScript and CSS rather than reimplementing page functionality. This keeps the extension lightweight and resilient to upstream changes.
+**Intercept, do not replace.** Corgi hooks into Kagi's existing JavaScript and CSS rather than reimplementing page functionality. This keeps the extension lightweight and resilient to upstream changes.
 
-**Two worlds, one bridge.** Chrome MV3 content scripts run in an isolated world by default, which cannot access page JavaScript globals. Kagistry uses a dual-script architecture with a MAIN world script for hooking and an ISOLATED world script for extension API access. Communication between them flows through `window.postMessage`.
+**Two worlds, one bridge.** Chrome MV3 content scripts run in an isolated world by default, which cannot access page JavaScript globals. Corgi uses a dual-script architecture with a MAIN world script for hooking and an ISOLATED world script for extension API access. Communication between them flows through `window.postMessage`.
 
-**Styles before content.** The MAIN world script runs at `document_start`, before any Kagi code executes. This lets Kagistry intercept CSS loading, override CSS variables, and inject custom styles before the first paint.
+**Styles before content.** The MAIN world script runs at `document_start`, before any Kagi code executes. This lets Corgi intercept CSS loading, override CSS variables, and inject custom styles before the first paint.
 
 ## Runtime Architecture
 
@@ -18,7 +18,7 @@ Browser Tab (kagi.com)
  |-- MAIN world content script (document_start)
  |    |-- Patches: monkey-patch Kagi globals before page JS runs
  |    |-- Hooks: intercept SSE events, fetch, DOM mutations
- |    |-- CSS: inject <kagistry-styles> before Kagi stylesheets
+ |    |-- CSS: inject <corgi-styles> before Kagi stylesheets
  |    |-- Plugins: load and execute plugin start/stop lifecycle
  |    |-- Bridge: postMessage to ISOLATED world for storage/API
  |
@@ -49,4 +49,4 @@ Both transports converge at `Client.prototype.onSocketMessage`, which parses mes
 
 ## Extension Packaging
 
-Kagistry is built with [WXT](https://wxt.dev/) targeting Manifest V3. The build produces separate outputs for Chrome, Firefox, and Safari from a single codebase. WXT handles manifest generation, content script registration, and cross-browser API polyfilling.
+Corgi is built with [WXT](https://wxt.dev/) targeting Manifest V3. The build produces separate outputs for Chrome, Firefox, and Safari from a single codebase. WXT handles manifest generation, content script registration, and cross-browser API polyfilling.

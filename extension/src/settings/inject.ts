@@ -1,4 +1,4 @@
-import { injectNavLink, activateNavLink, deactivateNavLink, isKagistryRoute } from './nav';
+import { injectNavLink, activateNavLink, deactivateNavLink, isCorgiRoute } from './nav';
 import { buildSettingsPage, isSettingsPageMounted } from './page';
 
 function isSettingsPage(): boolean {
@@ -11,14 +11,14 @@ function getMainElement(): HTMLElement | null {
 
 function hideKagiContent(main: HTMLElement): void {
   for (const child of Array.from(main.children)) {
-    if (child.id === 'kagistry-settings-page') continue;
+    if (child.id === 'corgi-settings-page') continue;
     (child as HTMLElement).style.display = 'none';
   }
 }
 
 function showKagiContent(main: HTMLElement): void {
   for (const child of Array.from(main.children)) {
-    if (child.id === 'kagistry-settings-page') continue;
+    if (child.id === 'corgi-settings-page') continue;
     (child as HTMLElement).style.display = '';
   }
 }
@@ -34,7 +34,7 @@ async function mountSettingsPage(): Promise<void> {
 
   hideKagiContent(main);
 
-  const existing = main.querySelector('#kagistry-settings-page');
+  const existing = main.querySelector('#corgi-settings-page');
   if (existing) {
     (existing as HTMLElement).style.display = '';
     activateNavLink();
@@ -51,7 +51,7 @@ function unmountSettingsPage(): void {
   const main = getMainElement();
   if (!main) return;
 
-  const page = main.querySelector('#kagistry-settings-page');
+  const page = main.querySelector('#corgi-settings-page');
   if (page) (page as HTMLElement).style.display = 'none';
 
   showKagiContent(main);
@@ -59,7 +59,7 @@ function unmountSettingsPage(): void {
 }
 
 function handleRouteChange(): void {
-  if (isKagistryRoute()) {
+  if (isCorgiRoute()) {
     mountSettingsPage();
   } else {
     unmountSettingsPage();
@@ -79,7 +79,7 @@ export function initSettingsIntegration(): void {
       linkWired = true;
       navLink.addEventListener('click', (event) => {
         event.preventDefault();
-        window.history.pushState(null, '', '/settings/kagistry');
+        window.history.pushState(null, '', '/settings/corgi');
         handleRouteChange();
       });
     }
@@ -94,7 +94,7 @@ export function initSettingsIntegration(): void {
   }
 
   const navObserver = new MutationObserver(() => {
-    if (!document.getElementById('kagistry-nav-link')) {
+    if (!document.getElementById('corgi-nav-link')) {
       linkWired = false;
       tryInject();
     }

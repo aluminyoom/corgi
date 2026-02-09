@@ -1,5 +1,5 @@
 {
-  "name": "@kagistry/docs",
+  "name": "@corgi/docs",
   "private": true,
   "type": "module",
   "scripts": {

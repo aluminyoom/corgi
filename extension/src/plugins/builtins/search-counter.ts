@@ -3,11 +3,11 @@ import { definePlugin } from '../api';
 export const searchCounterPlugin = definePlugin({
   name: 'search-counter',
   version: '0.1.0',
-  author: 'kagistry',
+  author: 'corgi',
   description: 'Shows a live count of search results on the page',
 
   css: `
-    .kagistry-result-counter {
+    .corgi-result-counter {
       position: fixed;
       bottom: 16px;
       right: 16px;
@@ -45,7 +45,7 @@ export const searchCounterPlugin = definePlugin({
     }
 
     counter = document.createElement('div');
-    counter.className = 'kagistry-result-counter';
+    counter.className = 'corgi-result-counter';
     counter.style.display = 'none';
     document.body.appendChild(counter);
 

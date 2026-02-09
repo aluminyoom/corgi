@@ -11,20 +11,20 @@ export default defineConfig({
     },
   },
   manifest: {
-    name: 'Kagistry',
+    name: 'Corgi',
     description: 'Theming engine and plugin API for Kagi',
     permissions: ['storage', 'declarativeNetRequest'],
     host_permissions: ['*://*.kagi.com/*'],
     web_accessible_resources: [
       {
-        resources: ['kagistry-main.js'],
+        resources: ['corgi-main.js'],
         matches: ['*://*.kagi.com/*'],
       },
     ],
     declarative_net_request: {
       rule_resources: [
         {
-          id: 'kagistry_rules',
+          id: 'corgi_rules',
           enabled: true,
           path: 'rules.json',
         },

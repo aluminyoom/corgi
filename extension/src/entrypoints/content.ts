@@ -9,7 +9,7 @@ export default defineContentScript({
 
   async main() {
     startBridge();
-    await injectScript('/kagistry-main.js', { keepInDom: true });
+    await injectScript('/corgi-main.js', { keepInDom: true });
     pushReady();
     initSettingsIntegration();
   },
