@@ -9,9 +9,15 @@ function getSearchLimit(): number {
   return Number(label?.dataset?.searchLimit) || 100;
 }
 
+function readCurrentRemaining(): number | null {
+  const el = document.querySelector('._0_search_counter_num');
+  if (!el || !el.textContent?.trim()) return null;
+  const n = Number(el.textContent);
+  return Number.isFinite(n) ? n : null;
+}
+
 function buildWidget(remaining: number, limit: number): HTMLElement {
-  const used = limit - remaining;
-  const pct = Math.min(Math.round((used / limit) * 100), 100);
+  const pct = Math.min(Math.round((remaining / limit) * 100), 100);
 
   const el = document.createElement('div');
   el.id = WIDGET_ID;
@@ -19,7 +25,7 @@ function buildWidget(remaining: number, limit: number): HTMLElement {
     `<div class="kagistry-usage-bar">` +
     `<div class="kagistry-usage-fill" style="width:${pct}%"></div>` +
     `</div>` +
-    `<span class="kagistry-usage-text">${used}/${limit} searches used</span>`;
+    `<span class="kagistry-usage-text">${remaining}/${limit} searches remaining</span>`;
   return el;
 }
 
@@ -28,26 +34,23 @@ function updateWidget(remaining: number): void {
   if (!existing) return;
 
   const limit = getSearchLimit();
-  const used = limit - remaining;
-  const pct = Math.min(Math.round((used / limit) * 100), 100);
+  const pct = Math.min(Math.round((remaining / limit) * 100), 100);
 
   const fill = existing.querySelector('.kagistry-usage-fill') as HTMLElement | null;
   const text = existing.querySelector('.kagistry-usage-text');
 
   if (fill) fill.style.width = `${pct}%`;
-  if (text) text.textContent = `${used}/${limit} searches used`;
+  if (text) text.textContent = `${remaining}/${limit} searches remaining`;
 }
 
-function inject(): boolean {
+function inject(remaining: number | null): boolean {
   if (document.getElementById(WIDGET_ID)) return true;
+  if (remaining === null) return false;
 
   const panel = document.querySelector(FILTER_PANEL);
   if (!panel) return false;
 
-  const counterNum = document.querySelector('._0_search_counter_num');
-  const remaining = Number(counterNum?.textContent) || 0;
   const limit = getSearchLimit();
-
   panel.after(buildWidget(remaining, limit));
   return true;
 }
@@ -90,14 +93,14 @@ export const usageCounterPlugin = definePlugin({
   onStart(api) {
     const cleanups: (() => void)[] = [];
 
-    inject();
+    inject(readCurrentRemaining());
 
     cleanups.push(
       api.onProviderEvent('free_search_remaining', (payload: unknown) => {
         const remaining = Number(payload);
         if (!Number.isFinite(remaining)) return;
 
-        if (!inject()) {
+        if (!inject(remaining)) {
           updateWidget(remaining);
         } else {
           updateWidget(remaining);
@@ -106,7 +109,7 @@ export const usageCounterPlugin = definePlugin({
     );
 
     cleanups.push(
-      api.observeElement(FILTER_PANEL, () => inject(), {
+      api.observeElement(FILTER_PANEL, () => inject(readCurrentRemaining()), {
         childList: true,
         subtree: false,
       }),
@@ -114,7 +117,7 @@ export const usageCounterPlugin = definePlugin({
 
     const bodyCleanup = api.observeElement('body', () => {
       if (!document.getElementById(WIDGET_ID) && document.querySelector(FILTER_PANEL)) {
-        inject();
+        inject(readCurrentRemaining());
       }
     }, { childList: true, subtree: true });
     cleanups.push(bodyCleanup);
