@@ -3,6 +3,10 @@ import { getThemeId, type Theme } from '@/utils/types';
 import { onMessage } from '@/utils/messaging';
 
 export default defineBackground(() => {
+  browser.action.onClicked.addListener(() => {
+    browser.tabs.create({ url: 'https://kagi.com/settings/corgi' });
+  });
+
   onMessage('getActiveThemes', async () => {
     const state = await themeState.getValue();
     return state.themes.filter((t) => state.activeThemeIds.includes(getThemeId(t)));

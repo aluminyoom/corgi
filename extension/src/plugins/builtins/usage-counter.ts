@@ -140,20 +140,20 @@ export const usageCounterPlugin = definePlugin({
       padding: 6px 0;
       margin: 4px 0 0;
       font-size: 12px;
-      color: var(--search-result-sub, var(--app-text-2, #888));
+      color: color-mix(in srgb, currentColor 60%, transparent);
     }
     .corgi-usage-bar {
       width: 120px;
       height: 4px;
       border-radius: 2px;
-      background: var(--border-color, rgba(128,128,128,0.2));
+      background: color-mix(in srgb, currentColor 15%, transparent);
       overflow: hidden;
       flex-shrink: 0;
     }
     .corgi-usage-fill {
       height: 100%;
       border-radius: 2px;
-      background: var(--accent-color, var(--color-primary, #6366f1));
+      background: var(--yellow, var(--primary, currentColor));
       transition: width 0.3s ease;
     }
     .corgi-usage-text {

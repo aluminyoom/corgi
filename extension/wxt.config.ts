@@ -14,6 +14,7 @@ export default defineConfig({
     name: 'Corgi',
     description: 'Theming engine and plugin API for Kagi',
     permissions: ['storage', 'declarativeNetRequest'],
+    action: {},
     host_permissions: ['*://*.kagi.com/*'],
     web_accessible_resources: [
       {

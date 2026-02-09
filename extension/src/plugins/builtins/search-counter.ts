@@ -15,12 +15,13 @@ export const searchCounterPlugin = definePlugin({
       border-radius: 8px;
       font-size: 12px;
       font-family: var(--font-mono, monospace);
-      background: var(--app-frame-bg, rgba(0, 0, 0, 0.7));
-      color: var(--app-text, #fff);
-      border: 1px solid var(--border-color, rgba(128, 128, 128, 0.2));
+      background: var(--secondary, #fff);
+      color: var(--primary, #181824);
+      border: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+      box-shadow: 0 2px 8px color-mix(in srgb, currentColor 10%, transparent);
       z-index: 9999;
       pointer-events: none;
-      opacity: 0.8;
+      opacity: 0.9;
       transition: opacity 0.2s;
     }
   `,

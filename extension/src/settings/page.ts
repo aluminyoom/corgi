@@ -1,185 +1,212 @@
-import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS, BUILTIN_GROUPS, type PluginGroupMeta } from '@/utils/storage';
 import { getThemeId, type Theme } from '@/utils/types';
 
 const PAGE_CONTAINER_ID = 'corgi-settings-page';
 
-function createHeader(): HTMLElement {
-  const header = document.createElement('div');
-  header.className = 'flex align-center justify-between mb-24';
-
-  const title = document.createElement('h1');
-  title.className = 'heading-2';
-  title.textContent = 'Corgi';
-
-  const version = document.createElement('span');
-  version.className = 'text-xs color-muted ml-8';
-  version.textContent = `v${browser.runtime.getManifest().version}`;
-
-  title.appendChild(version);
-  header.appendChild(title);
-
-  return header;
+function el<K extends keyof HTMLElementTagNameMap>(
+  tag: K,
+  attrs?: Record<string, string>,
+  ...children: (HTMLElement | string)[]
+): HTMLElementTagNameMap[K] {
+  const element = document.createElement(tag);
+  if (attrs) {
+    for (const [key, value] of Object.entries(attrs)) {
+      if (key === 'className') element.className = value;
+      else element.setAttribute(key, value);
+    }
+  }
+  for (const child of children) {
+    if (typeof child === 'string') element.appendChild(document.createTextNode(child));
+    else element.appendChild(child);
+  }
+  return element;
 }
 
-function createToggleRow(label: string, checked: boolean, onChange: (value: boolean) => void): HTMLElement {
-  const row = document.createElement('div');
-  row.className = 'setting-row flex align-center justify-between py-12';
-
-  const text = document.createElement('span');
-  text.className = 'text-sm';
-  text.textContent = label;
-
-  const toggle = document.createElement('label');
-  toggle.className = 'switch';
-
+function kagiToggle(checked: boolean, onChange: (value: boolean) => void): HTMLElement {
   const input = document.createElement('input');
   input.type = 'checkbox';
-  input.checked = checked;
-  input.addEventListener('change', () => onChange(input.checked));
+  if (checked) input.checked = true;
 
-  const slider = document.createElement('span');
-  slider.className = 'slider round';
+  const hidden = document.createElement('input');
+  hidden.type = 'hidden';
+  hidden.value = 'false';
 
+  const bar = el('div', { className: 'k_ui_toggle_switch_bar' });
+  const toggle = el('label', { className: '_0_k_ui_toggle_switch k_ui_toggle_switch' });
   toggle.appendChild(input);
-  toggle.appendChild(slider);
+  toggle.appendChild(hidden);
+  toggle.appendChild(bar);
 
-  row.appendChild(text);
-  row.appendChild(toggle);
-
-  return row;
+  input.addEventListener('change', () => onChange(input.checked));
+  return toggle;
 }
 
-function createSection(title: string): HTMLElement {
-  const section = document.createElement('div');
-  section.className = 'mb-24';
+function settingsRow(label: string, description: string, control: HTMLElement): HTMLElement {
+  const left = el('div', { className: 'c-left lg:min-w-xs pr-24 m-0 fs-base' },
+    el('label', {}, label),
+    el('div', { className: 'description' }, description),
+  );
 
-  const heading = document.createElement('h2');
-  heading.className = 'heading-3 mb-12';
-  heading.textContent = title;
+  const right = el('div', { className: 'c-right flex justify-end align-center flex-fluid pt-8 xl:pt-0' });
+  right.appendChild(control);
 
-  section.appendChild(heading);
-  return section;
+  const row = el('div', { className: 'settings-row flex flex-wrap' });
+  row.appendChild(left);
+  row.appendChild(right);
+
+  const box = el('div', { className: 'settings-row-box box pb-16 md:pb-9' });
+  box.appendChild(row);
+  return box;
 }
 
-function createThemeCard(theme: Theme, active: boolean, onToggle: (active: boolean) => void): HTMLElement {
-  const card = document.createElement('div');
-  card.className = 'p-16 rounded-lg mb-8';
-  card.style.cssText = 'border: 1px solid var(--border-color, rgba(128,128,128,0.2));';
-
-  const top = document.createElement('div');
-  top.className = 'flex align-center justify-between';
-
-  const info = document.createElement('div');
-
-  const name = document.createElement('strong');
-  name.className = 'text-sm';
-  name.textContent = theme.name;
-
-  const meta = document.createElement('div');
-  meta.className = 'text-xs color-muted mt-2';
-  meta.textContent = `${theme.author} \u00B7 v${theme.version}`;
-
-  info.appendChild(name);
-  info.appendChild(meta);
-
-  const toggle = document.createElement('input');
-  toggle.type = 'checkbox';
-  toggle.checked = active;
-  toggle.addEventListener('change', () => onToggle(toggle.checked));
-
-  top.appendChild(info);
-  top.appendChild(toggle);
-  card.appendChild(top);
-
-  if (theme.description) {
-    const desc = document.createElement('div');
-    desc.className = 'text-xs color-muted mt-8';
-    desc.textContent = theme.description;
-    card.appendChild(desc);
-  }
-
-  return card;
+function sectionHeading(text: string): HTMLElement {
+  const box = el('div', { className: 'settings-row-box box pb-16 md:pb-9' });
+  box.style.borderBottom = 'none';
+  const heading = el('h2', { className: 'heading-3 mt-8' }, text);
+  box.appendChild(heading);
+  return box;
 }
 
-function createEmptyState(message: string): HTMLElement {
-  const empty = document.createElement('div');
-  empty.className = 'text-sm color-muted py-16 text-center';
-  empty.textContent = message;
-  return empty;
-}
-
-function createImportButton(onImport: (json: string) => void): HTMLElement {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'mt-12';
-
-  const btn = document.createElement('button');
-  btn.className = 'btn btn-sm btn-secondary';
-  btn.textContent = 'Import Theme (JSON)';
-
-  const fileInput = document.createElement('input');
-  fileInput.type = 'file';
-  fileInput.accept = '.json';
-  fileInput.style.display = 'none';
-
-  fileInput.addEventListener('change', () => {
-    const file = fileInput.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        onImport(reader.result);
-      }
-    };
-    reader.readAsText(file);
-    fileInput.value = '';
+function groupRow(
+  group: PluginGroupMeta,
+  allEnabled: boolean,
+  onToggle: (enabled: boolean) => void,
+  onExpand: () => void,
+): HTMLElement {
+  const expandBtn = el('button', {
+    style: 'background: none; border: none; cursor: pointer; color: var(--color-primary, #6366f1); font-size: 12px; padding: 2px 0; margin-top: 4px; display: block;',
+  }, allEnabled ? 'Customize individually' : 'Show plugins');
+  expandBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    onExpand();
   });
 
-  btn.addEventListener('click', () => fileInput.click());
+  const left = el('div', { className: 'c-left lg:min-w-xs pr-24 m-0 fs-base' },
+    el('label', {}, group.name),
+    el('div', { className: 'description' }, group.description),
+    expandBtn,
+  );
 
-  wrapper.appendChild(btn);
-  wrapper.appendChild(fileInput);
+  const right = el('div', { className: 'c-right flex justify-end align-center flex-fluid pt-8 xl:pt-0' });
+  right.appendChild(kagiToggle(allEnabled, onToggle));
 
-  return wrapper;
+  const row = el('div', { className: 'settings-row flex flex-wrap' });
+  row.appendChild(left);
+  row.appendChild(right);
+
+  const box = el('div', { className: 'settings-row-box box pb-16 md:pb-9' });
+  box.appendChild(row);
+  return box;
+}
+
+async function renderPluginList(container: HTMLElement): Promise<void> {
+  container.innerHTML = '';
+  const states = await pluginStates.getValue();
+  const disabledSet = new Set(states.disabled);
+  const groupedPlugins = new Set<string>();
+
+  for (const group of BUILTIN_GROUPS) {
+    for (const name of group.plugins) groupedPlugins.add(name);
+  }
+
+  for (const group of BUILTIN_GROUPS) {
+    const memberStates = group.plugins.map((name) => !disabledSet.has(name));
+    const allEnabled = memberStates.every(Boolean);
+
+    const childContainer = el('div', { style: 'padding-left: 24px; display: none;' });
+
+    const card = groupRow(group, allEnabled,
+      async (nowEnabled) => {
+        const current = await pluginStates.getValue();
+        const disabled = new Set(current.disabled);
+        for (const name of group.plugins) {
+          if (nowEnabled) disabled.delete(name);
+          else disabled.add(name);
+        }
+        await pluginStates.setValue({ disabled: [...disabled] });
+        renderPluginList(container);
+      },
+      () => {
+        const visible = childContainer.style.display !== 'none';
+        childContainer.style.display = visible ? 'none' : '';
+      },
+    );
+
+    container.appendChild(card);
+
+    for (const pluginName of group.plugins) {
+      const meta = BUILTIN_PLUGINS.find((p) => p.name === pluginName);
+      if (!meta) continue;
+
+      childContainer.appendChild(settingsRow(
+        meta.name,
+        `${meta.author} \u00B7 v${meta.version} \u2014 ${meta.description}`,
+        kagiToggle(!disabledSet.has(pluginName), async (nowEnabled) => {
+          const current = await pluginStates.getValue();
+          const disabled = new Set(current.disabled);
+          if (nowEnabled) disabled.delete(pluginName);
+          else disabled.add(pluginName);
+          await pluginStates.setValue({ disabled: [...disabled] });
+          renderPluginList(container);
+        }),
+      ));
+    }
+
+    container.appendChild(childContainer);
+  }
+
+  for (const plugin of BUILTIN_PLUGINS) {
+    if (groupedPlugins.has(plugin.name)) continue;
+
+    container.appendChild(settingsRow(
+      plugin.name,
+      `${plugin.author} \u00B7 v${plugin.version} \u2014 ${plugin.description}`,
+      kagiToggle(!disabledSet.has(plugin.name), async (nowEnabled) => {
+        const current = await pluginStates.getValue();
+        const disabled = new Set(current.disabled);
+        if (nowEnabled) disabled.delete(plugin.name);
+        else disabled.add(plugin.name);
+        await pluginStates.setValue({ disabled: [...disabled] });
+      }),
+    ));
+  }
 }
 
 async function renderThemeList(container: HTMLElement): Promise<void> {
   container.innerHTML = '';
-
   const state = await themeState.getValue();
-  const activeIds = state.activeThemeIds;
 
   if (state.themes.length === 0) {
-    container.appendChild(createEmptyState('No themes installed. Import a theme JSON to get started.'));
+    container.appendChild(settingsRow(
+      'No themes installed',
+      'Import a theme JSON file to get started.',
+      el('span'),
+    ));
     return;
   }
 
   for (const theme of state.themes) {
     const id = getThemeId(theme);
-    const isActive = activeIds.includes(id);
+    const isActive = state.activeThemeIds.includes(id);
 
-    const card = createThemeCard(theme, isActive, async (nowActive) => {
-      const current = await themeState.getValue();
-      const ids = new Set(current.activeThemeIds);
-
-      if (nowActive) {
-        ids.add(id);
-      } else {
-        ids.delete(id);
-      }
-
-      await themeState.setValue({ ...current, activeThemeIds: [...ids] });
-      renderThemeList(container);
-    });
-
-    container.appendChild(card);
+    container.appendChild(settingsRow(
+      theme.name,
+      `${theme.author} \u00B7 v${theme.version}${theme.description ? ' \u2014 ' + theme.description : ''}`,
+      kagiToggle(isActive, async (nowActive) => {
+        const current = await themeState.getValue();
+        const ids = new Set(current.activeThemeIds);
+        if (nowActive) ids.add(id);
+        else ids.delete(id);
+        await themeState.setValue({ ...current, activeThemeIds: [...ids] });
+        renderThemeList(container);
+      }),
+    ));
   }
 }
 
 async function handleImport(json: string, themeListContainer: HTMLElement): Promise<void> {
   try {
     const theme = JSON.parse(json) as Theme;
-
     if (!theme.name || !theme.version || !theme.author) {
       throw new Error('Theme must have name, version, and author fields');
     }
@@ -187,13 +214,9 @@ async function handleImport(json: string, themeListContainer: HTMLElement): Prom
     const current = await themeState.getValue();
     const id = getThemeId(theme);
     const existing = current.themes.findIndex((t) => getThemeId(t) === id);
-
     const themes = [...current.themes];
-    if (existing >= 0) {
-      themes[existing] = theme;
-    } else {
-      themes.push(theme);
-    }
+    if (existing >= 0) themes[existing] = theme;
+    else themes.push(theme);
 
     await themeState.setValue({ ...current, themes });
     renderThemeList(themeListContainer);
@@ -202,140 +225,73 @@ async function handleImport(json: string, themeListContainer: HTMLElement): Prom
   }
 }
 
-function createPluginCard(
-  name: string,
-  version: string,
-  author: string,
-  description: string,
-  enabled: boolean,
-  onToggle: (enabled: boolean) => void,
-): HTMLElement {
-  const card = document.createElement('div');
-  card.className = 'p-16 rounded-lg mb-8';
-  card.style.cssText = 'border: 1px solid var(--border-color, rgba(128,128,128,0.2));';
+function createImportButton(onImport: (json: string) => void): HTMLElement {
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = '.json';
+  fileInput.style.display = 'none';
 
-  const top = document.createElement('div');
-  top.className = 'flex align-center justify-between';
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') onImport(reader.result);
+    };
+    reader.readAsText(file);
+    fileInput.value = '';
+  });
 
-  const info = document.createElement('div');
+  const btn = el('button', {
+    className: '_0_k_ui_dropdown k_ui_dropdown __basic',
+    style: 'cursor: pointer; padding: 6px 14px; font-size: 13px;',
+  }, 'Import Theme (JSON)');
+  btn.addEventListener('click', () => fileInput.click());
 
-  const nameEl = document.createElement('strong');
-  nameEl.className = 'text-sm';
-  nameEl.textContent = name;
-
-  const meta = document.createElement('div');
-  meta.className = 'text-xs color-muted mt-2';
-  meta.textContent = `${author} \u00B7 v${version}`;
-
-  info.appendChild(nameEl);
-  info.appendChild(meta);
-
-  const toggle = document.createElement('label');
-  toggle.className = 'switch';
-
-  const input = document.createElement('input');
-  input.type = 'checkbox';
-  input.checked = enabled;
-  input.addEventListener('change', () => onToggle(input.checked));
-
-  const slider = document.createElement('span');
-  slider.className = 'slider round';
-
-  toggle.appendChild(input);
-  toggle.appendChild(slider);
-
-  top.appendChild(info);
-  top.appendChild(toggle);
-  card.appendChild(top);
-
-  if (description) {
-    const desc = document.createElement('div');
-    desc.className = 'text-xs color-muted mt-8';
-    desc.textContent = description;
-    card.appendChild(desc);
-  }
-
-  return card;
-}
-
-async function renderPluginList(container: HTMLElement): Promise<void> {
-  container.innerHTML = '';
-
-  const states = await pluginStates.getValue();
-  const disabledSet = new Set(states.disabled);
-
-  for (const plugin of BUILTIN_PLUGINS) {
-    const enabled = !disabledSet.has(plugin.name);
-
-    const card = createPluginCard(
-      plugin.name,
-      plugin.version,
-      plugin.author,
-      plugin.description,
-      enabled,
-      async (nowEnabled) => {
-        const current = await pluginStates.getValue();
-        const disabled = new Set(current.disabled);
-
-        if (nowEnabled) {
-          disabled.delete(plugin.name);
-        } else {
-          disabled.add(plugin.name);
-        }
-
-        await pluginStates.setValue({ disabled: [...disabled] });
-      },
-    );
-
-    container.appendChild(card);
-  }
+  const wrapper = el('div', { className: 'mt-12 mb-16' });
+  wrapper.appendChild(btn);
+  wrapper.appendChild(fileInput);
+  return wrapper;
 }
 
 export async function buildSettingsPage(): Promise<HTMLElement> {
-  const container = document.createElement('div');
-  container.id = PAGE_CONTAINER_ID;
+  const container = el('div', { id: PAGE_CONTAINER_ID });
 
-  const header = createHeader();
+  const header = el('div', { className: 'flex align-start justify-between' });
+  const title = el('h1', {}, 'Manage your Corgi extensions and preferences');
+  header.appendChild(title);
   container.appendChild(header);
 
+  const form = el('div', { className: 's-form' });
+  const section = el('div', { className: 'max-w-xl _0_spc' });
+
   const enabled = await extensionEnabled.getValue();
-  const enableRow = createToggleRow('Enable Corgi', enabled, async (value) => {
-    await extensionEnabled.setValue(value);
-  });
-  container.appendChild(enableRow);
+  section.appendChild(settingsRow(
+    'Enable Corgi',
+    'Master switch for the Corgi extension. When disabled, no plugins or themes will run.',
+    kagiToggle(enabled, async (value) => {
+      await extensionEnabled.setValue(value);
+    }),
+  ));
 
-  const hr = document.createElement('hr');
-  hr.className = 'my-16';
-  container.appendChild(hr);
+  section.appendChild(sectionHeading('Plugins'));
 
-  const themesSection = createSection('Themes');
-  const themeList = document.createElement('div');
-  themeList.id = 'corgi-theme-list';
-
-  await renderThemeList(themeList);
-  themesSection.appendChild(themeList);
-  themesSection.appendChild(createImportButton((json) => handleImport(json, themeList)));
-
-  container.appendChild(themesSection);
-
-  const hr2 = document.createElement('hr');
-  hr2.className = 'my-16';
-  container.appendChild(hr2);
-
-  const pluginsSection = createSection('Plugins');
-  const pluginList = document.createElement('div');
-  pluginList.id = 'corgi-plugin-list';
-
+  const pluginList = el('div', { id: 'corgi-plugin-list' });
   await renderPluginList(pluginList);
-  pluginsSection.appendChild(pluginList);
+  section.appendChild(pluginList);
 
-  const hint = document.createElement('div');
-  hint.className = 'text-xs color-muted mt-8';
-  hint.textContent = 'Changes take effect on next page load.';
-  pluginsSection.appendChild(hint);
+  section.appendChild(sectionHeading('Themes'));
 
-  container.appendChild(pluginsSection);
+  const themeList = el('div', { id: 'corgi-theme-list' });
+  await renderThemeList(themeList);
+  section.appendChild(themeList);
+  section.appendChild(createImportButton((json) => handleImport(json, themeList)));
 
+  const hint = el('div', { className: 'description mt-8' }, 'Some changes take effect on next page load.');
+  section.appendChild(hint);
+
+  form.appendChild(section);
+  container.appendChild(form);
   return container;
 }
 

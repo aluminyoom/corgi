@@ -8,6 +8,14 @@ export interface PluginMeta {
   builtin: boolean;
 }
 
+export interface PluginGroupMeta {
+  name: string;
+  version: string;
+  author: string;
+  description: string;
+  plugins: string[];
+}
+
 export interface PluginStates {
   disabled: string[];
 }
@@ -50,3 +58,5 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
     builtin: true,
   },
 ];
+
+export const BUILTIN_GROUPS: PluginGroupMeta[] = [];
