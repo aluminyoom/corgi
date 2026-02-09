@@ -44,16 +44,9 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
   },
   {
     name: 'usage-counter',
-    version: '0.1.0',
+    version: '0.2.0',
     author: 'kagistry',
-    description: 'Displays remaining free searches in a progress bar below the filters.',
-    builtin: true,
-  },
-  {
-    name: 'midnight-theme',
-    version: '0.1.0',
-    author: 'kagistry',
-    description: 'A deep dark theme with purple accents.',
+    description: 'Displays account usage stats (searches, AI, assistant) below the filter bar.',
     builtin: true,
   },
 ];

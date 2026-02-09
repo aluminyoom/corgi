@@ -1,65 +1,136 @@
 import { definePlugin } from '../api';
 
 const FILTER_PANEL = '._0_filters-panel';
-const COUNTER_LABEL = '._0_search_counter_label';
 const WIDGET_ID = 'kagistry-usage-counter';
+const CACHE_KEY = 'kagistry:billing';
+const CACHE_TTL = 5 * 60 * 1000;
 
-function getSearchLimit(): number {
-  const label = document.querySelector(COUNTER_LABEL) as HTMLElement | null;
-  return Number(label?.dataset?.searchLimit) || 100;
+interface BillingEntry {
+  label: string;
+  used: number;
+  limit: number;
 }
 
-function readCurrentRemaining(): number | null {
-  const el = document.querySelector('._0_search_counter_num');
-  if (!el || !el.textContent?.trim()) return null;
-  const n = Number(el.textContent);
-  return Number.isFinite(n) ? n : null;
+interface BillingData {
+  account: string;
+  entries: BillingEntry[];
+  ts: number;
 }
 
-function buildWidget(remaining: number, limit: number): HTMLElement {
-  const pct = Math.min(Math.round((remaining / limit) * 100), 100);
+function parseBillingHTML(html: string): BillingData | null {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
 
+  const account =
+    doc.querySelector('.billing_box_title span')?.textContent?.trim() ?? '';
+
+  const boxes = doc.querySelectorAll('.billing_box_count_box');
+  if (boxes.length === 0) return null;
+
+  const entries: BillingEntry[] = [];
+  for (const box of boxes) {
+    const label =
+      box.querySelector('.billing_box_count_title')?.textContent?.trim() ?? '';
+    const raw =
+      box.querySelector('.billing_box_count_num')?.textContent?.trim() ?? '';
+    const match = raw.match(/^(\d+)\s*\/\s*(\d+)$/);
+    if (!match) continue;
+    entries.push({
+      label,
+      used: Number(match[1]),
+      limit: Number(match[2]),
+    });
+  }
+
+  return entries.length > 0 ? { account, entries, ts: Date.now() } : null;
+}
+
+function readCache(): BillingData | null {
+  try {
+    const raw = sessionStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const data = JSON.parse(raw) as BillingData;
+    if (Date.now() - data.ts > CACHE_TTL) return null;
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(data: BillingData): void {
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  } catch {
+    // storage full or disabled
+  }
+}
+
+async function fetchBillingData(): Promise<BillingData | null> {
+  const cached = readCache();
+  if (cached) return cached;
+
+  try {
+    const resp = await fetch('/settings/billing', {
+      credentials: 'same-origin',
+      headers: { Accept: 'text/html' },
+    });
+    if (!resp.ok) return null;
+
+    const html = await resp.text();
+    const data = parseBillingHTML(html);
+    if (data) writeCache(data);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+function findSearchEntry(data: BillingData): BillingEntry | null {
+  return (
+    data.entries.find((e) => /search/i.test(e.label)) ?? data.entries[0] ?? null
+  );
+}
+
+function buildWidget(data: BillingData): HTMLElement {
   const el = document.createElement('div');
   el.id = WIDGET_ID;
+
+  const search = findSearchEntry(data);
+  if (!search) return el;
+
+  const remaining = search.limit - search.used;
+  const pct = Math.min(Math.round((remaining / search.limit) * 100), 100);
+
   el.innerHTML =
     `<div class="kagistry-usage-bar">` +
     `<div class="kagistry-usage-fill" style="width:${pct}%"></div>` +
     `</div>` +
-    `<span class="kagistry-usage-text">${remaining}/${limit} searches remaining</span>`;
+    `<span class="kagistry-usage-text">${remaining}/${search.limit} searches left</span>`;
+
   return el;
 }
 
-function updateWidget(remaining: number): void {
+function updateWidget(data: BillingData): void {
   const existing = document.getElementById(WIDGET_ID);
   if (!existing) return;
 
-  const limit = getSearchLimit();
-  const pct = Math.min(Math.round((remaining / limit) * 100), 100);
+  const search = findSearchEntry(data);
+  if (!search) return;
 
-  const fill = existing.querySelector('.kagistry-usage-fill') as HTMLElement | null;
+  const remaining = search.limit - search.used;
+  const pct = Math.min(Math.round((remaining / search.limit) * 100), 100);
+
+  const fill = existing.querySelector<HTMLElement>('.kagistry-usage-fill');
   const text = existing.querySelector('.kagistry-usage-text');
 
   if (fill) fill.style.width = `${pct}%`;
-  if (text) text.textContent = `${remaining}/${limit} searches remaining`;
-}
-
-function inject(remaining: number | null): boolean {
-  if (document.getElementById(WIDGET_ID)) return true;
-  if (remaining === null) return false;
-
-  const panel = document.querySelector(FILTER_PANEL);
-  if (!panel) return false;
-
-  const limit = getSearchLimit();
-  panel.after(buildWidget(remaining, limit));
-  return true;
+  if (text) text.textContent = `${remaining}/${search.limit} searches left`;
 }
 
 export const usageCounterPlugin = definePlugin({
   name: 'usage-counter',
-  version: '0.1.0',
+  version: '0.2.0',
   author: 'kagistry',
-  description: 'Displays trial search usage after the filter bar',
+  description: 'Displays account usage stats below the filter bar',
 
   css: `
     #${WIDGET_ID} {
@@ -91,41 +162,47 @@ export const usageCounterPlugin = definePlugin({
   `,
 
   onStart(api) {
-    const cleanups: (() => void)[] = [];
-    let injecting = false;
+    let mounted = false;
 
-    function safeInject(): void {
-      if (injecting) return;
-      injecting = true;
-      inject(readCurrentRemaining());
-      injecting = false;
+    async function tryInject(): Promise<void> {
+      if (mounted || document.getElementById(WIDGET_ID)) return;
+
+      const panel = document.querySelector(FILTER_PANEL);
+      if (!panel) return;
+
+      const data = await fetchBillingData();
+      if (!data || !findSearchEntry(data)) return;
+
+      panel.after(buildWidget(data));
+      mounted = true;
     }
 
-    safeInject();
+    tryInject();
 
-    cleanups.push(
-      api.onProviderEvent('free_search_remaining', (payload: unknown) => {
-        const remaining = Number(payload);
-        if (!Number.isFinite(remaining)) return;
+    const cleanup = api.observeElement(FILTER_PANEL, () => {
+      if (!mounted) tryInject();
+    }, { childList: true, subtree: false });
 
-        if (!inject(remaining)) {
-          updateWidget(remaining);
-        } else {
-          updateWidget(remaining);
+    api.onProviderEvent('free_search_remaining', (payload: unknown) => {
+      const remaining = Number(payload);
+      if (!Number.isFinite(remaining)) return;
+
+      const cached = readCache();
+      if (cached) {
+        const search = findSearchEntry(cached);
+        if (search) {
+          search.used = search.limit - remaining;
+          writeCache(cached);
+          if (mounted) updateWidget(cached);
+          else tryInject();
         }
-      }),
-    );
-
-    cleanups.push(
-      api.observeElement(FILTER_PANEL, () => safeInject(), {
-        childList: true,
-        subtree: false,
-      }),
-    );
+      }
+    });
 
     return () => {
-      for (const fn of cleanups) fn();
+      cleanup();
       document.getElementById(WIDGET_ID)?.remove();
+      mounted = false;
     };
   },
 });
