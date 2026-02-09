@@ -28,6 +28,6 @@ When multiple themes are active, their CSS variables merge. If two themes set th
 
 Themes can define overrides for specific pages. For example, a theme might use different colors on the search results page versus the settings page. The extension reads the `data-path` attribute on `<html>` to determine the current page and applies matching overrides.
 
-## Built-in Theme
+## Creating Your Own
 
-Kagistry ships with a "Midnight" theme as a reference. It uses a deep dark background with purple accents. You can find its source at `extension/src/plugins/builtins/midnight-theme.ts` to understand the theme structure.
+See the [Creating Themes](./creating-themes.md) guide for the full theme JSON format and how to build your own.

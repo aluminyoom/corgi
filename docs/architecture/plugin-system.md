@@ -104,11 +104,10 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Kagistry ships with three built-in plugins in `plugins/builtins/`:
+Kagistry ships with two built-in plugins in `plugins/builtins/`:
 
 - **search-counter**: Observes the DOM and shows a live count of search results in a floating badge. Demonstrates `observeElement`, `onProviderEvent`, and `injectCSS`.
-- **usage-counter**: Displays a progress bar of remaining free searches below the filter panel. Listens to the `provider:free_search_remaining` server-sent event and reads Kagi's own search limit DOM elements.
-- **midnight-theme**: A dark purple theme defined as a `Theme` object. Shows how themes can be packaged as plugins.
+- **usage-counter**: Fetches account usage data from the billing page and displays a progress bar of remaining searches below the filter panel. Uses `sessionStorage` caching to avoid redundant requests.
 
 Built-in plugins are registered in `kagistry-main.ts` and started when the bridge signals `ready`. Each built-in can be individually toggled from the settings page at `/settings/kagistry`.
 

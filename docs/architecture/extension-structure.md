@@ -48,7 +48,7 @@ extension/
       builtins/
         index.ts          Built-in plugin/theme exports
         search-counter.ts Sample plugin: live search result counter
-        midnight-theme.ts Sample theme: deep dark purple
+        usage-counter.ts  Account usage widget (scrapes billing page)
     styles/
       injector.ts         CSS injection and <kagistry-styles> management
       variables.ts        CSS variable override application
