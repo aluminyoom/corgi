@@ -46,7 +46,16 @@ Corgi ships with two built-in plugins enabled by default:
 - **search-counter** shows a result count badge on search pages
 - **usage-counter** adds a search usage progress bar below filters
 
-You can toggle any of these from the Plugins section on the settings page. You can also open the Kagi Control Center (press `c` or click the gear icon) and find a Corgi shortcut at the bottom.
+It also includes a **Corgi Polish** plugin group (disabled by default) with four subtle visual refinements:
+
+- **refined-typography** improves font weights, line heights, and letter spacing
+- **smoother-interactions** adds hover transitions, focus rings, and scale transforms
+- **cleaner-cards** applies soft backgrounds, border-radius, and padding to result cards
+- **visual-hierarchy** mutes secondary text and adds clearer section separation
+
+You can toggle all four at once with the group toggle, or expand the group and override individual plugins.
+
+You can also open the Kagi Control Center (press `c` or click the gear icon) and find a Corgi shortcut at the bottom.
 
 ## Development Mode
 

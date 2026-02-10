@@ -6,7 +6,7 @@ Corgi embeds its management UI directly into Kagi's settings page rather than us
 
 Extension popups feel like a separate application. They close when you click away, they have their own styling that never quite matches the host page, and they create a mental context switch. By injecting into the settings page, Corgi feels like a feature Kagi shipped themselves.
 
-The popup still exists, but only as a one-button launcher that opens `/settings/corgi` in a new tab.
+There is no popup at all. Clicking the extension icon opens `/settings/corgi` directly through the `browser.action.onClicked` handler.
 
 ## Route Detection
 
@@ -38,7 +38,7 @@ The settings sidebar uses `nav#settings-menu` with a `div.cth_settings_nav_menu`
 
 Corgi inserts its link before the `<hr>` separator (which sits above "Sign Out") to position it at the bottom of the main settings list.
 
-When the Corgi route is active, all other nav links are deactivated and the Corgi link gets the `active` class and `aria-current="page"` attribute.
+When the Corgi route is active, all other nav links are deactivated and the Corgi link gets the `--active` class and `aria-current="page"` attribute. Kagi uses a double-dash prefix convention for its active state class.
 
 ## Page Content
 
@@ -47,11 +47,12 @@ The settings page replaces Kagi's `<main>` element content with Corgi's own UI. 
 The page renders:
 - **Header** with the Corgi title and version
 - **Enable/disable toggle** for the entire extension
+- **Plugin groups section** with batch toggles and expandable member lists
+- **Plugins section** listing individual plugins with per-plugin enable/disable toggles
 - **Themes section** listing installed themes with per-theme enable/disable
 - **Import button** for loading theme JSON files
-- **Plugins section** listing built-in plugins with per-plugin enable/disable toggles
 
-All elements use Kagi's own CSS utility classes (`heading-2`, `text-sm`, `color-muted`, `rounded-lg`, `flex`, `align-center`) so they match the native look without custom styles. The only custom CSS is for toggle switches and buttons, scoped under `#corgi-settings-page`.
+All elements use Kagi's own CSS classes and markup patterns (`settings-row-box`, `k_ui_toggle_switch`, native spacing utilities) so they are visually indistinguishable from Kagi's own settings. No custom CSS is needed.
 
 ## Control Center Shortcut
 

@@ -104,12 +104,43 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Corgi ships with two built-in plugins in `plugins/builtins/`:
+Corgi ships with built-in plugins in `plugins/builtins/`:
 
 - **search-counter**: Observes the DOM and shows a live count of search results in a floating badge. Demonstrates `observeElement`, `onProviderEvent`, and `injectCSS`.
 - **usage-counter**: Fetches account usage data from the billing page and displays a progress bar of remaining searches below the filter panel. Uses `sessionStorage` caching to avoid redundant requests.
 
-Built-in plugins are registered in `corgi-main.ts` and started when the bridge signals `ready`. Each built-in can be individually toggled from the settings page at `/settings/corgi`.
+Both are enabled by default and registered in `corgi-main.ts`.
+
+### Corgi Polish
+
+Corgi also ships with a group of four CSS-only plugins under `plugins/builtins/polish/`. These provide subtle visual refinements that make Kagi feel more polished without changing its core identity. All four are disabled by default and bundled under the "Corgi Polish" plugin group.
+
+- **corgi-polish/refined-typography**: Tighter line heights, improved font weights on headings, better letter spacing on URLs and dates.
+- **corgi-polish/smoother-interactions**: Subtle transitions on hover states, focus rings using `var(--yellow)`, scale transforms on interactive elements.
+- **corgi-polish/cleaner-cards**: Soft backgrounds using `color-mix`, consistent border-radius, and improved padding on search result cards and settings rows.
+- **corgi-polish/visual-hierarchy**: Muted secondary text through opacity, stronger result group separation with borders, and hover reveal on more-menus.
+
+All four plugins use theme-agnostic CSS exclusively. They rely on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
+
+## Plugin Groups
+
+Plugin groups bundle related plugins under a single toggle. Enabling a group enables all of its member plugins. Disabling a group disables all members. Users can also expand the group in settings and override individual plugins.
+
+Groups are defined in `storage.ts` as `BUILTIN_GROUPS`:
+
+```typescript
+export interface PluginGroupMeta {
+  name: string;
+  version: string;
+  author: string;
+  description: string;
+  plugins: string[];  // Plugin name references
+}
+```
+
+The group toggle writes to the same `pluginStates.disabled` array as individual toggles. When a group is toggled on, all its plugin names are removed from the disabled list. When toggled off, all are added.
+
+Groups are a UI and storage concept only. The plugin runtime has no awareness of groups. It reads the flat disabled list and starts or skips plugins accordingly.
 
 ### Plugin State Persistence
 

@@ -20,6 +20,8 @@ Corgi removes all of these limitations.
 - **Full page coverage.** Style *every* Kagi page, including settings.
 - **Live preview.** See changes as you type.
 - **Theme layering.** Combine multiple themes (e.g., Catppuccin colors + compact layout).
+- **Plugin system.** Extend Kagi with new features through a Vencord-style plugin API.
+- **Plugin groups.** Bundle related plugins under a single toggle with individual overrides.
 - **CSS variable API.** Programmatically override Kagi's design tokens.
 - **DOM hooks.** Target specific UI elements with stable selectors.
 - **Cross-browser.** Chrome, Firefox, and Safari from a single codebase.
