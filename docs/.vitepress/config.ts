@@ -36,6 +36,13 @@ export default defineConfig({
             { text: 'Creating Themes', link: '/guide/creating-themes' },
           ],
         },
+        {
+          text: 'Plugins',
+          items: [
+            { text: 'Using Plugins', link: '/guide/using-plugins' },
+            { text: 'Creating Plugins', link: '/guide/creating-plugins' },
+          ],
+        },
         { text: '―', items: [kagiHelpLink] },
       ],
       '/architecture/': [
