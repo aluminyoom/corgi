@@ -72,10 +72,11 @@ function groupRow(
   allEnabled: boolean,
   onToggle: (enabled: boolean) => void,
   onExpand: () => void,
+  expanded: boolean,
 ): HTMLElement {
   const expandBtn = el('button', {
     style: 'background: none; border: none; cursor: pointer; color: var(--color-primary, #6366f1); font-size: 12px; padding: 2px 0; margin-top: 4px; display: block;',
-  }, allEnabled ? 'Customize individually' : 'Show plugins');
+  }, expanded ? 'Hide plugins' : 'Show plugins');
   expandBtn.addEventListener('click', (e) => {
     e.preventDefault();
     onExpand();
@@ -99,6 +100,8 @@ function groupRow(
   return box;
 }
 
+const expandedGroups = new Set<string>();
+
 async function renderPluginList(container: HTMLElement): Promise<void> {
   container.innerHTML = '';
   const states = await pluginStates.getValue();
@@ -112,8 +115,9 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
   for (const group of BUILTIN_GROUPS) {
     const memberStates = group.plugins.map((name) => !disabledSet.has(name));
     const allEnabled = memberStates.every(Boolean);
+    const isExpanded = expandedGroups.has(group.name);
 
-    const childContainer = el('div', { style: 'padding-left: 24px; display: none;' });
+    const childContainer = el('div', { style: `padding-left: 24px; display: ${isExpanded ? '' : 'none'};` });
 
     const card = groupRow(group, allEnabled,
       async (nowEnabled) => {
@@ -129,7 +133,12 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
       () => {
         const visible = childContainer.style.display !== 'none';
         childContainer.style.display = visible ? 'none' : '';
+        if (visible) expandedGroups.delete(group.name);
+        else expandedGroups.add(group.name);
+        const btn = card.querySelector('button');
+        if (btn) btn.textContent = visible ? 'Show plugins' : 'Hide plugins';
       },
+      isExpanded,
     );
 
     container.appendChild(card);
@@ -147,7 +156,6 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
           if (nowEnabled) disabled.delete(pluginName);
           else disabled.add(pluginName);
           await pluginStates.setValue({ disabled: [...disabled] });
-          renderPluginList(container);
         }),
       ));
     }

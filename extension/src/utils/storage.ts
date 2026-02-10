@@ -44,6 +44,7 @@ export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates
     'corgi-polish/smoother-interactions',
     'corgi-polish/cleaner-cards',
     'corgi-polish/visual-hierarchy',
+    'corgi-polish/qol',
   ] },
 });
 
@@ -90,6 +91,13 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
     description: 'Muted secondary text, stronger title contrast, clearer result group separation',
     builtin: true,
   },
+  {
+    name: 'corgi-polish/qol',
+    version: '0.1.0',
+    author: 'corgi',
+    description: 'Small quality-of-life fixes: centered sidebar icons, aligned inline elements',
+    builtin: true,
+  },
 ];
 
 export const BUILTIN_GROUPS: PluginGroupMeta[] = [
@@ -103,6 +111,7 @@ export const BUILTIN_GROUPS: PluginGroupMeta[] = [
       'corgi-polish/smoother-interactions',
       'corgi-polish/cleaner-cards',
       'corgi-polish/visual-hierarchy',
+      'corgi-polish/qol',
     ],
   },
 ];

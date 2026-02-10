@@ -7,18 +7,14 @@ export const cleanerCardsPlugin = definePlugin({
   description: 'Softer shadows, consistent border-radius, and improved spacing on cards and boxes',
   css: `
     .search-result {
-      background: color-mix(in srgb, currentColor 3%, transparent);
       border-radius: 8px;
       padding: 16px;
-      border: 1px solid color-mix(in srgb, currentColor 6%, transparent);
       margin-bottom: 8px;
     }
 
     .discussions .search-result {
-      background: color-mix(in srgb, currentColor 3%, transparent);
       border-radius: 8px;
       padding: 16px;
-      border: 1px solid color-mix(in srgb, currentColor 6%, transparent);
     }
 
     .settings-row-box {

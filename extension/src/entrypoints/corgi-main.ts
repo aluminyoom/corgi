@@ -9,6 +9,7 @@ import {
   smootherInteractionsPlugin,
   cleanerCardsPlugin,
   visualHierarchyPlugin,
+  qolPlugin,
 } from '@/plugins/builtins';
 import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
@@ -69,6 +70,7 @@ export default defineUnlistedScript(() => {
     registerPlugin(smootherInteractionsPlugin);
     registerPlugin(cleanerCardsPlugin);
     registerPlugin(visualHierarchyPlugin);
+    registerPlugin(qolPlugin);
 
     const disabled = await getDisabledPlugins();
     for (const instance of listPlugins()) {
