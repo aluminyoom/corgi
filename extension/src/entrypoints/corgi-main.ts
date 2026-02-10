@@ -2,7 +2,14 @@ import { bridgeRequest, onBridgePush } from '@/bridge/main-side';
 import { trapGlobal } from '@/hooks/traps';
 import { applyThemes, clearThemes, interceptKagiStylesheets } from '@/styles/injector';
 import { registerPlugin, startPlugin, stopPlugin, stopAllPlugins, listPlugins } from '@/plugins/registry';
-import { searchCounterPlugin, usageCounterPlugin } from '@/plugins/builtins';
+import {
+  searchCounterPlugin,
+  usageCounterPlugin,
+  refinedTypographyPlugin,
+  smootherInteractionsPlugin,
+  cleanerCardsPlugin,
+  visualHierarchyPlugin,
+} from '@/plugins/builtins';
 import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
 
@@ -58,6 +65,10 @@ export default defineUnlistedScript(() => {
 
     registerPlugin(searchCounterPlugin);
     registerPlugin(usageCounterPlugin);
+    registerPlugin(refinedTypographyPlugin);
+    registerPlugin(smootherInteractionsPlugin);
+    registerPlugin(cleanerCardsPlugin);
+    registerPlugin(visualHierarchyPlugin);
 
     const disabled = await getDisabledPlugins();
     for (const instance of listPlugins()) {
