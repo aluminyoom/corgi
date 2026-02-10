@@ -13,6 +13,7 @@ type PendingRequest = {
 
 const pending = new Map<string, PendingRequest>();
 const pushListeners = new Map<BridgeAction, Set<(payload: unknown) => void>>();
+const queuedPushes: { action: BridgeAction; payload: unknown }[] = [];
 let requestCounter = 0;
 
 function generateId(): string {
@@ -37,7 +38,10 @@ window.addEventListener('message', (event) => {
 
   if (isBridgePush(event)) {
     const listeners = pushListeners.get(event.data.action);
-    if (!listeners) return;
+    if (!listeners || listeners.size === 0) {
+      queuedPushes.push({ action: event.data.action, payload: event.data.payload });
+      return;
+    }
     for (const fn of listeners) {
       try {
         fn(event.data.payload);
@@ -79,5 +83,17 @@ export function onBridgePush(action: BridgeAction, fn: (payload: unknown) => voi
     pushListeners.set(action, set);
   }
   set.add(fn);
+
+  const replay = queuedPushes.filter((q) => q.action === action);
+  for (let i = queuedPushes.length - 1; i >= 0; i--) {
+    if (queuedPushes[i].action === action) queuedPushes.splice(i, 1);
+  }
+  for (const queued of replay) {
+    try {
+      fn(queued.payload);
+    } catch {
+    }
+  }
+
   return () => set!.delete(fn);
 }
