@@ -33,5 +33,16 @@ export const qolPlugin = definePlugin({
       align-items: center;
       gap: 6px;
     }
+
+    .clipboardCopy.search_token {
+      display: flex !important;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .clipboardCopy.search_token .copyToClip {
+      position: static !important;
+      flex-shrink: 0;
+    }
   `,
 });
