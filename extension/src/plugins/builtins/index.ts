@@ -12,3 +12,4 @@ export { serpCardWrappingPlugin } from './polish/serp-card-wrapping';
 export { pillFiltersPlugin } from './polish/pill-filters';
 export { edgeToEdgeNavPlugin } from './polish/edge-to-edge-nav';
 export { centeredHeaderPlugin } from './polish/centered-header';
+export { modernLandingTabsPlugin } from './polish/modern-landing-tabs';

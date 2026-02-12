@@ -53,6 +53,7 @@ export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates
     'corgi-polish/pill-filters',
     'corgi-polish/edge-to-edge-nav',
     'corgi-polish/centered-header',
+    'corgi-polish/modern-landing-tabs',
   ] },
 });
 
@@ -169,6 +170,14 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
     description: 'Vertically centers the apps and control center buttons with the search bar in the SERP header',
     builtin: true,
   },
+  {
+    name: 'corgi-polish/modern-landing-tabs',
+    displayName: 'Modern Landing Tabs',
+    version: '0.2.0',
+    authors: ['aluminyoom'],
+    description: 'Redesigns the landing page search options into a centered card with colorful category pills and cleaner filters',
+    builtin: true,
+  },
 ];
 
 export const BUILTIN_GROUPS: PluginGroupMeta[] = [
@@ -190,6 +199,7 @@ export const BUILTIN_GROUPS: PluginGroupMeta[] = [
       'corgi-polish/pill-filters',
       'corgi-polish/edge-to-edge-nav',
       'corgi-polish/centered-header',
+      'corgi-polish/modern-landing-tabs',
     ],
   },
 ];
