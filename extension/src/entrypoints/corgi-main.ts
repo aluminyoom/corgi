@@ -10,6 +10,9 @@ import {
   cleanerCardsPlugin,
   visualHierarchyPlugin,
   qolPlugin,
+  stickySidebarPlugin,
+  sidebarCategoriesPlugin,
+  supportRedirectPlugin,
 } from '@/plugins/builtins';
 import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
@@ -71,6 +74,9 @@ export default defineUnlistedScript(() => {
     registerPlugin(cleanerCardsPlugin);
     registerPlugin(visualHierarchyPlugin);
     registerPlugin(qolPlugin);
+    registerPlugin(stickySidebarPlugin);
+    registerPlugin(sidebarCategoriesPlugin);
+    registerPlugin(supportRedirectPlugin);
 
     const disabled = await getDisabledPlugins();
     for (const instance of listPlugins()) {
@@ -80,6 +86,8 @@ export default defineUnlistedScript(() => {
     }
 
     injectControlCenterLink();
+
+    document.documentElement.classList.remove('corgi-cloaked');
   });
 
   onBridgePush('theme:apply', () => {

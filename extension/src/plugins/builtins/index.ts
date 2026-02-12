@@ -5,3 +5,6 @@ export { smootherInteractionsPlugin } from './polish/smoother-interactions';
 export { cleanerCardsPlugin } from './polish/cleaner-cards';
 export { visualHierarchyPlugin } from './polish/visual-hierarchy';
 export { qolPlugin } from './polish/qol';
+export { stickySidebarPlugin } from './polish/sticky-sidebar';
+export { sidebarCategoriesPlugin } from './polish/sidebar-categories';
+export { supportRedirectPlugin } from './support-redirect';

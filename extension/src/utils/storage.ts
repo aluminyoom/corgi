@@ -45,6 +45,8 @@ export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates
     'corgi-polish/cleaner-cards',
     'corgi-polish/visual-hierarchy',
     'corgi-polish/qol',
+    'corgi-polish/sticky-sidebar',
+    'corgi-polish/sidebar-categories',
   ] },
 });
 
@@ -98,6 +100,27 @@ export const BUILTIN_PLUGINS: PluginMeta[] = [
     description: 'Small quality-of-life fixes: centered sidebar icons, aligned inline elements',
     builtin: true,
   },
+  {
+    name: 'corgi-polish/sticky-sidebar',
+    version: '0.2.0',
+    author: 'corgi',
+    description: 'Makes the settings sidebar sticky while the main content scrolls independently',
+    builtin: true,
+  },
+  {
+    name: 'corgi-polish/sidebar-categories',
+    version: '0.1.0',
+    author: 'corgi',
+    description: 'Displays Search and Billing as category headings with sub-items promoted to top-level styling',
+    builtin: true,
+  },
+  {
+    name: 'support-redirect',
+    version: '0.1.0',
+    author: 'corgi',
+    description: 'Warns users not to report Corgi issues to Kagi when visiting support links.',
+    builtin: true,
+  },
 ];
 
 export const BUILTIN_GROUPS: PluginGroupMeta[] = [
@@ -112,6 +135,8 @@ export const BUILTIN_GROUPS: PluginGroupMeta[] = [
       'corgi-polish/cleaner-cards',
       'corgi-polish/visual-hierarchy',
       'corgi-polish/qol',
+      'corgi-polish/sticky-sidebar',
+      'corgi-polish/sidebar-categories',
     ],
   },
 ];
