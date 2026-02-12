@@ -128,6 +128,9 @@ export default defineUnlistedScript(() => {
       variables: () => import('@/styles/variables'),
       injector: () => import('@/styles/injector'),
     },
+    ui: {
+      modal: () => import('@/ui/modal'),
+    },
     destroy() {
       stopAllPlugins();
       clearThemes();
