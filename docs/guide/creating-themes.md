@@ -6,9 +6,10 @@ A Corgi theme is a JSON file that declares CSS variable overrides and optional c
 
 ```json
 {
-  "name": "My Theme",
+  "name": "my-theme",
+  "displayName": "My Theme",
   "version": "1.0.0",
-  "author": "your-name",
+  "authors": ["your-name"],
   "description": "A custom look for Kagi",
   "tags": ["dark"],
   "variables": {
@@ -83,7 +84,7 @@ The optional `meta` field provides hints to the engine:
 4. Toggle it on
 5. Navigate to a search page to see the result
 
-Changes to `variables` apply instantly. If you update the theme file, re-import it. Themes with the same `author/name` combination are replaced on import rather than duplicated.
+Changes to `variables` apply instantly. If you update the theme file, re-import it. Themes with the same `name` are replaced on import rather than duplicated.
 
 ## Distribution
 

@@ -2,8 +2,9 @@ import { definePlugin } from '../../api';
 
 export const stickySidebarPlugin = definePlugin({
   name: 'corgi-polish/sticky-sidebar',
+  displayName: 'Sticky Sidebar',
   version: '0.2.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Makes the settings sidebar sticky while the main content scrolls independently',
 
   css: `

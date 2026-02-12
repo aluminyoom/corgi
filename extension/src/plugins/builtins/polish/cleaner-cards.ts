@@ -2,8 +2,9 @@ import { definePlugin } from '../../api';
 
 export const cleanerCardsPlugin = definePlugin({
   name: 'corgi-polish/cleaner-cards',
+  displayName: 'Cleaner Cards',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Softer shadows, consistent border-radius, and improved spacing on cards and boxes',
   css: `
     .search-result {
@@ -17,13 +18,14 @@ export const cleanerCardsPlugin = definePlugin({
       padding: 16px;
     }
 
-    .settings-row-box {
+    .inline-content {
       border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 8px;
     }
 
-    ._0_k_ui_dropdown {
+    .settings-row-box {
       border-radius: 8px;
-      overflow: hidden;
     }
   `,
 });

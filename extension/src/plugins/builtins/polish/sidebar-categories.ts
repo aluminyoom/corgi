@@ -70,8 +70,9 @@ function transformNavCategories(): (() => void) | undefined {
 
 export const sidebarCategoriesPlugin = definePlugin({
   name: 'corgi-polish/sidebar-categories',
+  displayName: 'Sidebar Categories',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Displays Search and Billing as category headings with sub-items promoted to top-level styling',
 
   css: `

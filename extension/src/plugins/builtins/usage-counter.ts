@@ -128,8 +128,9 @@ function updateWidget(data: BillingData): void {
 
 export const usageCounterPlugin = definePlugin({
   name: 'usage-counter',
+  displayName: 'Usage Counter',
   version: '0.2.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Displays account usage stats below the filter bar',
 
   css: `

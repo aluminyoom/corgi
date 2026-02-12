@@ -13,6 +13,10 @@ import {
   stickySidebarPlugin,
   sidebarCategoriesPlugin,
   supportRedirectPlugin,
+  serpCardWrappingPlugin,
+  pillFiltersPlugin,
+  edgeToEdgeNavPlugin,
+  centeredHeaderPlugin,
 } from '@/plugins/builtins';
 import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
@@ -77,6 +81,10 @@ export default defineUnlistedScript(() => {
     registerPlugin(stickySidebarPlugin);
     registerPlugin(sidebarCategoriesPlugin);
     registerPlugin(supportRedirectPlugin);
+    registerPlugin(serpCardWrappingPlugin);
+    registerPlugin(pillFiltersPlugin);
+    registerPlugin(edgeToEdgeNavPlugin);
+    registerPlugin(centeredHeaderPlugin);
 
     const disabled = await getDisabledPlugins();
     for (const instance of listPlugins()) {

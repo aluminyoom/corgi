@@ -1,4 +1,5 @@
 import type { Theme } from '@/utils/types';
+import { getThemeId } from '@/utils/types';
 
 const CONTAINER_TAG = 'corgi-styles';
 
@@ -39,7 +40,7 @@ export function applyThemes(themes: Theme[], pagePath: string | null): void {
     const theme = themes[i];
     const style = document.createElement('style');
     style.id = buildThemeStyleId(i);
-    style.setAttribute('data-theme', `${theme.author}/${theme.name}`);
+    style.setAttribute('data-theme', getThemeId(theme));
 
     const parts: string[] = [];
 

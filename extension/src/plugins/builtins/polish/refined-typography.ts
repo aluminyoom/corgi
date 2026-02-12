@@ -2,8 +2,9 @@ import { definePlugin } from '../../api';
 
 export const refinedTypographyPlugin = definePlugin({
   name: 'corgi-polish/refined-typography',
+  displayName: 'Refined Typography',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Tighter line heights, improved font weights on headings, better text spacing',
   css: `
     .__sri_title_link {

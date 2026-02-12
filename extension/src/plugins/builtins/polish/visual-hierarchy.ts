@@ -2,8 +2,9 @@ import { definePlugin } from '../../api';
 
 export const visualHierarchyPlugin = definePlugin({
   name: 'corgi-polish/visual-hierarchy',
+  displayName: 'Visual Hierarchy',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Muted secondary text, stronger title contrast, clearer result group separation',
   css: `
     .__sri-url {

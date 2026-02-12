@@ -7,8 +7,9 @@ Complete reference for the Corgi theme JSON structure.
 ```typescript
 interface Theme {
   name: string;
+  displayName: string;
   version: string;
-  author: string;
+  authors: string[];
   description: string;
   tags: string[];
   variables: Record<string, string>;
@@ -30,9 +31,10 @@ interface Theme {
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `name` | `string` | Display name of the theme |
+| `name` | `string` | Unique identifier for the theme (used as theme ID) |
+| `displayName` | `string` | Human-readable name shown in the UI |
 | `version` | `string` | Semver version string |
-| `author` | `string` | Author identifier (used in theme ID) |
+| `authors` | `string[]` | Author identifiers (mapped to profiles in the author registry) |
 | `description` | `string` | Short description of the theme |
 | `tags` | `string[]` | Searchable tags (e.g., `["dark", "minimal"]`) |
 | `variables` | `Record<string, string>` | CSS variable overrides applied to `:root` |
@@ -63,15 +65,16 @@ Page keys match the `data-path` attribute on `<html>`.
 
 ## Theme ID
 
-Themes are identified by `author/name`. Importing a theme with the same author and name as an existing theme replaces the existing one.
+Themes are identified by their `name` field. Importing a theme with the same name as an existing theme replaces it.
 
 ## Example
 
 ```json
 {
-  "name": "Midnight",
+  "name": "midnight",
+  "displayName": "Midnight",
   "version": "1.0.0",
-  "author": "corgi",
+  "authors": ["aluminyoom"],
   "description": "A deep dark theme with purple accents",
   "tags": ["dark", "purple", "minimal"],
   "variables": {

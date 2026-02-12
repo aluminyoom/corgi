@@ -9,8 +9,9 @@ import { definePlugin } from '@/plugins/api';
 
 export const myPlugin = definePlugin({
   name: 'my-plugin',
+  displayName: 'My Plugin',
   version: '1.0.0',
-  author: 'your-name',
+  authors: ['your-name'],
   description: 'What this plugin does',
 
   onStart(api) {
@@ -33,8 +34,9 @@ The simplest plugin type injects CSS without any JavaScript logic. Declare the `
 ```typescript
 export const myThemePlugin = definePlugin({
   name: 'my-theme-tweak',
+  displayName: 'My Theme Tweak',
   version: '0.1.0',
-  author: 'your-name',
+  authors: ['your-name'],
   description: 'Rounds all search result cards',
   css: `
     .search-result {

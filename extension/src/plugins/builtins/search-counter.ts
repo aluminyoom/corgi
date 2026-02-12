@@ -2,8 +2,9 @@ import { definePlugin } from '../api';
 
 export const searchCounterPlugin = definePlugin({
   name: 'search-counter',
+  displayName: 'Search Counter',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Shows a live count of search results on the page',
 
   css: `

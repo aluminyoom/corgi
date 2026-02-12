@@ -9,8 +9,9 @@ import { definePlugin } from '@/plugins/api';
 
 export const myPlugin = definePlugin({
   name: 'my-plugin',
+  displayName: 'My Plugin',
   version: '1.0.0',
-  author: 'your-name',
+  authors: ['your-name'],
   description: 'What this plugin does',
 
   onStart(api) {
@@ -131,8 +132,9 @@ Groups are defined in `storage.ts` as `BUILTIN_GROUPS`:
 ```typescript
 export interface PluginGroupMeta {
   name: string;
+  displayName: string;
   version: string;
-  author: string;
+  authors: string[];
   description: string;
   plugins: string[];  // Plugin name references
 }

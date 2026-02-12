@@ -30,8 +30,9 @@ function bodyForHref(href: string): string {
 
 export const supportRedirectPlugin = definePlugin({
   name: 'support-redirect',
+  displayName: 'Support Redirect',
   version: '0.1.0',
-  author: 'corgi',
+  authors: ['aluminyoom'],
   description: 'Warns users not to report Corgi issues to Kagi when visiting support links',
 
   onStart() {

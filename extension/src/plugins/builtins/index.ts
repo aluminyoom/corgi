@@ -8,3 +8,7 @@ export { qolPlugin } from './polish/qol';
 export { stickySidebarPlugin } from './polish/sticky-sidebar';
 export { sidebarCategoriesPlugin } from './polish/sidebar-categories';
 export { supportRedirectPlugin } from './support-redirect';
+export { serpCardWrappingPlugin } from './polish/serp-card-wrapping';
+export { pillFiltersPlugin } from './polish/pill-filters';
+export { edgeToEdgeNavPlugin } from './polish/edge-to-edge-nav';
+export { centeredHeaderPlugin } from './polish/centered-header';

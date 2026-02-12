@@ -49,8 +49,9 @@ const { install } = await window.__corgi.plugins.install();
 
 const myPlugin = define({
   name: 'my-custom-plugin',
+  displayName: 'My Custom Plugin',
   version: '0.1.0',
-  author: 'me',
+  authors: ['me'],
   description: 'Does something cool',
   onStart(api) {
     api.injectCSS('.search-result { border-left: 3px solid var(--yellow); }');

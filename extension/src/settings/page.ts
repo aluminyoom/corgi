@@ -1,5 +1,6 @@
 import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS, BUILTIN_GROUPS, type PluginGroupMeta } from '@/utils/storage';
 import { getThemeId, type Theme } from '@/utils/types';
+import { formatAuthors } from '@/authors';
 
 const PAGE_CONTAINER_ID = 'corgi-settings-page';
 
@@ -83,7 +84,7 @@ function groupRow(
   });
 
   const left = el('div', { className: 'c-left lg:min-w-xs pr-24 m-0 fs-base' },
-    el('label', {}, group.name),
+    el('label', {}, group.displayName),
     el('div', { className: 'description' }, group.description),
     expandBtn,
   );
@@ -148,8 +149,8 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
       if (!meta) continue;
 
       childContainer.appendChild(settingsRow(
-        meta.name,
-        `${meta.author} \u00B7 v${meta.version} \u2014 ${meta.description}`,
+        meta.displayName,
+        `${formatAuthors(meta.authors)} \u00B7 v${meta.version} \u2014 ${meta.description}`,
         kagiToggle(!disabledSet.has(pluginName), async (nowEnabled) => {
           const current = await pluginStates.getValue();
           const disabled = new Set(current.disabled);
@@ -167,8 +168,8 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
     if (groupedPlugins.has(plugin.name)) continue;
 
     container.appendChild(settingsRow(
-      plugin.name,
-      `${plugin.author} \u00B7 v${plugin.version} \u2014 ${plugin.description}`,
+      plugin.displayName,
+      `${formatAuthors(plugin.authors)} \u00B7 v${plugin.version} \u2014 ${plugin.description}`,
       kagiToggle(!disabledSet.has(plugin.name), async (nowEnabled) => {
         const current = await pluginStates.getValue();
         const disabled = new Set(current.disabled);
@@ -198,8 +199,8 @@ async function renderThemeList(container: HTMLElement): Promise<void> {
     const isActive = state.activeThemeIds.includes(id);
 
     container.appendChild(settingsRow(
-      theme.name,
-      `${theme.author} \u00B7 v${theme.version}${theme.description ? ' \u2014 ' + theme.description : ''}`,
+      theme.displayName,
+      `${formatAuthors(theme.authors)} \u00B7 v${theme.version}${theme.description ? ' \u2014 ' + theme.description : ''}`,
       kagiToggle(isActive, async (nowActive) => {
         const current = await themeState.getValue();
         const ids = new Set(current.activeThemeIds);
@@ -215,8 +216,8 @@ async function renderThemeList(container: HTMLElement): Promise<void> {
 async function handleImport(json: string, themeListContainer: HTMLElement): Promise<void> {
   try {
     const theme = JSON.parse(json) as Theme;
-    if (!theme.name || !theme.version || !theme.author) {
-      throw new Error('Theme must have name, version, and author fields');
+    if (!theme.name || !theme.version || !theme.authors?.length) {
+      throw new Error('Theme must have name, version, and authors fields');
     }
 
     const current = await themeState.getValue();

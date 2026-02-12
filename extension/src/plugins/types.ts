@@ -11,8 +11,9 @@ export interface PluginPatch {
 
 export interface PluginDefinition {
   name: string;
+  displayName: string;
   version: string;
-  author: string;
+  authors: string[];
   description: string;
   dependencies?: string[];
 

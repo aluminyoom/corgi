@@ -1,7 +1,8 @@
 export interface Theme {
   name: string;
+  displayName: string;
   version: string;
-  author: string;
+  authors: string[];
   description: string;
   tags: string[];
   variables: Record<string, string>;
@@ -22,5 +23,5 @@ export interface ThemeState {
 export type ThemeId = string;
 
 export function getThemeId(theme: Theme): ThemeId {
-  return `${theme.author}/${theme.name}`;
+  return theme.name;
 }
