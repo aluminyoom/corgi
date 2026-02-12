@@ -9,19 +9,10 @@ export const cleanerCardsPlugin = definePlugin({
   css: `
     .search-result {
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 8px;
-    }
-
-    .discussions .search-result {
-      border-radius: 8px;
-      padding: 16px;
     }
 
     .inline-content {
       border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 8px;
     }
 
     .settings-row-box {

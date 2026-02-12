@@ -1,6 +1,7 @@
 import { injectScript } from 'wxt/utils/inject-script';
 import { startBridge, pushReady } from '@/bridge/isolated-side';
 import { initSettingsIntegration } from '@/settings/inject';
+import { initBranding } from '@/settings/branding';
 
 const CLOAK_ID = 'corgi-cloak';
 
@@ -26,5 +27,6 @@ export default defineContentScript({
     await injectScript('/corgi-main.js', { keepInDom: true });
     pushReady();
     initSettingsIntegration();
+    initBranding();
   },
 });
