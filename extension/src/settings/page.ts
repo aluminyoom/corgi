@@ -262,6 +262,51 @@ function createImportButton(onImport: (json: string) => void): HTMLElement {
   return wrapper;
 }
 
+function createAdmonition(): HTMLElement {
+  const box = el('div', { className: 'alert' });
+  box.style.cssText =
+    'background: var(--app-bg); border: 1px solid var(--accent-alert, var(--red-600)); margin-bottom: 20px;';
+
+  const heading = el('div', {});
+  heading.style.cssText =
+    'font-weight: 600; color: var(--accent-alert, var(--red-600)); margin-bottom: 6px;';
+  heading.textContent = 'Corgi is an unofficial project';
+
+  const text = el('div', {});
+  text.style.cssText = 'color: var(--primary-600); margin-bottom: 12px; line-height: 1.5;';
+  text.textContent =
+    'Corgi is a third-party extension and is not affiliated with or supported by Kagi. ' +
+    'Please do not contact Kagi support for Corgi-related issues. Before reporting a bug to Kagi, ' +
+    'disable Corgi first to confirm the issue is not caused by it.';
+
+  const actions = el('div', { className: 'flex gap-8 flex-wrap' });
+
+  const issueLink = el('a', {
+    href: 'https://github.com/aluminyoom/corgi/issues',
+    target: '_blank',
+    rel: 'noopener',
+    className: 'btn --danger-secondary',
+  });
+  issueLink.style.cssText = 'text-decoration: none; font-size: 0.8125rem; min-height: 32px; padding: 0 16px;';
+  issueLink.textContent = 'Report a Corgi issue';
+
+  const kagiLink = el('a', {
+    href: 'https://kagifeedback.org',
+    target: '_blank',
+    rel: 'noopener',
+    className: 'btn --secondary',
+  });
+  kagiLink.style.cssText = 'text-decoration: none; font-size: 0.8125rem; min-height: 32px; padding: 0 16px;';
+  kagiLink.textContent = 'Kagi Feedback';
+
+  actions.appendChild(issueLink);
+  actions.appendChild(kagiLink);
+  box.appendChild(heading);
+  box.appendChild(text);
+  box.appendChild(actions);
+  return box;
+}
+
 export async function buildSettingsPage(): Promise<HTMLElement> {
   const container = el('div', { id: PAGE_CONTAINER_ID });
 
@@ -272,6 +317,8 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
 
   const form = el('div', { className: 's-form' });
   const section = el('div', { className: 'max-w-xl _0_spc' });
+
+  section.appendChild(createAdmonition());
 
   const enabled = await extensionEnabled.getValue();
   section.appendChild(settingsRow(
