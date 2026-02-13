@@ -29,7 +29,7 @@ export const modernLandingTabsPlugin = definePlugin({
     .landing-category-select .landing_cat_buttons {
       background: var(--modal-bg) !important;
       border: 1px solid var(--primary-100) !important;
-      border-radius: 16px !important;
+      border-radius: 999px !important;
       box-shadow: 0 2px 12px 0 var(--box-shadow) !important;
       padding: 10px 14px !important;
       justify-content: center !important;
@@ -226,9 +226,9 @@ export const modernLandingTabsPlugin = definePlugin({
        SECTION 3b — Search Options toggle INSIDE search bar
        ═══════════════════════════════════════════ */
 
-    /* Position toggle inside the search bar, left side */
-    .search-input-container ._0_land_adv_search_btn,
-    .search-input-container .land_adv_search_btn {
+    /* Position toggle inside the search bar, left side (landing only) */
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn,
+    [data-path="/"] .search-input-container .land_adv_search_btn {
       position: absolute !important;
       visibility: visible !important;
       top: 50% !important;
@@ -248,46 +248,46 @@ export const modernLandingTabsPlugin = definePlugin({
       z-index: 2 !important;
       transition: background-color 0.15s ease !important;
     }
-    .search-input-container ._0_land_adv_search_btn:hover,
-    .search-input-container .land_adv_search_btn:hover {
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn:hover,
+    [data-path="/"] .search-input-container .land_adv_search_btn:hover {
       background-color: var(--hover-bg) !important;
     }
 
     /* Shift the search input right to make room for the gear icon */
-    .search-input-container .search-input {
+    [data-path="/"] .search-input-container .search-input {
       padding-left: 42px !important;
     }
 
     /* Hide the text label, show only the icon */
-    .search-input-container .land_adv_search_btn span,
-    .search-input-container ._0_land_adv_search_btn span {
+    [data-path="/"] .search-input-container .land_adv_search_btn span,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn span {
       display: none !important;
     }
 
     /* Ensure the SVG icon is visible */
-    .search-input-container .land_adv_search_btn svg,
-    .search-input-container ._0_land_adv_search_btn svg {
+    [data-path="/"] .search-input-container .land_adv_search_btn svg,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn svg {
       opacity: 0.6;
       transition: opacity 0.15s ease;
     }
-    .search-input-container .land_adv_search_btn:hover svg,
-    .search-input-container ._0_land_adv_search_btn:hover svg {
+    [data-path="/"] .search-input-container .land_adv_search_btn:hover svg,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn:hover svg {
       opacity: 1;
     }
 
     /* Zero out the margin on the gear icon <i> */
-    .search-input-container .land_adv_search_btn i,
-    .search-input-container ._0_land_adv_search_btn i {
+    [data-path="/"] .search-input-container .land_adv_search_btn i,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn i {
       margin-right: 0 !important;
     }
 
     /* When toggle is active (X icon state), give it a subtle active indicator */
-    .search-input-container .land_adv_search_btn.__close,
-    .search-input-container ._0_land_adv_search_btn.__close {
+    [data-path="/"] .search-input-container .land_adv_search_btn.__close,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn.__close {
       background-color: color-mix(in srgb, var(--nav_n_se_line) 15%, transparent) !important;
     }
-    .search-input-container .land_adv_search_btn.__close svg,
-    .search-input-container ._0_land_adv_search_btn.__close svg {
+    [data-path="/"] .search-input-container .land_adv_search_btn.__close svg,
+    [data-path="/"] .search-input-container ._0_land_adv_search_btn.__close svg {
       opacity: 0.9;
     }
 
