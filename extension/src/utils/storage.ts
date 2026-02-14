@@ -7,6 +7,8 @@ export interface PluginStates {
   disabled: string[];
 }
 
+export type PluginSettingsStore = Record<string, Record<string, unknown>>;
+
 const DEFAULT_STATE: ThemeState = {
   themes: [],
   activeThemeIds: [],
@@ -27,6 +29,10 @@ export const extensionEnabled = storage.defineItem<boolean>('sync:enabled', {
 
 export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates', {
   fallback: { disabled: getDefaultDisabled() },
+});
+
+export const pluginSettings = storage.defineItem<PluginSettingsStore>('local:pluginSettings', {
+  fallback: {},
 });
 
 export const BUILTIN_PLUGINS = getBuiltinMeta();

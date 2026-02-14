@@ -1,4 +1,4 @@
-import type { PluginDefinition } from '../types';
+import type { PluginDefinition, PluginSetting } from '../types';
 import { BUILTIN_GROUP_DEFS } from './groups';
 import type { GroupDef } from './groups';
 
@@ -35,6 +35,7 @@ export interface PluginMeta {
   authors: string[];
   description: string;
   builtin: boolean;
+  settings?: PluginSetting[];
 }
 
 export interface PluginGroupMeta {
@@ -54,6 +55,7 @@ export function getBuiltinMeta(): PluginMeta[] {
     authors: p.authors,
     description: p.description,
     builtin: true,
+    settings: p.settings,
   }));
 }
 

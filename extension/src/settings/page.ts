@@ -1,7 +1,10 @@
-import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS, BUILTIN_GROUPS } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates, pluginSettings, BUILTIN_PLUGINS, BUILTIN_GROUPS } from '@/utils/storage';
 import type { PluginGroupMeta } from '@/utils/storage';
+import type { PluginMeta } from '@/plugins/builtins/discover';
+import type { PluginSetting } from '@/plugins/types';
 import { getThemeId, type Theme } from '@/utils/types';
 import { formatAuthors } from '@/authors';
+import { showModal } from '@/ui/modal';
 
 const PAGE_CONTAINER_ID = 'corgi-settings-page';
 
@@ -43,13 +46,14 @@ function kagiToggle(checked: boolean, onChange: (value: boolean) => void): HTMLE
   return toggle;
 }
 
-function settingsRow(label: string, description: string, control: HTMLElement): HTMLElement {
+function settingsRow(label: string, description: string, control: HTMLElement, gearBtn?: HTMLElement | null): HTMLElement {
   const left = el('div', { className: 'c-left lg:min-w-xs pr-24 m-0 fs-base' },
     el('label', {}, label),
     el('div', { className: 'description' }, description),
   );
 
   const right = el('div', { className: 'c-right flex justify-end align-center flex-fluid pt-8 xl:pt-0' });
+  if (gearBtn) right.appendChild(gearBtn);
   right.appendChild(control);
 
   const row = el('div', { className: 'settings-row flex flex-wrap' });
@@ -67,6 +71,126 @@ function sectionHeading(text: string): HTMLElement {
   const heading = el('h2', { className: 'heading-3 mt-8' }, text);
   box.appendChild(heading);
   return box;
+}
+
+function buildSettingsForm(
+  settings: PluginSetting[],
+  values: Record<string, unknown>,
+): { form: HTMLElement; getValues: () => Record<string, unknown> } {
+  const form = el('div', { style: 'display: flex; flex-direction: column; gap: 16px;' });
+  const inputs: { key: string; getValue: () => unknown }[] = [];
+
+  for (const setting of settings) {
+    const row = el('div', { style: 'display: flex; flex-direction: column; gap: 4px;' });
+    const label = el('label', { style: 'font-size: 13px; font-weight: 500; color: var(--color, var(--primary-800, #222));' }, setting.label);
+    row.appendChild(label);
+
+    const currentValue = values[setting.key] ?? setting.default;
+
+    if (setting.type === 'boolean') {
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.checked = Boolean(currentValue);
+      checkbox.style.cssText = 'width: 16px; height: 16px;';
+      row.appendChild(checkbox);
+      inputs.push({ key: setting.key, getValue: () => checkbox.checked });
+    } else if (setting.type === 'select' && setting.options) {
+      const select = document.createElement('select');
+      select.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px;';
+      for (const opt of setting.options) {
+        const option = document.createElement('option');
+        option.value = String(opt.value);
+        option.textContent = opt.label;
+        if (String(currentValue) === String(opt.value)) option.selected = true;
+        select.appendChild(option);
+      }
+      row.appendChild(select);
+      inputs.push({ key: setting.key, getValue: () => select.value });
+    } else if (setting.type === 'number') {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.value = String(currentValue ?? '');
+      input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px; max-width: 200px;';
+      row.appendChild(input);
+      inputs.push({ key: setting.key, getValue: () => Number(input.value) });
+    } else {
+      const isLong = String(currentValue ?? '').length > 60 || setting.key.includes('url') || setting.key.includes('data');
+      if (isLong) {
+        const textarea = document.createElement('textarea');
+        textarea.value = String(currentValue ?? '');
+        textarea.rows = 3;
+        textarea.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px; resize: vertical; font-family: var(--font-mono, monospace);';
+        row.appendChild(textarea);
+        inputs.push({ key: setting.key, getValue: () => textarea.value });
+      } else {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = String(currentValue ?? '');
+        input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px;';
+        row.appendChild(input);
+        inputs.push({ key: setting.key, getValue: () => input.value });
+      }
+    }
+
+    form.appendChild(row);
+  }
+
+  return {
+    form,
+    getValues: () => {
+      const result: Record<string, unknown> = {};
+      for (const { key, getValue } of inputs) result[key] = getValue();
+      return result;
+    },
+  };
+}
+
+async function openPluginSettingsModal(meta: PluginMeta): Promise<void> {
+  if (!meta.settings?.length) return;
+
+  const allSettings = await pluginSettings.getValue();
+  const currentValues = allSettings[meta.name] ?? {};
+  const { form, getValues } = buildSettingsForm(meta.settings, currentValues);
+
+  let handle: ReturnType<typeof showModal>;
+  handle = showModal({
+    title: `${meta.displayName} Settings`,
+    body: form,
+    buttons: [
+      {
+        label: 'Cancel',
+        variant: 'secondary',
+        action() { handle.close(); },
+      },
+      {
+        label: 'Save',
+        variant: 'primary',
+        async action() {
+          const values = getValues();
+          const all = await pluginSettings.getValue();
+          all[meta.name] = values;
+          await pluginSettings.setValue(all);
+          handle.close();
+        },
+      },
+    ],
+  });
+}
+
+function pluginSettingsButton(meta: PluginMeta): HTMLElement | null {
+  if (!meta.settings?.length) return null;
+
+  const btn = el('button', {
+    style: 'background: none; border: none; cursor: pointer; padding: 4px; margin-right: 8px; color: var(--color-primary, #6366f1); display: flex; align-items: center;',
+  });
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>';
+  btn.title = 'Plugin settings';
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openPluginSettingsModal(meta);
+  });
+  return btn;
 }
 
 function groupRow(
@@ -159,6 +283,7 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
           else disabled.add(pluginName);
           await pluginStates.setValue({ disabled: [...disabled] });
         }),
+        pluginSettingsButton(meta),
       ));
     }
 
@@ -178,6 +303,7 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
         else disabled.add(plugin.name);
         await pluginStates.setValue({ disabled: [...disabled] });
       }),
+      pluginSettingsButton(plugin),
     ));
   }
 }
@@ -331,7 +457,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
     }),
   ));
 
-  section.appendChild(sectionHeading('Plugins'));
+  section.appendChild(sectionHeading(`Plugins (${BUILTIN_PLUGINS.length})`));
 
   const pluginList = el('div', { id: 'corgi-plugin-list' });
   await renderPluginList(pluginList);
