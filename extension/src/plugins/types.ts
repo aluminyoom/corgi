@@ -37,9 +37,10 @@ export interface PluginDefinition {
 export interface PluginSetting {
   key: string;
   label: string;
-  type: 'boolean' | 'string' | 'number' | 'select';
+  type: 'boolean' | 'string' | 'number' | 'select' | 'file';
   default: unknown;
   options?: { label: string; value: unknown }[];
+  accept?: string;
 }
 
 export interface PluginAPI {

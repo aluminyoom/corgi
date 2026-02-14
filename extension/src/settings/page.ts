@@ -113,6 +113,48 @@ function buildSettingsForm(
       input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px; max-width: 200px;';
       row.appendChild(input);
       inputs.push({ key: setting.key, getValue: () => Number(input.value) });
+    } else if (setting.type === 'file') {
+      let dataUrl = String(currentValue ?? '');
+      const preview = el('div', { style: 'margin-top: 4px;' });
+
+      function updatePreview(): void {
+        preview.innerHTML = '';
+        if (dataUrl) {
+          const img = document.createElement('img');
+          img.src = dataUrl;
+          img.style.cssText = 'max-width: 200px; max-height: 80px; border-radius: 6px; border: 1px solid var(--primary-100, #e0e0e0);';
+          preview.appendChild(img);
+
+          const clearBtn = el('button', {
+            style: 'background: none; border: none; cursor: pointer; color: var(--accent-alert, #e53e3e); font-size: 12px; margin-left: 8px;',
+          }, 'Remove');
+          clearBtn.addEventListener('click', () => {
+            dataUrl = '';
+            updatePreview();
+          });
+          preview.appendChild(clearBtn);
+        }
+      }
+
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = setting.accept ?? 'image/*';
+      fileInput.style.cssText = 'font-size: 13px;';
+      fileInput.addEventListener('change', () => {
+        const file = fileInput.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          dataUrl = reader.result as string;
+          updatePreview();
+        };
+        reader.readAsDataURL(file);
+      });
+
+      row.appendChild(fileInput);
+      row.appendChild(preview);
+      updatePreview();
+      inputs.push({ key: setting.key, getValue: () => dataUrl });
     } else {
       const isLong = String(currentValue ?? '').length > 60 || setting.key.includes('url') || setting.key.includes('data');
       if (isLong) {
