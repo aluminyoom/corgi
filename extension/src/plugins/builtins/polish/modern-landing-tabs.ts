@@ -31,7 +31,7 @@ export const modernLandingTabsPlugin = definePlugin({
       border: 1px solid var(--primary-100) !important;
       border-radius: 999px !important;
       box-shadow: 0 2px 12px 0 var(--box-shadow) !important;
-      padding: 10px 14px !important;
+      padding: 5px !important;
       justify-content: center !important;
       gap: 8px !important;
       flex-wrap: wrap !important;
@@ -234,7 +234,6 @@ export const modernLandingTabsPlugin = definePlugin({
       top: 50% !important;
       transform: translateY(-50%) !important;
       right: auto !important;
-      left: 6px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
