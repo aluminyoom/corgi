@@ -66,6 +66,8 @@ export interface PluginAPI {
   removeVariable: (name: string) => void;
   getComputedVariable: (name: string) => string;
   injectCSS: (css: string) => HTMLStyleElement;
+  getSettings: <T extends Record<string, unknown> = Record<string, unknown>>() => Promise<T>;
+  setSettings: (values: Record<string, unknown>) => Promise<void>;
 }
 
 export type PluginState = 'registered' | 'started' | 'stopped' | 'error';

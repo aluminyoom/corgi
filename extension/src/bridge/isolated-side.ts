@@ -5,7 +5,7 @@ import {
   type BridgePush,
   isBridgeRequest,
 } from './protocol';
-import { themeState, extensionEnabled, pluginStates } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates, pluginSettings } from '@/utils/storage';
 import { getThemeId } from '@/utils/types';
 
 type ActionHandler = (payload: unknown) => Promise<unknown>;
@@ -62,6 +62,20 @@ handlers.set('theme:clear', async () => {
 
 handlers.set('plugin:state', async () => {
   return pluginStates.getValue();
+});
+
+handlers.set('plugin:settings:get', async (payload) => {
+  const { pluginName } = payload as { pluginName: string };
+  const all = await pluginSettings.getValue();
+  return all[pluginName] ?? {};
+});
+
+handlers.set('plugin:settings:set', async (payload) => {
+  const { pluginName, values } = payload as { pluginName: string; values: Record<string, unknown> };
+  const all = await pluginSettings.getValue();
+  all[pluginName] = values;
+  await pluginSettings.setValue(all);
+  return null;
 });
 
 export function startBridge(): void {

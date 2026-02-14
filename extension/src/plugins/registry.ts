@@ -5,6 +5,7 @@ import { addEventInterceptor, onProviderEvent } from '@/hooks/events';
 import { addFetchRequestInterceptor, addFetchResponseInterceptor } from '@/hooks/fetch';
 import { observeElement } from '@/hooks/observer';
 import { setVariable, removeVariable, getComputedVariable } from '@/styles/variables';
+import { bridgeRequest } from '@/bridge/main-side';
 
 const plugins = new Map<string, PluginInstance>();
 
@@ -38,6 +39,18 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
       (document.head ?? document.documentElement).appendChild(style);
       instance.cleanups.push(() => style.remove());
       return style;
+    },
+    async getSettings<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
+      const result = await bridgeRequest<T>('plugin:settings:get', {
+        pluginName: instance.definition.name,
+      });
+      return result ?? ({} as T);
+    },
+    async setSettings(values: Record<string, unknown>): Promise<void> {
+      await bridgeRequest('plugin:settings:set', {
+        pluginName: instance.definition.name,
+        values,
+      });
     },
   };
 }

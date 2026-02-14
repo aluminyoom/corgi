@@ -10,6 +10,8 @@ export type BridgeAction =
   | 'theme:clear'
   | 'plugin:list'
   | 'plugin:state'
+  | 'plugin:settings:get'
+  | 'plugin:settings:set'
   | 'ready';
 
 export interface BridgeRequest {
