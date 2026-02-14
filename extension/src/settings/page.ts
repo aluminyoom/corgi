@@ -1,4 +1,5 @@
-import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS, BUILTIN_GROUPS, type PluginGroupMeta } from '@/utils/storage';
+import { themeState, extensionEnabled, pluginStates, BUILTIN_PLUGINS, BUILTIN_GROUPS } from '@/utils/storage';
+import type { PluginGroupMeta } from '@/utils/storage';
 import { getThemeId, type Theme } from '@/utils/types';
 import { formatAuthors } from '@/authors';
 

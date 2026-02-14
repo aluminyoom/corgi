@@ -6,6 +6,7 @@ export const serpCardWrappingPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Wraps the right sidebar content in a card for better visual distinction from search results',
+  group: 'corgi-polish',
   css: `
     .right-content-box ._0_right_sidebar {
       background: var(--background-color, var(--bg-2, #fff));

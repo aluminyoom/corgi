@@ -6,6 +6,7 @@ export const visualHierarchyPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Muted secondary text, stronger title contrast, clearer result group separation',
+  group: 'corgi-polish',
   css: `
     .__sri-url {
       opacity: 0.7;

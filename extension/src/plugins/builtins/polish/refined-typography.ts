@@ -6,6 +6,7 @@ export const refinedTypographyPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Tighter line heights, improved font weights on headings, better text spacing',
+  group: 'corgi-polish',
   css: `
     .__sri_title_link {
       font-weight: 500;

@@ -7,6 +7,7 @@ export const stickySidebarPlugin = definePlugin({
   authors: ['aluminyoom'],
   description: 'Makes the settings sidebar sticky while the main content scrolls independently',
 
+  group: 'corgi-polish',
   css: `
     @media (min-width: 1024px) {
       html[data-path="/settings"] body {

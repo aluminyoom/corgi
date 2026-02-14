@@ -1,4 +1,5 @@
 import { definePlugin } from '../../api';
+import type { PluginAPI } from '../../types';
 
 const CATEGORY_HREFS: Record<string, string> = {
   '/settings/search': 'Search',
@@ -8,10 +9,7 @@ const CATEGORY_HREFS: Record<string, string> = {
 const SUB_CLASSES = ['nav-link-sub', 'ml-20', 'my-8', 'py-2', 'px-8'];
 const TOP_CLASSES = ['nav-link', 'py-8', 'px-10', 'mx-n10', 'rounded-full', 'corgi-promoted-sub'];
 
-function transformNavCategories(): (() => void) | undefined {
-  const menu = document.querySelector('.cth_settings_nav_menu');
-  if (!menu) return;
-
+function transformNavCategories(menu: Element): () => void {
   const originals = new Map<HTMLElement, { className: string; innerHTML: string; href: string }>();
 
   for (const [href, label] of Object.entries(CATEGORY_HREFS)) {
@@ -75,6 +73,7 @@ export const sidebarCategoriesPlugin = definePlugin({
   authors: ['aluminyoom'],
   description: 'Displays Search and Billing as category headings with sub-items promoted to top-level styling',
 
+  group: 'corgi-polish',
   css: `
     .corgi-nav-category {
       font-size: 11px;
@@ -101,7 +100,24 @@ export const sidebarCategoriesPlugin = definePlugin({
     }
   `,
 
-  onStart() {
-    return transformNavCategories();
+  onStart(api: PluginAPI) {
+    const menu = document.querySelector('.cth_settings_nav_menu');
+    if (menu && menu.querySelector('a.nav-link[href="/settings/search"]')) {
+      return transformNavCategories(menu);
+    }
+
+    let transformCleanup: (() => void) | undefined;
+    const observerCleanup = api.observeElement('.cth_settings_nav_menu', () => {
+      const m = document.querySelector('.cth_settings_nav_menu');
+      if (!m || !m.querySelector('a.nav-link[href="/settings/search"]')) return;
+      if (m.querySelector('.corgi-nav-category')) return;
+      observerCleanup();
+      transformCleanup = transformNavCategories(m);
+    }, { childList: true, subtree: true });
+
+    return () => {
+      observerCleanup();
+      transformCleanup?.();
+    };
   },
 });

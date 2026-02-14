@@ -17,6 +17,9 @@ export interface PluginDefinition {
   description: string;
   dependencies?: string[];
 
+  group?: string;
+  defaultEnabled?: boolean;
+
   patches?: PluginPatch[];
 
   onStart?: (api: PluginAPI) => void | (() => void);

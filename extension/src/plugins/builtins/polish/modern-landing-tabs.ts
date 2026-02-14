@@ -1,5 +1,4 @@
 import { definePlugin } from '../../api';
-import type { PluginAPI } from '../../types';
 
 export const modernLandingTabsPlugin = definePlugin({
   name: 'corgi-polish/modern-landing-tabs',
@@ -8,6 +7,7 @@ export const modernLandingTabsPlugin = definePlugin({
   authors: ['aluminyoom'],
   description:
     'Redesigns the landing page search options into a centered card with colorful category pills and cleaner filters',
+  group: 'corgi-polish',
   css: `
     /* ═══════════════════════════════════════════
        SECTION 1 — Card wrapper & centering
@@ -227,13 +227,14 @@ export const modernLandingTabsPlugin = definePlugin({
        ═══════════════════════════════════════════ */
 
     /* Position toggle inside the search bar, left side (landing only) */
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn,
-    [data-path="/"] .search-input-container .land_adv_search_btn {
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn,
+    [data-path="/landing"] .search-input-container .land_adv_search_btn {
       position: absolute !important;
       visibility: visible !important;
       top: 50% !important;
       transform: translateY(-50%) !important;
       right: auto !important;
+      left: 6px !important;
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -248,46 +249,46 @@ export const modernLandingTabsPlugin = definePlugin({
       z-index: 2 !important;
       transition: background-color 0.15s ease !important;
     }
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn:hover,
-    [data-path="/"] .search-input-container .land_adv_search_btn:hover {
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn:hover,
+    [data-path="/landing"] .search-input-container .land_adv_search_btn:hover {
       background-color: var(--hover-bg) !important;
     }
 
     /* Shift the search input right to make room for the gear icon */
-    [data-path="/"] .search-input-container .search-input {
+    [data-path="/landing"] .search-input-container .search-input {
       padding-left: 42px !important;
     }
 
     /* Hide the text label, show only the icon */
-    [data-path="/"] .search-input-container .land_adv_search_btn span,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn span {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn span,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn span {
       display: none !important;
     }
 
     /* Ensure the SVG icon is visible */
-    [data-path="/"] .search-input-container .land_adv_search_btn svg,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn svg {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn svg,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn svg {
       opacity: 0.6;
       transition: opacity 0.15s ease;
     }
-    [data-path="/"] .search-input-container .land_adv_search_btn:hover svg,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn:hover svg {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn:hover svg,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn:hover svg {
       opacity: 1;
     }
 
     /* Zero out the margin on the gear icon <i> */
-    [data-path="/"] .search-input-container .land_adv_search_btn i,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn i {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn i,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn i {
       margin-right: 0 !important;
     }
 
     /* When toggle is active (X icon state), give it a subtle active indicator */
-    [data-path="/"] .search-input-container .land_adv_search_btn.__close,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn.__close {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn.__close,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn.__close {
       background-color: color-mix(in srgb, var(--nav_n_se_line) 15%, transparent) !important;
     }
-    [data-path="/"] .search-input-container .land_adv_search_btn.__close svg,
-    [data-path="/"] .search-input-container ._0_land_adv_search_btn.__close svg {
+    [data-path="/landing"] .search-input-container .land_adv_search_btn.__close svg,
+    [data-path="/landing"] .search-input-container ._0_land_adv_search_btn.__close svg {
       opacity: 0.9;
     }
 
@@ -352,7 +353,7 @@ export const modernLandingTabsPlugin = definePlugin({
       opacity: 1;
     }
   `,
-  onStart(_api: PluginAPI) {
+  onStart() {
     const dotsIcon = document.querySelector(
       '.landing-category-select .k_ui_dropdown_first_item i',
     );

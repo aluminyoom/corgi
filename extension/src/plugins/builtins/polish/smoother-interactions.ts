@@ -6,6 +6,7 @@ export const smootherInteractionsPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Subtle transitions on hover states, focus rings, and interactive elements',
+  group: 'corgi-polish',
   css: `
     a {
       transition: color 0.15s ease, opacity 0.15s ease;

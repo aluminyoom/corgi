@@ -6,6 +6,7 @@ export const cleanerCardsPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Softer shadows, consistent border-radius, and improved spacing on cards and boxes',
+  group: 'corgi-polish',
   css: `
     .search-result {
       border-radius: 8px;

@@ -6,6 +6,7 @@ export const qolPlugin = definePlugin({
   version: '0.1.0',
   authors: ['aluminyoom'],
   description: 'Small quality-of-life fixes: centered sidebar icons, aligned inline elements',
+  group: 'corgi-polish',
   css: `
     .cth_settings_nav_menu .nav-link > i {
       align-self: center;

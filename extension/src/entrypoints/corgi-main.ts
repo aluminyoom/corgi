@@ -2,23 +2,7 @@ import { bridgeRequest, onBridgePush } from '@/bridge/main-side';
 import { trapGlobal } from '@/hooks/traps';
 import { applyThemes, clearThemes, interceptKagiStylesheets } from '@/styles/injector';
 import { registerPlugin, startPlugin, stopPlugin, stopAllPlugins, listPlugins } from '@/plugins/registry';
-import {
-  searchCounterPlugin,
-  usageCounterPlugin,
-  refinedTypographyPlugin,
-  smootherInteractionsPlugin,
-  cleanerCardsPlugin,
-  visualHierarchyPlugin,
-  qolPlugin,
-  stickySidebarPlugin,
-  sidebarCategoriesPlugin,
-  supportRedirectPlugin,
-  serpCardWrappingPlugin,
-  pillFiltersPlugin,
-  edgeToEdgeNavPlugin,
-  centeredHeaderPlugin,
-  modernLandingTabsPlugin,
-} from '@/plugins/builtins';
+import { builtinPlugins } from '@/plugins/builtins/discover';
 import { injectControlCenterLink } from '@/settings/control-center';
 import type { Theme } from '@/utils/types';
 
@@ -72,21 +56,7 @@ export default defineUnlistedScript(() => {
   onBridgePush('ready', async () => {
     loadThemes();
 
-    registerPlugin(searchCounterPlugin);
-    registerPlugin(usageCounterPlugin);
-    registerPlugin(refinedTypographyPlugin);
-    registerPlugin(smootherInteractionsPlugin);
-    registerPlugin(cleanerCardsPlugin);
-    registerPlugin(visualHierarchyPlugin);
-    registerPlugin(qolPlugin);
-    registerPlugin(stickySidebarPlugin);
-    registerPlugin(sidebarCategoriesPlugin);
-    registerPlugin(supportRedirectPlugin);
-    registerPlugin(serpCardWrappingPlugin);
-    registerPlugin(pillFiltersPlugin);
-    registerPlugin(edgeToEdgeNavPlugin);
-    registerPlugin(centeredHeaderPlugin);
-    registerPlugin(modernLandingTabsPlugin);
+    for (const plugin of builtinPlugins) registerPlugin(plugin);
 
     const disabled = await getDisabledPlugins();
     for (const instance of listPlugins()) {
