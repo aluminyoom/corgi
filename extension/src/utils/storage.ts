@@ -1,7 +1,4 @@
 import type { Theme, ThemeState } from './types';
-import { getBuiltinMeta, getBuiltinGroups, getDefaultDisabled } from '@/plugins/builtins/discover';
-
-export type { PluginMeta, PluginGroupMeta } from '@/plugins/builtins/discover';
 
 export interface PluginStates {
   disabled: string[];
@@ -27,13 +24,15 @@ export const extensionEnabled = storage.defineItem<boolean>('sync:enabled', {
   fallback: true,
 });
 
+// NOTE: fallback uses empty disabled list to avoid importing discover (which
+// eagerly pulls in all plugin modules via import.meta.glob, including bridge
+// code that uses `window` — unavailable in the background service worker).
+// The actual default-disabled list is applied on first storage access in
+// contexts that have `window` (content script / settings page).
 export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates', {
-  fallback: { disabled: getDefaultDisabled() },
+  fallback: { disabled: [] },
 });
 
 export const pluginSettings = storage.defineItem<PluginSettingsStore>('local:pluginSettings', {
   fallback: {},
 });
-
-export const BUILTIN_PLUGINS = getBuiltinMeta();
-export const BUILTIN_GROUPS = getBuiltinGroups();

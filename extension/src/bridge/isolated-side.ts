@@ -6,6 +6,7 @@ import {
   isBridgeRequest,
 } from './protocol';
 import { themeState, extensionEnabled, pluginStates, pluginSettings } from '@/utils/storage';
+import { getDefaultDisabled } from '@/plugins/builtins/discover';
 import { getThemeId } from '@/utils/types';
 
 type ActionHandler = (payload: unknown) => Promise<unknown>;
@@ -60,8 +61,27 @@ handlers.set('theme:clear', async () => {
   return null;
 });
 
+let pluginStatesInitialized = false;
+
 handlers.set('plugin:state', async () => {
-  return pluginStates.getValue();
+  const states = await pluginStates.getValue();
+  // On fresh install the fallback is { disabled: [] }. Apply real defaults
+  // once and persist so corgi-polish group starts disabled as expected.
+  if (!pluginStatesInitialized) {
+    pluginStatesInitialized = true;
+    const meta = await pluginStates.getMeta();
+    if (!meta?.initialized) {
+      const defaults = getDefaultDisabled();
+      if (defaults.length > 0) {
+        const initialized = { disabled: defaults };
+        await pluginStates.setValue(initialized);
+        await pluginStates.setMeta({ initialized: true });
+        return initialized;
+      }
+      await pluginStates.setMeta({ initialized: true });
+    }
+  }
+  return states;
 });
 
 handlers.set('plugin:settings:get', async (payload) => {

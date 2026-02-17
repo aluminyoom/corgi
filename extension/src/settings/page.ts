@@ -1,6 +1,5 @@
-import { themeState, extensionEnabled, pluginStates, pluginSettings, BUILTIN_PLUGINS, BUILTIN_GROUPS } from '@/utils/storage';
-import type { PluginGroupMeta } from '@/utils/storage';
-import type { PluginMeta } from '@/plugins/builtins/discover';
+import { themeState, extensionEnabled, pluginStates, pluginSettings } from '@/utils/storage';
+import { getBuiltinMeta, getBuiltinGroups, type PluginMeta, type PluginGroupMeta } from '@/plugins/builtins/discover';
 import type { PluginSetting } from '@/plugins/types';
 import { getThemeId, type Theme } from '@/utils/types';
 import { formatAuthors } from '@/authors';
@@ -276,11 +275,11 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
   const disabledSet = new Set(states.disabled);
   const groupedPlugins = new Set<string>();
 
-  for (const group of BUILTIN_GROUPS) {
+  for (const group of getBuiltinGroups()) {
     for (const name of group.plugins) groupedPlugins.add(name);
   }
 
-  for (const group of BUILTIN_GROUPS) {
+  for (const group of getBuiltinGroups()) {
     const memberStates = group.plugins.map((name) => !disabledSet.has(name));
     const allEnabled = memberStates.every(Boolean);
     const isExpanded = expandedGroups.has(group.name);
@@ -312,7 +311,7 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
     container.appendChild(card);
 
     for (const pluginName of group.plugins) {
-      const meta = BUILTIN_PLUGINS.find((p) => p.name === pluginName);
+      const meta = getBuiltinMeta().find((p) => p.name === pluginName);
       if (!meta) continue;
 
       childContainer.appendChild(settingsRow(
@@ -332,7 +331,7 @@ async function renderPluginList(container: HTMLElement): Promise<void> {
     container.appendChild(childContainer);
   }
 
-  for (const plugin of BUILTIN_PLUGINS) {
+  for (const plugin of getBuiltinMeta()) {
     if (groupedPlugins.has(plugin.name)) continue;
 
     container.appendChild(settingsRow(
@@ -499,7 +498,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
     }),
   ));
 
-  section.appendChild(sectionHeading(`Plugins (${BUILTIN_PLUGINS.length})`));
+  section.appendChild(sectionHeading(`Plugins (${getBuiltinMeta().length})`));
 
   const pluginList = el('div', { id: 'corgi-plugin-list' });
   await renderPluginList(pluginList);
