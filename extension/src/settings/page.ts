@@ -224,7 +224,7 @@ function pluginSettingsButton(meta: PluginMeta): HTMLElement | null {
   const btn = el('button', {
     style: 'background: none; border: none; cursor: pointer; padding: 4px; margin-right: 8px; color: var(--color-primary, #6366f1); display: flex; align-items: center;',
   });
-  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="2.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>';
+  btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.325 4.317C10.751 2.562 13.249 2.561 13.677 4.317 13.954 5.454 15.251 5.99 16.248 5.383 17.791 4.443 19.558 6.209 18.618 7.753 18.01 8.753 18.548 10.049 19.683 10.325 21.439 10.751 21.439 13.249 19.683 13.677 18.546 13.954 18.01 15.251 18.617 16.248 19.557 17.791 17.791 19.558 16.247 18.618 15.247 18.01 13.951 18.548 13.675 19.683 13.249 21.439 10.751 21.439 10.323 19.683 10.046 18.546 8.749 18.01 7.752 18.617 6.209 19.557 4.442 17.791 5.382 16.247 5.99 15.247 5.452 13.951 4.317 13.675 2.562 13.249 2.561 10.751 4.317 10.323 5.454 10.046 5.99 8.749 5.383 7.752 4.443 6.209 6.209 4.442 7.753 5.382 8.753 5.99 10.049 5.452 10.325 4.317Z"/><circle cx="12" cy="12" r="3"/></svg>';
   btn.title = 'Plugin settings';
   btn.addEventListener('click', (e) => {
     e.preventDefault();

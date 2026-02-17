@@ -16,34 +16,50 @@ const DEFAULTS: BackgroundSettings = {
   opacity: '1',
 };
 
-const BG_ELEMENT_ID = 'corgi-custom-bg';
+const STYLE_ID = 'corgi-custom-bg-style';
 
 function applyBackground(settings: BackgroundSettings): void {
   const src = settings.file || settings.url;
-  let bgEl = document.getElementById(BG_ELEMENT_ID);
+  let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
 
   if (!src) {
-    bgEl?.remove();
+    styleEl?.remove();
     return;
   }
 
-  if (!bgEl) {
-    bgEl = document.createElement('div');
-    bgEl.id = BG_ELEMENT_ID;
-    document.body.prepend(bgEl);
+  if (!styleEl) {
+    styleEl = document.createElement('style');
+    styleEl.id = STYLE_ID;
+    (document.head ?? document.documentElement).appendChild(styleEl);
   }
 
-  bgEl.style.cssText = [
-    'position: fixed',
-    'inset: 0',
-    'z-index: -1',
-    'pointer-events: none',
-    `background-image: url(${CSS.escape ? `"${src}"` : `"${src}"`})`,
-    `background-size: ${settings.size}`,
-    `background-position: ${settings.position}`,
-    'background-repeat: no-repeat',
-    `opacity: ${settings.opacity}`,
-  ].join('; ');
+  // use body::before pseudo-element so we can control opacity independently
+  // without affecting body content — also clears kagi's own body/html background
+  const cssUrl = src.replace(/"/g, '\\"');
+  styleEl.textContent = `
+    [data-path="/landing"] body {
+      background: transparent !important;
+      position: relative;
+    }
+    [data-path="/landing"] html {
+      background: transparent !important;
+    }
+    [data-path="/landing"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      background-image: url("${cssUrl}");
+      background-size: ${settings.size};
+      background-position: ${settings.position};
+      background-repeat: no-repeat;
+      opacity: ${settings.opacity};
+    }
+    [data-path="/landing"] footer {
+      background: transparent !important;
+    }
+  `;
 }
 
 export const customBackgroundPlugin = definePlugin({
@@ -81,12 +97,6 @@ export const customBackgroundPlugin = definePlugin({
     { key: 'opacity', label: 'Opacity (0-1)', type: 'string', default: '1' },
   ],
 
-  css: `
-    [data-path="/landing"] #${BG_ELEMENT_ID} ~ footer {
-      background: transparent !important;
-    }
-  `,
-
   onStart(api) {
     const pagePath = document.documentElement.getAttribute('data-path');
     if (pagePath !== '/landing') return;
@@ -100,7 +110,7 @@ export const customBackgroundPlugin = definePlugin({
     loadAndApply();
 
     return () => {
-      document.getElementById(BG_ELEMENT_ID)?.remove();
+      document.getElementById(STYLE_ID)?.remove();
     };
   },
 });
