@@ -1,6 +1,7 @@
 import { definePlugin } from '../api';
 
-const CLOUDS_LOGO_SELECTOR = '.clouds .logo';
+const CLOUDS_SELECTOR = '.clouds';
+const LOGO_SELECTOR = '.clouds .logo';
 
 interface LogoSettings {
   url: string;
@@ -17,29 +18,54 @@ const DEFAULTS: LogoSettings = {
 };
 
 const LOGO_ELEMENT_ID = 'corgi-custom-logo';
+const HIDDEN_ATTR = 'data-corgi-logo-hidden';
 
 function applyLogo(settings: LogoSettings): void {
   const src = settings.file || settings.url;
-  const logoContainer = document.querySelector<HTMLElement>(CLOUDS_LOGO_SELECTOR);
-
+  const clouds = document.querySelector<HTMLElement>(CLOUDS_SELECTOR);
+  const logoDiv = document.querySelector<HTMLElement>(LOGO_SELECTOR);
   const existing = document.getElementById(LOGO_ELEMENT_ID);
 
   if (!src) {
-    if (existing) {
-      existing.remove();
-      if (logoContainer) {
-        for (const child of logoContainer.children) {
+    // restore everything
+    if (existing) existing.remove();
+    if (clouds) {
+      for (const child of clouds.children) {
+        if ((child as HTMLElement).hasAttribute(HIDDEN_ATTR)) {
           (child as HTMLElement).style.display = '';
+          (child as HTMLElement).removeAttribute(HIDDEN_ATTR);
+        }
+      }
+    }
+    if (logoDiv) {
+      for (const child of logoDiv.children) {
+        if ((child as HTMLElement).hasAttribute(HIDDEN_ATTR)) {
+          (child as HTMLElement).style.display = '';
+          (child as HTMLElement).removeAttribute(HIDDEN_ATTR);
         }
       }
     }
     return;
   }
 
-  if (logoContainer) {
-    for (const child of logoContainer.children) {
-      if ((child as HTMLElement).id !== LOGO_ELEMENT_ID) {
-        (child as HTMLElement).style.display = 'none';
+  // hide siblings of .logo inside .clouds (e.g. .doggo_sit_a)
+  if (clouds) {
+    for (const child of clouds.children) {
+      const el = child as HTMLElement;
+      if (!el.classList.contains('logo')) {
+        el.style.display = 'none';
+        el.setAttribute(HIDDEN_ATTR, '');
+      }
+    }
+  }
+
+  // hide original logo content inside .logo
+  if (logoDiv) {
+    for (const child of logoDiv.children) {
+      const el = child as HTMLElement;
+      if (el.id !== LOGO_ELEMENT_ID) {
+        el.style.display = 'none';
+        el.setAttribute(HIDDEN_ATTR, '');
       }
     }
   }
@@ -49,15 +75,22 @@ function applyLogo(settings: LogoSettings): void {
     img = document.createElement('img');
     img.id = LOGO_ELEMENT_ID;
     img.style.cssText = 'display: block; margin: 0 auto;';
-
-    if (logoContainer) {
-      logoContainer.appendChild(img);
-    }
+    logoDiv?.appendChild(img);
   }
 
   img.src = src;
   img.style.maxWidth = settings.maxWidth || '200px';
   img.style.maxHeight = settings.maxHeight || '200px';
+}
+
+function restoreLogo(): void {
+  const img = document.getElementById(LOGO_ELEMENT_ID);
+  if (img) img.remove();
+
+  for (const el of document.querySelectorAll<HTMLElement>(`[${HIDDEN_ATTR}]`)) {
+    el.style.display = '';
+    el.removeAttribute(HIDDEN_ATTR);
+  }
 }
 
 export const customLogoPlugin = definePlugin({
@@ -89,22 +122,13 @@ export const customLogoPlugin = definePlugin({
 
     loadAndApply();
 
-    const cleanup = api.observeElement(CLOUDS_LOGO_SELECTOR, () => {
+    const cleanup = api.observeElement(LOGO_SELECTOR, () => {
       if (!applied) loadAndApply();
     }, { childList: true });
 
     return () => {
       cleanup();
-      const img = document.getElementById(LOGO_ELEMENT_ID);
-      if (img) {
-        img.remove();
-        const logoContainer = document.querySelector<HTMLElement>(CLOUDS_LOGO_SELECTOR);
-        if (logoContainer) {
-          for (const child of logoContainer.children) {
-            (child as HTMLElement).style.display = '';
-          }
-        }
-      }
+      restoreLogo();
     };
   },
 });
