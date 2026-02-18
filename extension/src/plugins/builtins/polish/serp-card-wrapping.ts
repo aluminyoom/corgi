@@ -9,7 +9,6 @@ export const serpCardWrappingPlugin = definePlugin({
   group: 'corgi-polish',
   css: `
     .right-content-box ._0_right_sidebar {
-      background: var(--background-color, var(--bg-2, #fff));
       border: 1px solid color-mix(in srgb, currentColor 10%, transparent);
       border-radius: 12px;
       padding: 16px;
