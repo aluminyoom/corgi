@@ -76,21 +76,18 @@ function applyLogo(settings: LogoSettings): boolean {
   }
 
   img.src = src;
-  // constrain to .logo container — object-fit mode is user-configurable,
-  // max-width/max-height let users shrink below container size
   const fit = settings.fitMode || DEFAULTS.fitMode;
+  const expand = fit === 'contain' || fit === 'cover' || fit === 'fill';
   img.style.cssText = [
     'display: block',
     'margin: 0 auto',
-    'width: auto',
-    'height: auto',
+    `width: ${expand ? '100%' : 'auto'}`,
+    `height: ${expand ? '100%' : 'auto'}`,
     'max-width: 100%',
     'max-height: 100%',
     `object-fit: ${fit}`,
   ].join(';');
 
-  // user overrides — only apply if they differ from defaults so the
-  // 100% container constraint still works as the baseline
   const userW = settings.maxWidth || DEFAULTS.maxWidth;
   const userH = settings.maxHeight || DEFAULTS.maxHeight;
   if (userW !== '100%') img.style.maxWidth = userW;
