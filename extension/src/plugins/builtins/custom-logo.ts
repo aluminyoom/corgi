@@ -3,11 +3,14 @@ import { definePlugin } from '../api';
 const CLOUDS_SELECTOR = '.clouds';
 const LOGO_SELECTOR = '.clouds .logo';
 
+type FitMode = 'contain' | 'cover' | 'fill' | 'scale-down' | 'none';
+
 interface LogoSettings {
   url: string;
   file: string;
   maxWidth: string;
   maxHeight: string;
+  fitMode: FitMode;
 }
 
 const DEFAULTS: LogoSettings = {
@@ -15,6 +18,7 @@ const DEFAULTS: LogoSettings = {
   file: '',
   maxWidth: '200px',
   maxHeight: '200px',
+  fitMode: 'contain',
 };
 
 const LOGO_ELEMENT_ID = 'corgi-custom-logo';
@@ -72,8 +76,9 @@ function applyLogo(settings: LogoSettings): boolean {
   }
 
   img.src = src;
-  // constrain to .logo container — object-fit keeps aspect ratio,
+  // constrain to .logo container — object-fit mode is user-configurable,
   // max-width/max-height let users shrink below container size
+  const fit = settings.fitMode || DEFAULTS.fitMode;
   img.style.cssText = [
     'display: block',
     'margin: 0 auto',
@@ -81,7 +86,7 @@ function applyLogo(settings: LogoSettings): boolean {
     'height: auto',
     'max-width: 100%',
     'max-height: 100%',
-    'object-fit: contain',
+    `object-fit: ${fit}`,
   ].join(';');
 
   // user overrides — only apply if they differ from defaults so the
@@ -112,13 +117,20 @@ function restoreLogo(): void {
 export const customLogoPlugin = definePlugin({
   name: 'custom-logo',
   displayName: 'Custom Logo',
-  version: '0.2.0',
+  version: '0.3.0',
   authors: ['aluminyoom'],
   description: 'Replace the landing page logo with a custom image (URL or file upload)',
 
   settings: [
     { key: 'url', label: 'Logo image URL', type: 'string', default: '' },
     { key: 'file', label: 'Or upload a logo image', type: 'file', default: '', accept: 'image/*' },
+    { key: 'fitMode', label: 'Image fit mode', type: 'select', default: 'contain', options: [
+      { label: 'Contain (fit inside, keep aspect ratio)', value: 'contain' },
+      { label: 'Cover (fill area, crop if needed)', value: 'cover' },
+      { label: 'Fill (stretch to fit)', value: 'fill' },
+      { label: 'Scale Down (shrink only, never enlarge)', value: 'scale-down' },
+      { label: 'None (original size)', value: 'none' },
+    ] },
     { key: 'maxWidth', label: 'Max width (CSS value)', type: 'string', default: '200px' },
     { key: 'maxHeight', label: 'Max height (CSS value)', type: 'string', default: '200px' },
   ],
