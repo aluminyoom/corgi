@@ -26,29 +26,7 @@ function applyLogo(settings: LogoSettings): void {
   const logoDiv = document.querySelector<HTMLElement>(LOGO_SELECTOR);
   const existing = document.getElementById(LOGO_ELEMENT_ID);
 
-  if (!src) {
-    // restore everything
-    if (existing) existing.remove();
-    if (clouds) {
-      for (const child of clouds.children) {
-        if ((child as HTMLElement).hasAttribute(HIDDEN_ATTR)) {
-          (child as HTMLElement).style.display = '';
-          (child as HTMLElement).removeAttribute(HIDDEN_ATTR);
-        }
-      }
-    }
-    if (logoDiv) {
-      for (const child of logoDiv.children) {
-        if ((child as HTMLElement).hasAttribute(HIDDEN_ATTR)) {
-          (child as HTMLElement).style.display = '';
-          (child as HTMLElement).removeAttribute(HIDDEN_ATTR);
-        }
-      }
-    }
-    return;
-  }
-
-  // hide siblings of .logo inside .clouds (e.g. .doggo_sit_a)
+  // always hide siblings of .logo inside .clouds (e.g. .doggo_sit_a)
   if (clouds) {
     for (const child of clouds.children) {
       const el = child as HTMLElement;
@@ -57,6 +35,12 @@ function applyLogo(settings: LogoSettings): void {
         el.setAttribute(HIDDEN_ATTR, '');
       }
     }
+  }
+
+  // no custom image — remove any leftover img but keep siblings hidden
+  if (!src) {
+    if (existing) existing.remove();
+    return;
   }
 
   // hide original logo content inside .logo
