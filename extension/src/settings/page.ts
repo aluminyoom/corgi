@@ -64,11 +64,19 @@ function settingsRow(label: string, description: string, control: HTMLElement, g
   return box;
 }
 
-function sectionHeading(text: string): HTMLElement {
+function sectionHeading(text: string, subtitle?: string): HTMLElement {
   const box = el('div', { className: 'settings-row-box box pb-16 md:pb-9' });
   box.style.borderBottom = 'none';
   const heading = el('h2', { className: 'heading-3 mt-8' }, text);
   box.appendChild(heading);
+  if (subtitle) {
+    const sub = el('span', {}, subtitle);
+    sub.style.fontSize = '13px';
+    sub.style.color = 'var(--color-primary_light, #999)';
+    sub.style.display = 'block';
+    sub.style.marginTop = '2px';
+    box.appendChild(sub);
+  }
   return box;
 }
 
@@ -498,7 +506,11 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
     }),
   ));
 
-  section.appendChild(sectionHeading(`Plugins (${getBuiltinMeta().length})`));
+  const pluginCount = getBuiltinMeta().length;
+  section.appendChild(sectionHeading(
+    `Plugins (${pluginCount})`,
+    `${pluginCount} plugins loaded`,
+  ));
 
   const pluginList = el('div', { id: 'corgi-plugin-list' });
   await renderPluginList(pluginList);
