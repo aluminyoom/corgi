@@ -65,22 +65,43 @@ let pluginStatesInitialized = false;
 
 handlers.set('plugin:state', async () => {
   const states = await pluginStates.getValue();
-  // On fresh install the fallback is { disabled: [] }. Apply real defaults
-  // once and persist so corgi-polish group starts disabled as expected.
+
   if (!pluginStatesInitialized) {
     pluginStatesInitialized = true;
     const meta = await pluginStates.getMeta();
+
     if (!meta?.initialized) {
+      // First-time install: apply all default-disabled plugins
       const defaults = getDefaultDisabled();
       if (defaults.length > 0) {
         const initialized = { disabled: defaults };
         await pluginStates.setValue(initialized);
-        await pluginStates.setMeta({ initialized: true });
+        await pluginStates.setMeta({ initialized: true, knownPlugins: defaults });
         return initialized;
       }
-      await pluginStates.setMeta({ initialized: true });
+      await pluginStates.setMeta({ initialized: true, knownPlugins: [] });
+    } else {
+      // Existing install: check for newly added defaultEnabled:false plugins
+      const allDefaults = getDefaultDisabled();
+      const knownPlugins = (meta.knownPlugins as string[] | undefined) ?? [];
+      const knownSet = new Set(knownPlugins);
+      const newlyDisabled = allDefaults.filter((name) => !knownSet.has(name));
+
+      if (newlyDisabled.length > 0) {
+        const disabled = new Set(states.disabled);
+        for (const name of newlyDisabled) disabled.add(name);
+        const updated = { disabled: [...disabled] };
+        await pluginStates.setValue(updated);
+        await pluginStates.setMeta({ ...meta, knownPlugins: allDefaults });
+        return updated;
+      }
+
+      if (allDefaults.length !== knownPlugins.length) {
+        await pluginStates.setMeta({ ...meta, knownPlugins: allDefaults });
+      }
     }
   }
+
   return states;
 });
 
