@@ -89,7 +89,7 @@ function buildSettingsForm(
 
   for (const setting of settings) {
     const row = el('div', { style: 'display: flex; flex-direction: column; gap: 4px;' });
-    const label = el('label', { style: 'font-size: 13px; font-weight: 500; color: var(--color, var(--primary-800, #222));' }, setting.label);
+    const label = el('label', { style: 'font-size: 13px; font-weight: 500; color: var(--color, var(--primary-800));' }, setting.label);
     row.appendChild(label);
 
     const currentValue = values[setting.key] ?? setting.default;
@@ -103,7 +103,7 @@ function buildSettingsForm(
       inputs.push({ key: setting.key, getValue: () => checkbox.checked });
     } else if (setting.type === 'select' && setting.options) {
       const select = document.createElement('select');
-      select.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px;';
+      select.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100); background: var(--input-bg, var(--app-bg)); color: var(--color); font-size: 13px; color-scheme: inherit;';
       for (const opt of setting.options) {
         const option = document.createElement('option');
         option.value = String(opt.value);
@@ -117,7 +117,7 @@ function buildSettingsForm(
       const input = document.createElement('input');
       input.type = 'number';
       input.value = String(currentValue ?? '');
-      input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px; max-width: 200px;';
+      input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100); background: var(--input-bg, var(--app-bg)); color: var(--color); font-size: 13px; max-width: 200px; color-scheme: inherit;';
       row.appendChild(input);
       inputs.push({ key: setting.key, getValue: () => Number(input.value) });
     } else if (setting.type === 'file') {
@@ -129,7 +129,7 @@ function buildSettingsForm(
         if (dataUrl) {
           const img = document.createElement('img');
           img.src = dataUrl;
-          img.style.cssText = 'max-width: 200px; max-height: 80px; border-radius: 6px; border: 1px solid var(--primary-100, #e0e0e0);';
+          img.style.cssText = 'max-width: 200px; max-height: 80px; border-radius: 6px; border: 1px solid var(--primary-100);';
           preview.appendChild(img);
 
           const clearBtn = el('button', {
@@ -146,7 +146,7 @@ function buildSettingsForm(
       const fileInput = document.createElement('input');
       fileInput.type = 'file';
       fileInput.accept = setting.accept ?? 'image/*';
-      fileInput.style.cssText = 'font-size: 13px;';
+      fileInput.style.cssText = 'font-size: 13px; color: var(--color); color-scheme: inherit;';
       fileInput.addEventListener('change', () => {
         const file = fileInput.files?.[0];
         if (!file) return;
@@ -168,14 +168,14 @@ function buildSettingsForm(
         const textarea = document.createElement('textarea');
         textarea.value = String(currentValue ?? '');
         textarea.rows = 3;
-        textarea.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px; resize: vertical; font-family: var(--font-mono, monospace);';
+        textarea.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100); background: var(--input-bg, var(--app-bg)); color: var(--color); font-size: 13px; resize: vertical; font-family: var(--font-mono, monospace); color-scheme: inherit;';
         row.appendChild(textarea);
         inputs.push({ key: setting.key, getValue: () => textarea.value });
       } else {
         const input = document.createElement('input');
         input.type = 'text';
         input.value = String(currentValue ?? '');
-        input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100, #e0e0e0); background: var(--app-bg, #fff); color: var(--color, #222); font-size: 13px;';
+        input.style.cssText = 'padding: 6px 10px; border-radius: 8px; border: 1px solid var(--primary-100); background: var(--input-bg, var(--app-bg)); color: var(--color); font-size: 13px; color-scheme: inherit;';
         row.appendChild(input);
         inputs.push({ key: setting.key, getValue: () => input.value });
       }
@@ -507,9 +507,12 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
   ));
 
   const pluginCount = getBuiltinMeta().length;
+  const states = await pluginStates.getValue();
+  const disabledCount = states.disabled.length;
+  const enabledCount = pluginCount - disabledCount;
   section.appendChild(sectionHeading(
     `Plugins (${pluginCount})`,
-    `${pluginCount} plugins loaded`,
+    `${enabledCount} plugins enabled`,
   ));
 
   const pluginList = el('div', { id: 'corgi-plugin-list' });
