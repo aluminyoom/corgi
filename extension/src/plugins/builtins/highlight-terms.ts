@@ -3,15 +3,20 @@ import { definePlugin } from '../api';
 const SNIPPET_SELECTOR = '.__sri-desc';
 const MARK_CLASS = 'corgi-highlight';
 const MARKED_ATTR = 'data-corgi-highlighted';
+const STYLE_ID = 'corgi-highlight-terms-style';
 
-const HIGHLIGHT_CSS = `
-  .${MARK_CLASS} {
-    background: color-mix(in srgb, var(--search_result_title, var(--primary, #6366f1)) 20%, transparent);
-    color: inherit;
-    border-radius: 2px;
-    padding: 0 1px;
-  }
-`;
+const DEFAULT_COLOR = '#6366f1';
+
+function buildHighlightCSS(color: string): string {
+  return `
+    .${MARK_CLASS} {
+      background: color-mix(in srgb, ${color} 20%, transparent);
+      color: inherit;
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+  `;
+}
 
 function getSearchTerms(): string[] {
   const params = new URLSearchParams(window.location.search);
@@ -83,19 +88,29 @@ function removeHighlights(): void {
 export const highlightTermsPlugin = definePlugin({
   name: 'highlight-terms',
   displayName: 'Highlight Search Terms',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Highlight your search terms in result snippets',
   defaultEnabled: false,
 
-  css: HIGHLIGHT_CSS,
+  settings: [
+    { key: 'highlightColor', label: 'Highlight color', type: 'string', default: DEFAULT_COLOR },
+  ],
 
-  onStart(api) {
+  async onStart(api) {
     const pagePath = document.documentElement.getAttribute('data-path');
     if (pagePath !== '/search') return;
 
     const terms = getSearchTerms();
     if (!terms.length) return;
+
+    const saved = await api.getSettings<{ highlightColor?: string }>();
+    const color = saved.highlightColor || DEFAULT_COLOR;
+
+    const styleEl = document.createElement('style');
+    styleEl.id = STYLE_ID;
+    styleEl.textContent = buildHighlightCSS(color);
+    (document.head ?? document.documentElement).appendChild(styleEl);
 
     highlightSnippets(terms);
 
@@ -106,6 +121,7 @@ export const highlightTermsPlugin = definePlugin({
     return () => {
       cleanup();
       removeHighlights();
+      styleEl.remove();
     };
   },
 });

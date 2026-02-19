@@ -1,4 +1,5 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
 
 const HORSE_ID = 'corgi-fatass-horse';
 const SPRITE_URL = 'https://nexpid.github.io/fatass-horse/sheet.png';
@@ -8,6 +9,7 @@ const ROWS = 8;
 
 const HORSE_SPEED = 30;
 const FRAME_INTERVAL = 42;
+const SAVE_INTERVAL = 2000;
 
 const DIRECTIONS: Record<string, number> = {
   N: 0,
@@ -20,15 +22,21 @@ const DIRECTIONS: Record<string, number> = {
   NW: 7,
 };
 
-function createHorse(): {
+interface HorsePosition {
+  x: number;
+  y: number;
+}
+
+function createHorse(api: PluginAPI, initialPos?: HorsePosition): {
   destroy: () => void;
 } {
-  let posX = 64;
-  let posY = 64;
+  let posX = initialPos?.x ?? 64;
+  let posY = initialPos?.y ?? 64;
   let mousePosX = 0;
   let mousePosY = 0;
   let frameCount = 0;
   let lastFrameTimestamp = 0;
+  let lastSaveTimestamp = 0;
   let opacity = 1;
 
   const el = document.createElement('div');
@@ -88,12 +96,20 @@ function createHorse(): {
     el.style.top = `${posY - SPRITE_SIZE / 2}px`;
   }
 
+  function savePosition(): void {
+    api.setSettings({ lastX: Math.round(posX), lastY: Math.round(posY) }).catch(() => {});
+  }
+
   function onAnimationFrame(timestamp: number): void {
     if (!el.isConnected) return;
     if (!lastFrameTimestamp) lastFrameTimestamp = timestamp;
     if (timestamp - lastFrameTimestamp > FRAME_INTERVAL) {
       lastFrameTimestamp = timestamp;
       frame();
+    }
+    if (timestamp - lastSaveTimestamp > SAVE_INTERVAL) {
+      lastSaveTimestamp = timestamp;
+      savePosition();
     }
     window.requestAnimationFrame(onAnimationFrame);
   }
@@ -108,6 +124,7 @@ function createHorse(): {
 
   return {
     destroy() {
+      savePosition();
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
     },
@@ -117,16 +134,22 @@ function createHorse(): {
 export const fatassHorsePlugin = definePlugin({
   name: 'fatass-horse',
   displayName: 'Fatass Horse',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['nexpid', 'aluminyoom'],
   description: 'A fatass horse that follows your mouse cursor around the page',
   defaultEnabled: false,
 
-  onStart() {
+  async onStart(api) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    const horse = createHorse();
+    const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
+    const initialPos: HorsePosition | undefined =
+      saved.lastX != null && saved.lastY != null
+        ? { x: saved.lastX, y: saved.lastY }
+        : undefined;
+
+    const horse = createHorse(api, initialPos);
     return () => horse.destroy();
   },
 });

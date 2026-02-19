@@ -125,9 +125,19 @@ export function startPlugin(name: string): void {
     }
 
     if (def.onStart) {
-      const cleanup = def.onStart(api);
-      if (typeof cleanup === 'function') {
-        instance.cleanups.push(cleanup);
+      const result = def.onStart(api);
+      if (result && typeof (result as Promise<unknown>).then === 'function') {
+        (result as Promise<unknown>).then((cleanup) => {
+          if (typeof cleanup === 'function') {
+            instance.cleanups.push(cleanup as () => void);
+          }
+        }).catch((err) => {
+          instance.state = 'error';
+          instance.error = err instanceof Error ? err : new Error(String(err));
+          console.warn(`[corgi] async plugin ${def.name} failed:`, err);
+        });
+      } else if (typeof result === 'function') {
+        instance.cleanups.push(result);
       }
     }
 

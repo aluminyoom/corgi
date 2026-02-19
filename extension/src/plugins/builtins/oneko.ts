@@ -1,7 +1,9 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
 
 const NEKO_ID = 'corgi-oneko';
 const SPRITE_URL = 'https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif';
+const SAVE_INTERVAL = 2000;
 
 type SpriteSet = [number, number][];
 const SPRITE_SETS: Record<string, SpriteSet> = {
@@ -27,11 +29,16 @@ const SPRITE_SETS: Record<string, SpriteSet> = {
 const NEKO_SPEED = 10;
 const FRAME_INTERVAL = 100;
 
-function createNeko(): {
+interface NekoPosition {
+  x: number;
+  y: number;
+}
+
+function createNeko(api: PluginAPI, initialPos?: NekoPosition): {
   destroy: () => void;
 } {
-  let nekoPosX = 32;
-  let nekoPosY = 32;
+  let nekoPosX = initialPos?.x ?? 32;
+  let nekoPosY = initialPos?.y ?? 32;
   let mousePosX = 0;
   let mousePosY = 0;
   let frameCount = 0;
@@ -39,6 +46,7 @@ function createNeko(): {
   let idleAnimation: string | null = null;
   let idleAnimationFrame = 0;
   let lastFrameTimestamp = 0;
+  let lastSaveTimestamp = 0;
 
   const el = document.createElement('div');
   el.id = NEKO_ID;
@@ -137,12 +145,20 @@ function createNeko(): {
     el.style.top = `${nekoPosY - 16}px`;
   }
 
+  function savePosition(): void {
+    api.setSettings({ lastX: Math.round(nekoPosX), lastY: Math.round(nekoPosY) }).catch(() => {});
+  }
+
   function onAnimationFrame(timestamp: number): void {
     if (!el.isConnected) return;
     if (!lastFrameTimestamp) lastFrameTimestamp = timestamp;
     if (timestamp - lastFrameTimestamp > FRAME_INTERVAL) {
       lastFrameTimestamp = timestamp;
       frame();
+    }
+    if (timestamp - lastSaveTimestamp > SAVE_INTERVAL) {
+      lastSaveTimestamp = timestamp;
+      savePosition();
     }
     window.requestAnimationFrame(onAnimationFrame);
   }
@@ -157,6 +173,7 @@ function createNeko(): {
 
   return {
     destroy() {
+      savePosition();
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
     },
@@ -166,16 +183,22 @@ function createNeko(): {
 export const onekoPlugin = definePlugin({
   name: 'oneko',
   displayName: 'Oneko (Cat)',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['adryd325', 'aluminyoom'],
   description: 'A cute cat that follows your mouse cursor around the page',
   defaultEnabled: false,
 
-  onStart() {
+  async onStart(api) {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
-    const neko = createNeko();
+    const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
+    const initialPos: NekoPosition | undefined =
+      saved.lastX != null && saved.lastY != null
+        ? { x: saved.lastX, y: saved.lastY }
+        : undefined;
+
+    const neko = createNeko(api, initialPos);
     return () => neko.destroy();
   },
 });
