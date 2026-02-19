@@ -18,7 +18,7 @@ export default defineConfig({
     host_permissions: ['*://*.kagi.com/*'],
     web_accessible_resources: [
       {
-        resources: ['corgi-main.js'],
+        resources: ['corgi-main.js', 'sprites/*'],
         matches: ['*://*.kagi.com/*'],
       },
     ],

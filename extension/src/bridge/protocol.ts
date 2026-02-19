@@ -6,6 +6,7 @@ export type BridgeAction =
   | 'storage:watch'
   | 'storage:unwatch'
   | 'runtime:send'
+  | 'runtime:getURL'
   | 'theme:apply'
   | 'theme:clear'
   | 'plugin:list'

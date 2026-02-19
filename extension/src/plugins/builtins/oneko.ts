@@ -1,8 +1,9 @@
 import { definePlugin } from '../api';
 import type { PluginAPI } from '../types';
+import { bridgeRequest } from '@/bridge/main-side';
 
 const NEKO_ID = 'corgi-oneko';
-const SPRITE_URL = 'https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif';
+const SPRITE_PATH = '/sprites/oneko.gif';
 const SAVE_INTERVAL = 2000;
 
 type SpriteSet = [number, number][];
@@ -34,7 +35,7 @@ interface NekoPosition {
   y: number;
 }
 
-function createNeko(api: PluginAPI, initialPos?: NekoPosition): {
+function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition): {
   destroy: () => void;
 } {
   let nekoPosX = initialPos?.x ?? 32;
@@ -60,7 +61,7 @@ function createNeko(api: PluginAPI, initialPos?: NekoPosition): {
     `left: ${nekoPosX - 16}px`,
     `top: ${nekoPosY - 16}px`,
     'z-index: 2147483647',
-    `background-image: url(${SPRITE_URL})`,
+    `background-image: url(${spriteUrl})`,
   ].join(';');
 
   document.body.appendChild(el);
@@ -183,7 +184,7 @@ function createNeko(api: PluginAPI, initialPos?: NekoPosition): {
 export const onekoPlugin = definePlugin({
   name: 'oneko',
   displayName: 'Oneko (Cat)',
-  version: '0.2.0',
+  version: '0.3.0',
   authors: ['adryd325', 'aluminyoom'],
   description: 'A cute cat that follows your mouse cursor around the page',
   defaultEnabled: false,
@@ -192,13 +193,15 @@ export const onekoPlugin = definePlugin({
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
+    const spriteUrl = await bridgeRequest<string>('runtime:getURL', { path: SPRITE_PATH });
+
     const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
     const initialPos: NekoPosition | undefined =
       saved.lastX != null && saved.lastY != null
         ? { x: saved.lastX, y: saved.lastY }
         : undefined;
 
-    const neko = createNeko(api, initialPos);
+    const neko = createNeko(api, spriteUrl, initialPos);
     return () => neko.destroy();
   },
 });

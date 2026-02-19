@@ -36,6 +36,11 @@ export function pushToMain(action: BridgeAction, payload?: unknown): void {
   window.postMessage(message, '*');
 }
 
+handlers.set('runtime:getURL', async (payload) => {
+  const { path } = payload as { path: string };
+  return browser.runtime.getURL(path);
+});
+
 handlers.set('storage:get', async (payload) => {
   const { key } = payload as { key: string };
   if (key === 'themeState') return themeState.getValue();

@@ -1,8 +1,9 @@
 import { definePlugin } from '../api';
 import type { PluginAPI } from '../types';
+import { bridgeRequest } from '@/bridge/main-side';
 
 const HORSE_ID = 'corgi-fatass-horse';
-const SPRITE_URL = 'https://nexpid.github.io/fatass-horse/sheet.png';
+const SPRITE_PATH = '/sprites/fatass-horse.png';
 const SPRITE_SIZE = 120;
 const COLS = 9;
 const ROWS = 8;
@@ -27,7 +28,7 @@ interface HorsePosition {
   y: number;
 }
 
-function createHorse(api: PluginAPI, initialPos?: HorsePosition): {
+function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePosition): {
   destroy: () => void;
 } {
   let posX = initialPos?.x ?? 64;
@@ -50,7 +51,7 @@ function createHorse(api: PluginAPI, initialPos?: HorsePosition): {
     `left: ${posX - SPRITE_SIZE / 2}px`,
     `top: ${posY - SPRITE_SIZE / 2}px`,
     'z-index: 2147483647',
-    `background-image: url(${SPRITE_URL})`,
+    `background-image: url(${spriteUrl})`,
     `background-size: ${COLS * SPRITE_SIZE}px ${ROWS * SPRITE_SIZE}px`,
   ].join(';');
 
@@ -134,7 +135,7 @@ function createHorse(api: PluginAPI, initialPos?: HorsePosition): {
 export const fatassHorsePlugin = definePlugin({
   name: 'fatass-horse',
   displayName: 'Fatass Horse',
-  version: '0.2.0',
+  version: '0.3.0',
   authors: ['nexpid', 'aluminyoom'],
   description: 'A fatass horse that follows your mouse cursor around the page',
   defaultEnabled: false,
@@ -143,13 +144,15 @@ export const fatassHorsePlugin = definePlugin({
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
+    const spriteUrl = await bridgeRequest<string>('runtime:getURL', { path: SPRITE_PATH });
+
     const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
     const initialPos: HorsePosition | undefined =
       saved.lastX != null && saved.lastY != null
         ? { x: saved.lastX, y: saved.lastY }
         : undefined;
 
-    const horse = createHorse(api, initialPos);
+    const horse = createHorse(api, spriteUrl, initialPos);
     return () => horse.destroy();
   },
 });
