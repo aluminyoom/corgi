@@ -1,10 +1,9 @@
 import { definePlugin } from '../api';
-import type { PluginAPI } from '../types';
 import { bridgeRequest } from '@/bridge/main-side';
 
 const NEKO_ID = 'corgi-oneko';
 const SPRITE_PATH = '/sprites/oneko.gif';
-const SAVE_INTERVAL = 2000;
+const STORAGE_KEY = 'corgi-oneko-pos';
 
 type SpriteSet = [number, number][];
 const SPRITE_SETS: Record<string, SpriteSet> = {
@@ -35,19 +34,37 @@ interface NekoPosition {
   y: number;
 }
 
-function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition): {
+function loadPosition(): NekoPosition | undefined {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
+      return { x: parsed.x, y: parsed.y };
+    }
+  } catch {}
+  return undefined;
+}
+
+function persistPosition(x: number, y: number): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: Math.round(x), y: Math.round(y) }));
+  } catch {}
+}
+
+function createNeko(spriteUrl: string, initialPos?: NekoPosition): {
   destroy: () => void;
 } {
   let nekoPosX = initialPos?.x ?? 32;
   let nekoPosY = initialPos?.y ?? 32;
-  let mousePosX = 0;
-  let mousePosY = 0;
+  // Initialize mouse position to neko position so it doesn't run to (0,0) on load
+  let mousePosX = nekoPosX;
+  let mousePosY = nekoPosY;
   let frameCount = 0;
   let idleTime = 0;
   let idleAnimation: string | null = null;
   let idleAnimationFrame = 0;
   let lastFrameTimestamp = 0;
-  let lastSaveTimestamp = 0;
 
   const el = document.createElement('div');
   el.id = NEKO_ID;
@@ -146,20 +163,12 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
     el.style.top = `${nekoPosY - 16}px`;
   }
 
-  function savePosition(): void {
-    api.setSettings({ lastX: Math.round(nekoPosX), lastY: Math.round(nekoPosY) }).catch(() => {});
-  }
-
   function onAnimationFrame(timestamp: number): void {
     if (!el.isConnected) return;
     if (!lastFrameTimestamp) lastFrameTimestamp = timestamp;
     if (timestamp - lastFrameTimestamp > FRAME_INTERVAL) {
       lastFrameTimestamp = timestamp;
       frame();
-    }
-    if (timestamp - lastSaveTimestamp > SAVE_INTERVAL) {
-      lastSaveTimestamp = timestamp;
-      savePosition();
     }
     window.requestAnimationFrame(onAnimationFrame);
   }
@@ -170,7 +179,7 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
   };
 
   const onBeforeUnload = (): void => {
-    savePosition();
+    persistPosition(nekoPosX, nekoPosY);
   };
 
   document.addEventListener('mousemove', onMouseMove);
@@ -179,7 +188,7 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
 
   return {
     destroy() {
-      savePosition();
+      persistPosition(nekoPosX, nekoPosY);
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('beforeunload', onBeforeUnload);
@@ -190,24 +199,20 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
 export const onekoPlugin = definePlugin({
   name: 'oneko',
   displayName: 'Oneko (Cat)',
-  version: '0.3.0',
+  version: '0.4.0',
   authors: ['adryd325', 'aluminyoom'],
   description: 'A cute cat that follows your mouse cursor around the page',
   defaultEnabled: false,
 
-  async onStart(api) {
+  async onStart() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
     const spriteUrl = await bridgeRequest<string>('runtime:getURL', { path: SPRITE_PATH });
 
-    const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
-    const initialPos: NekoPosition | undefined =
-      saved.lastX != null && saved.lastY != null
-        ? { x: saved.lastX, y: saved.lastY }
-        : undefined;
+    const initialPos = loadPosition();
 
-    const neko = createNeko(api, spriteUrl, initialPos);
+    const neko = createNeko(spriteUrl, initialPos);
     return () => neko.destroy();
   },
 });

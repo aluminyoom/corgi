@@ -1,5 +1,4 @@
 import { definePlugin } from '../api';
-import type { PluginAPI } from '../types';
 import { bridgeRequest } from '@/bridge/main-side';
 
 const HORSE_ID = 'corgi-fatass-horse';
@@ -10,7 +9,7 @@ const ROWS = 8;
 
 const HORSE_SPEED = 30;
 const FRAME_INTERVAL = 42;
-const SAVE_INTERVAL = 2000;
+const STORAGE_KEY = 'corgi-horse-pos';
 
 const DIRECTIONS: Record<string, number> = {
   N: 0,
@@ -28,16 +27,34 @@ interface HorsePosition {
   y: number;
 }
 
-function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePosition): {
+function loadPosition(): HorsePosition | undefined {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return undefined;
+    const parsed = JSON.parse(raw);
+    if (typeof parsed.x === 'number' && typeof parsed.y === 'number') {
+      return { x: parsed.x, y: parsed.y };
+    }
+  } catch {}
+  return undefined;
+}
+
+function persistPosition(x: number, y: number): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ x: Math.round(x), y: Math.round(y) }));
+  } catch {}
+}
+
+function createHorse(spriteUrl: string, initialPos?: HorsePosition): {
   destroy: () => void;
 } {
   let posX = initialPos?.x ?? 64;
   let posY = initialPos?.y ?? 64;
-  let mousePosX = 0;
-  let mousePosY = 0;
+  // Initialize mouse position to horse position so it doesn't run to (0,0) on load
+  let mousePosX = posX;
+  let mousePosY = posY;
   let frameCount = 0;
   let lastFrameTimestamp = 0;
-  let lastSaveTimestamp = 0;
   let opacity = 1;
 
   const el = document.createElement('div');
@@ -97,20 +114,12 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
     el.style.top = `${posY - SPRITE_SIZE / 2}px`;
   }
 
-  function savePosition(): void {
-    api.setSettings({ lastX: Math.round(posX), lastY: Math.round(posY) }).catch(() => {});
-  }
-
   function onAnimationFrame(timestamp: number): void {
     if (!el.isConnected) return;
     if (!lastFrameTimestamp) lastFrameTimestamp = timestamp;
     if (timestamp - lastFrameTimestamp > FRAME_INTERVAL) {
       lastFrameTimestamp = timestamp;
       frame();
-    }
-    if (timestamp - lastSaveTimestamp > SAVE_INTERVAL) {
-      lastSaveTimestamp = timestamp;
-      savePosition();
     }
     window.requestAnimationFrame(onAnimationFrame);
   }
@@ -121,7 +130,7 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
   };
 
   const onBeforeUnload = (): void => {
-    savePosition();
+    persistPosition(posX, posY);
   };
 
   document.addEventListener('mousemove', onMouseMove);
@@ -130,7 +139,7 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
 
   return {
     destroy() {
-      savePosition();
+      persistPosition(posX, posY);
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
       window.removeEventListener('beforeunload', onBeforeUnload);
@@ -141,24 +150,24 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
 export const fatassHorsePlugin = definePlugin({
   name: 'fatass-horse',
   displayName: 'Fatass Horse',
-  version: '0.3.0',
+  version: '0.4.0',
   authors: ['nexpid', 'aluminyoom'],
   description: 'A fatass horse that follows your mouse cursor around the page',
   defaultEnabled: false,
 
-  async onStart(api) {
+  async onStart() {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion) return;
 
     const spriteUrl = await bridgeRequest<string>('runtime:getURL', { path: SPRITE_PATH });
 
-    const saved = await api.getSettings<{ lastX?: number; lastY?: number }>();
+    const saved = loadPosition();
     const initialPos: HorsePosition | undefined =
-      saved.lastX != null && saved.lastY != null
-        ? { x: saved.lastX, y: saved.lastY }
+      saved?.x != null && saved?.y != null
+        ? { x: saved.x, y: saved.y }
         : undefined;
 
-    const horse = createHorse(api, spriteUrl, initialPos);
+    const horse = createHorse(spriteUrl, initialPos);
     return () => horse.destroy();
   },
 });
