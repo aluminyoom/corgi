@@ -9,25 +9,17 @@ export const resultCounterPlugin = definePlugin({
   defaultEnabled: false,
 
   css: `
-    .right-content-box {
+    .center-content-box {
       counter-reset: corgi-result;
     }
 
-    .right-content-box > .search-result::before {
+    .center-content-box .search-result > .__sri-title::before {
       counter-increment: corgi-result;
-      content: counter(corgi-result);
-      position: absolute;
-      left: -28px;
-      top: 0;
-      font-size: 12px;
+      content: counter(corgi-result) ".\\00a0";
+      font-size: inherit;
       font-weight: 600;
       color: var(--color-primary_light, var(--primary-400, #999));
-      line-height: 1.6;
       font-variant-numeric: tabular-nums;
-    }
-
-    .right-content-box > .search-result {
-      position: relative;
     }
   `,
 });
