@@ -45,6 +45,19 @@ function persistPosition(x: number, y: number): void {
   } catch {}
 }
 
+function waitForBody(): Promise<HTMLElement> {
+  return new Promise((resolve) => {
+    if (document.body) return resolve(document.body);
+    const obs = new MutationObserver(() => {
+      if (document.body) {
+        obs.disconnect();
+        resolve(document.body);
+      }
+    });
+    obs.observe(document.documentElement, { childList: true });
+  });
+}
+
 function createHorse(spriteUrl: string, initialPos?: HorsePosition): {
   destroy: () => void;
 } {
@@ -72,7 +85,7 @@ function createHorse(spriteUrl: string, initialPos?: HorsePosition): {
     `background-size: ${COLS * SPRITE_SIZE}px ${ROWS * SPRITE_SIZE}px`,
   ].join(';');
 
-  document.body.appendChild(el);
+  waitForBody().then((body) => body.appendChild(el));
 
   function setSprite(row: number, col: number): void {
     el.style.backgroundPosition = `${-col * SPRITE_SIZE}px ${-row * SPRITE_SIZE}px`;

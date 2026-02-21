@@ -52,6 +52,19 @@ function persistPosition(x: number, y: number): void {
   } catch {}
 }
 
+function waitForBody(): Promise<HTMLElement> {
+  return new Promise((resolve) => {
+    if (document.body) return resolve(document.body);
+    const obs = new MutationObserver(() => {
+      if (document.body) {
+        obs.disconnect();
+        resolve(document.body);
+      }
+    });
+    obs.observe(document.documentElement, { childList: true });
+  });
+}
+
 function createNeko(spriteUrl: string, initialPos?: NekoPosition): {
   destroy: () => void;
 } {
@@ -81,7 +94,8 @@ function createNeko(spriteUrl: string, initialPos?: NekoPosition): {
     `background-image: url(${spriteUrl})`,
   ].join(';');
 
-  document.body.appendChild(el);
+  // body may be null at document_start — wait for it
+  const appendToBody = waitForBody().then((body) => body.appendChild(el));
 
   function setSprite(name: string, frame: number): void {
     const set = SPRITE_SETS[name];
