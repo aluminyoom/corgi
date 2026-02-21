@@ -13,21 +13,27 @@ export const feelingLuckyPlugin = definePlugin({
 
   css: `
     #${BUTTON_ID} {
-      display: inline-block;
-      margin-top: 12px;
-      padding: 8px 20px;
-      border: 1px solid var(--color-primary_hover, #7b68ee);
-      border-radius: 6px;
-      background: transparent;
-      color: var(--color-primary, #7b68ee);
-      font-size: 0.85rem;
-      font-weight: 500;
+      align-items: center;
+      border-radius: 999px;
+      background-color: var(--color-search-input);
+      border: 1px solid var(--color-search-input-border);
+      color: var(--primary);
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      display: inline-flex;
+      font-family: var(--font-main, inherit);
+      font-size: 0.85rem;
+      justify-content: center;
+      min-height: 40px;
+      padding-left: 32px;
+      padding-right: 32px;
+      white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+      box-shadow: 1px 8px 30px 0 var(--box-shadow);
     }
     #${BUTTON_ID}:hover {
-      background: var(--color-primary, #7b68ee);
-      color: #fff;
+      border-color: var(--primary-hover, var(--primary));
+      color: var(--primary-hover, var(--primary));
+      text-decoration: none;
     }
   `,
 
