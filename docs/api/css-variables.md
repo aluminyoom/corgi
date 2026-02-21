@@ -54,8 +54,26 @@ All variables are set on `:root` and cascade through the entire page. Corgi appl
 
 | Variable | Description |
 |----------|-------------|
-| `--btn-primary-bg` | Primary button background |
-| `--btn-primary-color` | Primary button text |
+| `--btn-primary-bg` | Primary button background (defaults to `var(--primary)`) |
+| `--btn-primary-color` | Primary button text (defaults to `var(--secondary)`) |
+| `--primary-hover` | Primary color on hover state |
+
+Kagi buttons use the `.btn` class with modifier classes:
+- `.btn.--primary`: Solid background (`--btn-primary-bg`)
+- `.btn.--secondary`: Outlined (`border: 1px solid --btn-primary-bg`)
+- `.btn.--gray`: Subtle background (`--inline-widget-bg`)
+- `.btn.--link`: Link-colored background
+- `.btn.--danger`: Red background (`--red-800`)
+
+All `.btn` elements use `border-radius: 999px` (pill shape) by default.
+
+## Search Input
+
+| Variable | Description |
+|----------|-------------|
+| `--color-search-input` | Search input background color (defaults to `var(--input-bg)`) |
+| `--color-search-input-border` | Search input border color |
+| `--box-shadow` | Box shadow used on search input container |
 
 ## Reading Variables
 
