@@ -169,7 +169,12 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
     mousePosY = e.clientY;
   };
 
+  const onBeforeUnload = (): void => {
+    savePosition();
+  };
+
   document.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('beforeunload', onBeforeUnload);
   window.requestAnimationFrame(onAnimationFrame);
 
   return {
@@ -177,6 +182,7 @@ function createNeko(api: PluginAPI, spriteUrl: string, initialPos?: NekoPosition
       savePosition();
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('beforeunload', onBeforeUnload);
     },
   };
 }

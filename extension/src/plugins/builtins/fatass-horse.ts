@@ -120,7 +120,12 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
     mousePosY = e.clientY;
   };
 
+  const onBeforeUnload = (): void => {
+    savePosition();
+  };
+
   document.addEventListener('mousemove', onMouseMove);
+  window.addEventListener('beforeunload', onBeforeUnload);
   window.requestAnimationFrame(onAnimationFrame);
 
   return {
@@ -128,6 +133,7 @@ function createHorse(api: PluginAPI, spriteUrl: string, initialPos?: HorsePositi
       savePosition();
       el.remove();
       document.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('beforeunload', onBeforeUnload);
     },
   };
 }
