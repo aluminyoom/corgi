@@ -21,6 +21,10 @@ extension/
   wxt.config.ts           WXT configuration (modules, manifest overrides)
   tsconfig.json           Extends .wxt/tsconfig.json
   package.json            Dependencies and scripts
+  public/
+    sprites/
+      oneko.gif            Bundled oneko cat sprite (3.3KB)
+      fatass-horse.png     Bundled horse sprite sheet (1.16MB)
   src/
     entrypoints/
       content.ts          ISOLATED world content script (bridge + settings)
@@ -46,9 +50,34 @@ extension/
       registry.ts         Plugin loading and lifecycle
       api.ts              definePlugin() and plugin runtime API
       builtins/
-        index.ts          Built-in plugin/theme exports
-        search-counter.ts Sample plugin: live search result counter
+        discover.ts       Auto-discovery via import.meta.glob
+        groups.ts         Plugin group definitions (Corgi Polish)
         usage-counter.ts  Account usage widget (scrapes billing page)
+        support-redirect.ts  Support page redirect
+        custom-background.ts Custom background image (CSS injection)
+        custom-font.ts    Google Fonts injection
+        custom-logo.ts    Custom landing page logo
+        custom-placeholder.ts Custom search bar placeholder
+        hide-favicons.ts  Hide favicons (CSS-only)
+        result-counter.ts Result numbering (CSS counters)
+        highlight-terms.ts Highlight search terms in results
+        oneko.ts          Interactive cat sprite (cursor chaser)
+        fatass-horse.ts   Interactive horse sprite (cursor chaser)
+        infinite-scroll.ts Auto-load more SERP results on scroll
+        feeling-lucky.ts  "I'm Feeling Lucky" button on landing
+        polish/           Corgi Polish group (12 CSS-only plugins)
+          refined-typography.ts
+          smoother-interactions.ts
+          cleaner-cards.ts
+          visual-hierarchy.ts
+          centered-header.ts
+          edge-to-edge-nav.ts
+          modern-landing-tabs.ts
+          pill-filters.ts
+          qol.ts
+          serp-card-wrapping.ts
+          sidebar-categories.ts
+          sticky-sidebar.ts
     styles/
       injector.ts         CSS injection and <corgi-styles> management
       variables.ts        CSS variable override application

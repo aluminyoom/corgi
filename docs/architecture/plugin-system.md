@@ -105,40 +105,123 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Corgi ships with built-in plugins in `plugins/builtins/`:
+Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-discovered via `discover.ts`, which uses `import.meta.glob` to eagerly import all `.ts` files under `builtins/` (excluding `index.ts`, `groups.ts`, and `discover.ts`). Placing a file there with an exported `definePlugin({...})` object registers it automatically — no manual registration needed.
 
-- **search-counter**: Observes the DOM and shows a live count of search results in a floating badge. Demonstrates `observeElement`, `onProviderEvent`, and `injectCSS`.
-- **usage-counter**: Fetches account usage data from the billing page and displays a progress bar of remaining searches below the filter panel. Uses `sessionStorage` caching to avoid redundant requests.
+### Root-Level Plugins
 
-Both are enabled by default and registered in `corgi-main.ts`.
+| Plugin | Type | Description |
+|--------|------|-------------|
+| **usage-counter** | JS | Fetches account usage data from the billing page and displays a progress bar of remaining searches. Uses `sessionStorage` caching. |
+| **support-redirect** | JS | Redirects support page links. |
+| **custom-background** | JS + CSS | Custom background image for the landing page via CSS injection. Uses `file` setting for image upload. |
+| **custom-font** | JS | Google Fonts injection with configurable font family and weight. |
+| **custom-logo** | JS | Replaces the landing page doggo with a custom logo. Supports fit modes (contain/cover/fill/scale-down/none). |
+| **custom-placeholder** | JS | Custom search bar placeholder text. |
+| **hide-favicons** | CSS-only | Hides favicons from search results. |
+| **result-counter** | CSS-only | Adds result numbers using CSS counters. |
+| **highlight-terms** | JS + CSS | Highlights search terms in results with a configurable color. |
+| **oneko** | JS | Interactive cat sprite that chases the cursor. Bundled sprite, position persisted via localStorage across pages. |
+| **fatass-horse** | JS | Interactive horse sprite that chases the cursor. Bundled sprite sheet, position persisted via localStorage. |
+| **infinite-scroll** | JS + CSS | Auto-loads more SERP results on scroll. Hides the native load-more button and clicks it programmatically. Uses MutationObserver to detect new content. |
+| **feeling-lucky** | JS + CSS | Adds an "I'm Feeling Lucky" pill button on the landing page. Navigates to the first search result using a `corgi_lucky` URL parameter. |
 
 ### Corgi Polish
 
-Corgi also ships with a group of four CSS-only plugins under `plugins/builtins/polish/`. These provide subtle visual refinements that make Kagi feel more polished without changing its core identity. All four are disabled by default and bundled under the "Corgi Polish" plugin group.
+Corgi ships with a group of CSS-only plugins under `plugins/builtins/polish/`. These provide visual refinements that make Kagi feel more polished without changing its core identity. All are disabled by default and bundled under the "Corgi Polish" plugin group.
 
-- **corgi-polish/refined-typography**: Tighter line heights, improved font weights on headings, better letter spacing on URLs and dates.
-- **corgi-polish/smoother-interactions**: Subtle transitions on hover states, focus rings using `var(--yellow)`, scale transforms on interactive elements.
-- **corgi-polish/cleaner-cards**: Soft backgrounds using `color-mix`, consistent border-radius, and improved padding on search result cards and settings rows.
-- **corgi-polish/visual-hierarchy**: Muted secondary text through opacity, stronger result group separation with borders, and hover reveal on more-menus.
+| Plugin | Description |
+|--------|-------------|
+| **refined-typography** | Tighter line heights, improved font weights on headings, better letter spacing. |
+| **smoother-interactions** | Subtle transitions on hover states, focus rings, scale transforms. |
+| **cleaner-cards** | Soft backgrounds using `color-mix`, consistent border-radius and padding. |
+| **visual-hierarchy** | Muted secondary text through opacity, stronger result group separation. |
+| **centered-header** | Centers the SERP header. |
+| **edge-to-edge-nav** | Full-width navigation bar. |
+| **modern-landing-tabs** | Modernized landing page tab bar. |
+| **pill-filters** | Pill-shaped search filter buttons. |
+| **qol** | Quality-of-life CSS tweaks. |
+| **serp-card-wrapping** | Card wrapping for search results. |
+| **sidebar-categories** | Styled sidebar categories. |
+| **sticky-sidebar** | Sticky right sidebar on SERP. |
 
-All four plugins use theme-agnostic CSS exclusively. They rely on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
+All polish plugins use theme-agnostic CSS exclusively. They rely on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
+
+## Plugin Patterns
+
+### CSS-Only Plugins
+
+The simplest plugins just provide a `css` property. The runtime injects this as a `<style>` element when the plugin starts and removes it on stop.
+
+```typescript
+export const hideFaviconsPlugin = definePlugin({
+  name: 'hide-favicons',
+  displayName: 'Hide Favicons',
+  version: '0.1.0',
+  authors: ['aluminyoom'],
+  description: 'Hides favicons from search results',
+  defaultEnabled: false,
+  css: `.sri-url .favicon { display: none !important; }`,
+});
+```
+
+### JS Plugins
+
+Plugins that need runtime behavior provide `onStart(api)`. The function can return an optional cleanup function. Async `onStart` is supported — the registry detects Promise returns and handles `.then()` + `.catch()` for cleanup registration.
+
+```typescript
+onStart(api) {
+  const el = document.createElement('div');
+  document.body.appendChild(el);
+  return () => el.remove();
+},
+```
+
+### Plugin Settings
+
+Plugins can declare per-plugin settings with the `settings` array. Supported types: `'boolean'`, `'string'`, `'number'`, `'select'`, and `'file'`. The select type uses `options: { label, value }[]`.
+
+```typescript
+settings: [
+  { key: 'color', label: 'Highlight Color', type: 'string', default: '#ffeb3b' },
+  { key: 'fitMode', label: 'Image Fit', type: 'select', default: 'contain',
+    options: [
+      { label: 'Contain', value: 'contain' },
+      { label: 'Cover', value: 'cover' },
+    ] },
+],
+```
+
+Settings are read and written through bridge actions `plugin:settings:get` and `plugin:settings:set`, accessed via `api.getSettings<T>()` and `api.setSettings(values)`.
 
 ## Plugin Groups
 
 Plugin groups bundle related plugins under a single toggle. Enabling a group enables all of its member plugins. Disabling a group disables all members. Users can also expand the group in settings and override individual plugins.
 
-Groups are defined in `storage.ts` as `BUILTIN_GROUPS`:
+Groups are defined in `groups.ts` as `BUILTIN_GROUP_DEFS`. The `GroupDef` interface lives in `groups.ts`, while `PluginGroupMeta` (used by the settings UI) is in `discover.ts`:
 
 ```typescript
+// groups.ts
+export interface GroupDef {
+  name: string;
+  displayName: string;
+  version: string;
+  authors: string[];
+  description: string;
+  defaultEnabled: boolean;
+}
+
+// discover.ts
 export interface PluginGroupMeta {
   name: string;
   displayName: string;
   version: string;
   authors: string[];
   description: string;
-  plugins: string[];  // Plugin name references
+  plugins: string[];  // Computed from plugins with matching group field
 }
 ```
+
+Plugins declare group membership via their `group` field. The `discover.ts` module computes group membership at build time by scanning all plugins for matching `group` values.
 
 The group toggle writes to the same `pluginStates.disabled` array as individual toggles. When a group is toggled on, all its plugin names are removed from the disabled list. When toggled off, all are added.
 
