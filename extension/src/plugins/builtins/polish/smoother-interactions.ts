@@ -8,7 +8,7 @@ export const smootherInteractionsPlugin = definePlugin({
   description: 'Subtle transitions on hover states, focus rings, and interactive elements',
   group: 'corgi-polish',
   css: `
-    a {
+    a:not(.ranked-box-overlay a) {
       transition: color 0.15s ease, opacity 0.15s ease;
     }
 
@@ -16,8 +16,8 @@ export const smootherInteractionsPlugin = definePlugin({
       opacity: 0.8;
     }
 
-    button,
-    [role="button"] {
+    button:not(.ranked-box-overlay button),
+    [role="button"]:not(.ranked-box-overlay [role="button"]) {
       transition: background-color 0.15s ease, box-shadow 0.15s ease, color 0.15s ease;
     }
 

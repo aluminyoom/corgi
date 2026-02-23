@@ -8,11 +8,11 @@ export const visualHierarchyPlugin = definePlugin({
   description: 'Muted secondary text, stronger title contrast, clearer result group separation',
   group: 'corgi-polish',
   css: `
-    .__sri-url {
+    :not(.ranked-box-overlay) > .__sri-url {
       opacity: 0.7;
     }
 
-    .__sri-time {
+    :not(.ranked-box-overlay) > .__sri-time {
       opacity: 0.6;
     }
 
@@ -22,12 +22,12 @@ export const visualHierarchyPlugin = definePlugin({
       margin-bottom: 28px;
     }
 
-    .__sri_more_menu_box {
+    :not(.ranked-box-overlay) > .__sri_more_menu_box {
       opacity: 0.5;
       transition: opacity 0.15s ease;
     }
 
-    .__sri_more_menu_box:hover {
+    :not(.ranked-box-overlay) > .__sri_more_menu_box:hover {
       opacity: 0.8;
     }
 

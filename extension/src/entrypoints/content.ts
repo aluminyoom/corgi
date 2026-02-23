@@ -22,7 +22,10 @@ export default defineContentScript({
 
   async main() {
     injectCloak();
-    setTimeout(() => document.documentElement.classList.remove('corgi-cloaked'), 800);
+    setTimeout(() => {
+      document.documentElement.classList.remove('corgi-cloaked');
+      setTimeout(() => document.getElementById(CLOAK_ID)?.remove(), 100);
+    }, 800);
     startBridge();
     await injectScript('/corgi-main.js', { keepInDom: true });
     pushReady();
