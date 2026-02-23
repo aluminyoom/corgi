@@ -1,9 +1,10 @@
 # Creating Themes
 
-> [!NOTE]
-> **This page may be outdated.** The theme format is stabilizing but some features described here may change.
+::: warning Unstable
+Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
+:::
 
-A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools are needed.
+A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools required.
 
 ## Minimal Theme
 
@@ -42,26 +43,24 @@ For changes that go beyond variables, use the `css` field:
 }
 ```
 
-Custom CSS is injected as a `<style>` element inside a `<corgi-styles>` container that sits before Kagi's own stylesheets. This means your styles have the same specificity as Kagi's, so you may need to be specific with selectors.
+Custom CSS is injected as a `<style>` element inside a `<corgi-styles>` container that sits before Kagi's own stylesheets. Your styles share the same specificity as Kagi's, so you may need specific selectors to win.
 
 ## Page Overrides
 
-The `pages` field lets you apply different styles to specific pages:
+The `pages` field applies different styles to specific pages:
 
 ```json
 {
   "pages": {
     "search": {
-      "variables": {
-        "--app-bg": "#0d0d1a"
-      },
+      "variables": { "--app-bg": "#0d0d1a" },
       "css": ".search-result { margin-bottom: 24px; }"
     }
   }
 }
 ```
 
-Page keys correspond to the `data-path` attribute value on `<html>`. Common values: `search`, `settings`, `landing`.
+Page keys correspond to the `data-path` attribute value on `<html>`. Common values are `search`, `settings`, and `landing`.
 
 ## Theme Metadata
 
@@ -76,19 +75,18 @@ The optional `meta` field provides hints to the engine:
 }
 ```
 
-- `kagiThemes`: Which Kagi base themes this theme is designed for. Users can filter by this.
+- `kagiThemes`: Which Kagi base themes this theme targets, letting users filter by compatibility.
 - `minCorgiVersion`: The minimum Corgi version needed for features this theme uses.
 
-## Testing Your Theme
+## Testing
 
 1. Save your theme JSON
 2. Open `kagi.com/settings/corgi`
-3. Import the file
-4. Toggle it on
-5. Navigate to a search page to see the result
+3. Import the file and toggle it on
+4. Navigate to a search page to see the result
 
-Changes to `variables` apply instantly. If you update the theme file, re-import it. Themes with the same `name` are replaced on import rather than duplicated.
+Changes to `variables` apply instantly. If you update the file, re-import it. Themes with the same `name` are replaced on import rather than duplicated.
 
 ## Distribution
 
-Share your theme by distributing the JSON file. There is no central theme registry yet. Consider including a screenshot and a note about which Kagi base theme (light, dark, or both) your theme targets.
+Share your theme by distributing the JSON file. There is no central registry yet, so consider including a screenshot and a note about which Kagi base theme (light, dark, or both) your theme targets.

@@ -1,5 +1,9 @@
 # Theme Format
 
+::: warning Unstable
+Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
+:::
+
 Complete reference for the Corgi theme JSON structure.
 
 ## Schema

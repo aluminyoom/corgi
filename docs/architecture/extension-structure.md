@@ -65,6 +65,10 @@ extension/
         fatass-horse.ts   Interactive horse sprite (cursor chaser)
         infinite-scroll.ts Auto-load more SERP results on scroll
         feeling-lucky.ts  "I'm Feeling Lucky" button on landing
+        quick-copy.ts     Copy result URLs on hover
+        raw-urls.ts       Full URLs instead of breadcrumb paths
+        result-scrambler.ts  Randomize result order for the adventurous
+        rounded-cards.ts  Card treatment for search results
         polish/           Corgi Polish group (12 CSS-only plugins)
           refined-typography.ts
           smoother-interactions.ts
@@ -96,13 +100,13 @@ extension/
 
 **WXT** handles the extension build pipeline. It uses Vite internally and produces browser-specific outputs.
 
-Key scripts:
+Key scripts (all run from the `extension/` directory):
 | Command | Action |
 |---------|--------|
-| `pnpm --filter extension dev` | Development mode with HMR |
-| `pnpm --filter extension build` | Production build for Chrome |
-| `pnpm --filter extension build --browser firefox` | Firefox build |
-| `pnpm --filter extension check` | Run svelte-check for type validation |
+| `pnpm dev` | Development mode with HMR |
+| `pnpm build` | Production build for Chrome |
+| `pnpm build --browser firefox` | Firefox build |
+| `pnpm check` | Run svelte-check for type validation |
 
 **Build output:** `.output/chrome-mv3/` contains the unpacked extension ready for `chrome://extensions` loading.
 
@@ -155,4 +159,4 @@ docs/
   api/                    API reference
 ```
 
-Built with VitePress. Run `pnpm --filter docs dev` for local preview.
+Built with VitePress. Run `pnpm dev` from the `docs/` directory for local preview.

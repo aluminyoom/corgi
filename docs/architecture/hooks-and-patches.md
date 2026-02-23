@@ -1,19 +1,23 @@
 # Hooks and Patches
 
-Corgi intercepts Kagi's runtime behavior through monkey-patching and event interception. This page documents the hooking layer that enables plugins to modify search results, settings, network requests, and UI behavior.
+Corgi intercepts Kagi's runtime behavior through monkey-patching and event interception. This page documents the hooking layer that plugins use to modify search results, settings, network requests, and UI behavior.
+
+::: warning Current Coverage
+The hook API described here is fully implemented and available to every plugin through the `PluginAPI` object. That said, most built-in plugins still hardcode their DOM manipulation directly in `onStart` rather than routing through hooks. This works fine today, but the plan is to migrate those plugins to proper hook calls over time so cleanup and lifecycle management become automatic. If you are writing a new plugin, prefer the hook API from the start.
+:::
 
 ## Hooking Strategy
 
-Kagi assigns all its core objects and functions to `window` as plain globals. There is no module system, no bundler, and no framework. This makes hooking straightforward compared to systems like Discord (which requires Webpack module factory interception).
+Kagi assigns all its core objects and functions to `window` as plain globals with no module system, no bundler, and no framework in the way. This makes hooking straightforward compared to systems like Discord, which requires Webpack module factory interception.
 
-Corgi's MAIN world script runs at `document_start`, before Kagi's scripts execute. This gives it two techniques:
+Because Corgi's MAIN world script runs at `document_start` (before Kagi's scripts execute), it has two techniques available:
 
-1. **Pre-assignment traps**: Use `Object.defineProperty` to intercept globals that Kagi assigns during initialization (like `window.client` and `window.sseCache`).
-2. **Post-assignment patches**: Wrap functions on prototypes and globals that already exist or will exist after the trap fires.
+1. **Pre-assignment traps** use `Object.defineProperty` to intercept globals that Kagi assigns during initialization, such as `window.client` and `window.sseCache`.
+2. **Post-assignment patches** wrap functions on prototypes and globals that already exist or will exist once a trap fires.
 
 ## Object.defineProperty Traps
 
-Some globals are assigned by Kagi's scripts during execution. Corgi intercepts these assignments:
+Some globals are assigned by Kagi's scripts during execution, and Corgi intercepts those assignments before the rest of the page can see them:
 
 ```typescript
 let _client: Client | undefined
@@ -39,7 +43,7 @@ Object.defineProperty(window, 'client', {
 
 ## Function Wrapping
 
-For functions that exist on `window` or on prototypes, Corgi wraps them with before/after hooks:
+For functions that already exist on `window` or on prototypes, Corgi wraps them with before/after hooks that let plugins observe or modify calls without replacing the originals outright:
 
 ```typescript
 function wrapFunction<T extends (...args: any[]) => any>(
@@ -70,7 +74,7 @@ function wrapFunction<T extends (...args: any[]) => any>(
 
 ## Event Interception
 
-Kagi dispatches search results and UI state through `CustomEvent`s on `window`. Corgi wraps `window.addEventListener` to intercept event registration for `provider:*` events:
+Kagi dispatches search results and UI state through `CustomEvent`s on `window`, and Corgi wraps `window.addEventListener` to intercept registration for any `provider:*` event:
 
 ```typescript
 const originalAddEventListener = window.addEventListener.bind(window)
@@ -107,7 +111,7 @@ window.addEventListener = function(type: string, listener: EventListener, option
 
 ## Fetch Interception
 
-Corgi wraps `window.fetch` to intercept API requests:
+Corgi wraps `window.fetch` so plugins can inspect and modify API requests before they leave the browser and responses before they reach Kagi's handlers:
 
 ```typescript
 const originalFetch = window.fetch.bind(window)
@@ -137,17 +141,11 @@ window.fetch = async function(input: RequestInfo, init?: RequestInit) {
 
 ## DOM Mutation Observer
 
-A `MutationObserver` on `document.documentElement` watches for DOM changes. This catches:
-
-- Stylesheet additions (`<link>`, `<style>` elements)
-- Theme class changes on `<html>` (Kagi adds `theme_*` classes)
-- Dynamic content injection (search results, modals, widgets)
-
-Plugins can register mutation handlers to react to specific DOM changes without polling.
+A `MutationObserver` on `document.documentElement` watches for DOM changes, catching stylesheet additions (`<link>` and `<style>` elements), theme class changes on `<html>` (Kagi adds `theme_*` classes), and dynamic content injection like search results, modals, and widgets. Plugins can register mutation handlers to react to specific changes without polling.
 
 ## Plugin Patch Format
 
-Plugins define patches as declarative objects. The patching system applies them during the hooking phase:
+Plugins can also define patches as declarative objects, and the patching system applies them during the hooking phase:
 
 ```typescript
 {

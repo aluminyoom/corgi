@@ -1,6 +1,10 @@
 # CSS Variables
 
-Kagi uses CSS custom properties extensively. Overriding these variables is the primary way Corgi themes change the page appearance.
+::: warning Unstable
+Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
+:::
+
+Kagi uses CSS custom properties extensively, and overriding these variables is the primary way Corgi themes change the page appearance.
 
 All variables are set on `:root` and cascade through the entire page. Corgi applies overrides with `!important` to ensure they take priority over Kagi's defaults.
 
@@ -58,12 +62,7 @@ All variables are set on `:root` and cascade through the entire page. Corgi appl
 | `--btn-primary-color` | Primary button text (defaults to `var(--secondary)`) |
 | `--primary-hover` | Primary color on hover state |
 
-Kagi buttons use the `.btn` class with modifier classes:
-- `.btn.--primary`: Solid background (`--btn-primary-bg`)
-- `.btn.--secondary`: Outlined (`border: 1px solid --btn-primary-bg`)
-- `.btn.--gray`: Subtle background (`--inline-widget-bg`)
-- `.btn.--link`: Link-colored background
-- `.btn.--danger`: Red background (`--red-800`)
+Kagi buttons use the `.btn` class with modifier classes: `.btn.--primary` for a solid background (`--btn-primary-bg`), `.btn.--secondary` for outlined (`border: 1px solid --btn-primary-bg`), `.btn.--gray` for a subtle background (`--inline-widget-bg`), `.btn.--link` for a link-colored background, and `.btn.--danger` for red (`--red-800`).
 
 All `.btn` elements use `border-radius: 999px` (pill shape) by default.
 

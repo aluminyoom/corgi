@@ -3,7 +3,7 @@
 > [!WARNING]
 > **Corgi is in heavy development.** Features may break, APIs will change, and some things documented here may not be fully implemented yet. If you find bugs, please [open an issue](https://github.com/aluminyoom/corgi/issues).
 
-Corgi is a browser extension that adds a plugin system and theming engine to [Kagi Search](https://kagi.com). It works like [Vencord](https://vencord.dev/) does for Discord: it hooks into the existing page, gives you an API to extend it, and stays out of your way.
+Corgi is a browser extension that adds a plugin system and theming engine to [Kagi Search](https://kagi.com). It hooks into the existing page, gives you an API to extend it, and stays out of your way.
 
 ## Why Corgi?
 
@@ -37,6 +37,6 @@ The settings UI embeds directly into Kagi's settings page. No popup, no separate
 
 ## Inspired By
 
-- [Vencord](https://vencord.dev/) for the approach of building an API layer over a web app
+- [Vencord](https://vencord.dev/) for the idea of layering an API over an existing web app
 - [awesome-kagi-css](https://github.com/kawaiier/awesome-kagi-css), the existing Kagi theming community
 - [kage-css](https://github.com/pdanzma/kage-css), the most comprehensive existing Kagi theme

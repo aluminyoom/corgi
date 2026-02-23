@@ -11,13 +11,10 @@ The MAIN world script runs in the same JavaScript context as Kagi's page code. I
 - Set `Object.defineProperty` traps for globals that Kagi assigns later during page init
 - Intercept SSE provider events before they reach page handlers
 - Inject CSS custom elements before Kagi's stylesheets load
-- Run plugin `start()` and `stop()` lifecycle methods
+- Run plugin `onStart()` and `onStop()` lifecycle methods
 - Send messages to the ISOLATED world via `window.postMessage`
 
-**Timing matters.** Because this script runs at `document_start`, it executes before `<head>` content is parsed. The DOM is essentially empty at this point. The script must:
-1. Set up all interception traps immediately
-2. Use `MutationObserver` or `document.addEventListener("DOMContentLoaded")` for DOM-dependent work
-3. Never assume any DOM element exists during initial execution
+**Timing matters.** Because this script runs at `document_start`, it executes before `<head>` content is parsed and the DOM is essentially empty. The script must set up all interception traps immediately, use `MutationObserver` or `DOMContentLoaded` for any DOM-dependent work, and never assume that any element exists during initial execution.
 
 **Registration in WXT:**
 ```typescript
@@ -58,7 +55,7 @@ export default defineContentScript({
 
 ## Bridge Protocol
 
-The two worlds communicate through `window.postMessage` with a structured message format. The `BRIDGE_SOURCE` constant (`'corgi-bridge'`) prevents Corgi from processing its own messages or unrelated postMessage traffic.
+The two worlds communicate through `window.postMessage` with a structured message format. A `BRIDGE_SOURCE` constant (`'corgi-bridge'`) tags every message so Corgi can ignore its own echoes and unrelated postMessage traffic.
 
 ```typescript
 interface BridgeRequest {
@@ -96,7 +93,7 @@ interface BridgeResponse {
 | `plugin:settings:set` | Main → Isolated | Write per-plugin settings |
 | `ready` | Isolated → Main (push) | Signal that bridge is ready, triggers plugin startup |
 
-The MAIN world exposes a promise-based API (`bridgeRequest()`) wrapping this protocol with a 5-second timeout, so plugin code never deals with raw postMessage. The ISOLATED world can also push messages to MAIN world via `pushToMain()` with queue/replay semantics.
+The MAIN world exposes a promise-based API (`bridgeRequest()`) that wraps this protocol with a 5-second timeout, so plugin code never deals with raw postMessage. The ISOLATED world can also push unsolicited messages to MAIN via `pushToMain()`, which queues them if the listener is not ready yet and replays them once it connects.
 
 ## Execution Order
 
@@ -126,9 +123,7 @@ The MAIN world exposes a promise-based API (`bridgeRequest()`) wrapping this pro
 
 ## DOM Safety: waitForBody
 
-Because the MAIN world script runs at `document_start`, `document.body` is `null` when plugins first execute. Plugins that need to append elements to the body must wait for it to exist.
-
-The established pattern is `waitForBody()`:
+Because the MAIN world script runs at `document_start`, `document.body` is `null` when plugins first execute. Any plugin that needs to append elements to the body must wait for it to exist, and the established pattern for this is `waitForBody()`:
 
 ```typescript
 function waitForBody(): Promise<HTMLElement> {
@@ -149,12 +144,6 @@ This avoids the `Cannot read properties of null (reading 'appendChild')` crash t
 
 ## CSP and Bundled Assets
 
-Kagi's SERP pages enforce a Content Security Policy that restricts `img-src` to `'self'`, `https://*.kagi.com/`, `data:`, `blob:`, and `chrome-extension://` URLs. External image URLs will be blocked.
+Kagi's SERP pages enforce a Content Security Policy that restricts `img-src` to `'self'`, `https://*.kagi.com/`, `data:`, `blob:`, and `chrome-extension://` URLs, which means external image URLs get blocked.
 
-Plugins that need to load images (like sprite sheets) must:
-
-1. Bundle the asset in `extension/public/` (e.g., `public/sprites/oneko.gif`)
-2. Declare the path in `web_accessible_resources` in `wxt.config.ts`
-3. Resolve the URL at runtime via the `runtime:getURL` bridge action
-
-`chrome-extension://` URLs bypass page CSP entirely, so bundled assets load without restrictions.
+Plugins that need to load images (like sprite sheets) should bundle the asset in `extension/public/`, declare the path in `web_accessible_resources` in `wxt.config.ts`, and resolve the URL at runtime via the `runtime:getURL` bridge action. Since `chrome-extension://` URLs bypass page CSP entirely, bundled assets load without restrictions.

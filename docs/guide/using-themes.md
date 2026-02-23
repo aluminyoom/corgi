@@ -1,13 +1,14 @@
 # Using Themes
 
-> [!NOTE]
-> **This page may be outdated.** The theming system is under active development and some features described here may not be fully implemented yet.
+::: warning Unstable
+Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
+:::
 
-Themes let you change how Kagi looks by overriding CSS variables and injecting custom styles. Corgi applies themes at the stylesheet level, so they integrate with Kagi's existing dark/light mode system.
+Themes change how Kagi looks by overriding CSS variables and injecting custom styles. Corgi applies them at the stylesheet level, so they integrate with Kagi's existing dark/light mode system.
 
 ## Managing Themes
 
-Open `kagi.com/settings/corgi` to see your installed themes. Each theme has a toggle to enable or disable it. Multiple themes can be active at the same time; they layer on top of each other in the order they appear.
+Open `kagi.com/settings/corgi` to see your installed themes. Each one has a toggle to enable or disable it, and multiple themes can be active at the same time. They layer on top of each other in the order they appear.
 
 ## Installing a Theme
 
@@ -25,12 +26,12 @@ Theme removal is not yet available through the settings UI. To remove a theme, c
 
 ## Theme Layering
 
-When multiple themes are active, their CSS variables merge. If two themes set the same variable, the theme that appears later in the list wins. Custom CSS from all active themes is injected in order, so later themes can override earlier ones.
+When multiple themes are active, their CSS variables merge. If two themes set the same variable, the one that appears later in the list wins. Custom CSS from all active themes is injected in order, so later themes can also override earlier ones.
 
 ## Page-Specific Styles
 
-Themes can define overrides for specific pages. For example, a theme might use different colors on the search results page versus the settings page. The extension reads the `data-path` attribute on `<html>` to determine the current page and applies matching overrides.
+Themes can define overrides for specific pages. For example, a theme might use different colors on search results versus settings. The extension reads the `data-path` attribute on `<html>` to determine the current page and applies matching overrides.
 
 ## Creating Your Own
 
-See the [Creating Themes](./creating-themes.md) guide for the full theme JSON format and how to build your own.
+See the [Creating Themes](./creating-themes.md) guide for the full JSON format.

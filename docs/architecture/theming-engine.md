@@ -1,12 +1,16 @@
 # Theming Engine
 
+::: warning Unstable
+Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
+:::
+
 The theming engine controls how Corgi applies visual changes to Kagi pages. It operates at three levels: CSS variable overrides, arbitrary CSS injection, and stylesheet interception.
 
 ## CSS Variable Overrides
 
-Kagi defines hundreds of CSS custom properties on `:root` for colors, fonts, spacing, and component styles. Corgi themes can override any of these without writing selector-based CSS.
+Kagi defines hundreds of CSS custom properties on `:root` for colors, fonts, spacing, and component styles, and Corgi themes can override any of them without writing selector-based CSS.
 
-Variable overrides are applied as a `<style>` element injected into `<corgi-styles>` before Kagi's own stylesheets load:
+Variable overrides are applied as a `<style>` element injected into `<corgi-styles>` before Kagi's own stylesheets load, using `!important` to ensure they take precedence regardless of specificity:
 
 ```css
 :root {
@@ -17,11 +21,9 @@ Variable overrides are applied as a `<style>` element injected into `<corgi-styl
 }
 ```
 
-Using `!important` ensures overrides take precedence regardless of specificity in Kagi's styles.
-
 ## Custom CSS
 
-Themes can include arbitrary CSS for changes that go beyond variable overrides, such as hiding elements, repositioning layouts, or adding visual effects. Custom CSS is injected into a separate `<style>` element within `<corgi-styles>`.
+Themes can also include arbitrary CSS for changes that go beyond variable overrides, like hiding elements, repositioning layouts, or adding visual effects. This CSS is injected into a separate `<style>` element within `<corgi-styles>`.
 
 ## Style Container
 
@@ -48,11 +50,7 @@ This container is injected at `document_start` as the first child of `<html>`, b
 
 ## Stylesheet Interception
 
-A `MutationObserver` watches for `<link>` and `<style>` elements added to the document. This allows Corgi to:
-
-- **Block** Kagi's built-in custom CSS (`link[href^='/_s/custom_css?']`) when Corgi themes are active, preventing conflicts
-- **Reorder** stylesheets to ensure Corgi's styles load in the correct cascade position
-- **Detect** Kagi theme changes (class additions on `<html>` like `theme_dark`, `theme_calm_blue`) and react accordingly
+A `MutationObserver` watches for `<link>` and `<style>` elements added to the document, allowing Corgi to block Kagi's built-in custom CSS (`link[href^='/_s/custom_css?']`) when Corgi themes are active to prevent conflicts, reorder stylesheets to maintain the correct cascade position, and detect Kagi theme changes (class additions on `<html>` like `theme_dark` or `theme_calm_blue`) so it can react accordingly.
 
 ## Theme Application Flow
 
@@ -91,11 +89,8 @@ The engine evaluates the current `window.location.pathname` against these keys o
 
 ## Interaction with Kagi's Theme System
 
-Kagi has its own theme system controlled by `getKagiSetting("theme")` with values like `theme_light`, `theme_dark`, and variety sub-themes. Kagi applies themes by adding CSS classes to the `<html>` element.
+Kagi has its own theme system controlled by `getKagiSetting("theme")` with values like `theme_light`, `theme_dark`, and various sub-themes, and it applies them by adding CSS classes to the `<html>` element.
 
-Corgi does not replace this system. It layers on top. When Corgi is active:
-1. Kagi's base theme classes remain on `<html>` (providing default variable values)
-2. Corgi's `!important` overrides take precedence for any variables the theme defines
-3. Kagi's `updateTheme()` function still runs, but its visual effect is overridden
+Corgi does not replace this system but layers on top of it. When Corgi is active, Kagi's base theme classes remain on `<html>` to provide default variable values, Corgi's `!important` overrides take precedence for any variables the theme defines, and Kagi's `updateTheme()` function still runs even though its visual effect is overridden.
 
 This means Corgi themes can be partial. A theme that only overrides `--primary` and `--app-bg` will inherit all other styles from whatever Kagi theme the user has selected.

@@ -1,9 +1,10 @@
 # Creating Plugins
 
-> [!NOTE]
-> **This page may be outdated.** The plugin API is evolving. Some examples below use an older API shape. Refer to existing plugins in `extension/src/plugins/builtins/` for current patterns.
+Plugins are TypeScript modules that use `definePlugin()` to declare their behavior. The plugin runtime handles lifecycle, dependency resolution, and cleanup automatically.
 
-Plugins are TypeScript modules that use `definePlugin()` to declare their behavior. The plugin runtime handles lifecycle, dependency resolution, and cleanup.
+::: warning Hook API coverage
+The plugin hook API (`onProviderEvent`, `addEventInterceptor`, `observeElement`, etc.) is fully implemented and works, but most built-in plugins still hardcode their DOM manipulation directly in `onStart` rather than going through these hooks. This will be refactored over time so that more plugins use the proper API surface. When writing new plugins, prefer the hook API where possible.
+:::
 
 ## Minimal Plugin
 
@@ -28,7 +29,11 @@ export const myPlugin = definePlugin({
 });
 ```
 
-`definePlugin()` is a type-safe identity function. It returns the definition unchanged but gives full IntelliSense for the plugin shape.
+`definePlugin()` is a type-safe identity function that returns the definition unchanged but provides full IntelliSense for the plugin shape.
+
+## Registration
+
+Drop your file anywhere inside `extension/src/plugins/builtins/` (or `builtins/polish/` for polish group plugins). The auto-discovery system in `discover.ts` uses `import.meta.glob` to eagerly import every `.ts` file in that tree, so placing the file there is all that's needed.
 
 ## CSS-Only Plugin
 
@@ -50,26 +55,24 @@ export const myThemePlugin = definePlugin({
 });
 ```
 
-The CSS is injected as a `<style>` element tagged with `data-corgi-plugin="my-theme-tweak"`. It is automatically removed when the plugin stops.
+The CSS is injected as a `<style>` element tagged with `data-corgi-plugin="my-theme-tweak"` and is automatically removed when the plugin stops.
 
 ### Theme-Agnostic CSS
 
-Plugins must work in both light and dark mode. Never hardcode colors. Instead use:
+Plugins must work in both light and dark mode, so never hardcode colors. Use:
 
 - `currentColor` for text-relative colors
 - `color-mix(in srgb, currentColor N%, transparent)` for semi-transparent borders and backgrounds
 - `var(--primary)` and `var(--secondary)` for foreground/background
 - `var(--yellow)` for accent
 
-These variables are always defined in both light and dark Kagi themes.
+These variables are always available in both light and dark Kagi themes.
 
 ## Plugin API
 
-The `api` object passed to `onStart` provides tracked access to every hook system. "Tracked" means every listener or interceptor registered through the API is automatically cleaned up when the plugin stops, even if you forget to return a cleanup function.
+The `api` object passed to `onStart` provides tracked access to every hook system. "Tracked" means that every listener or interceptor registered through the API is automatically cleaned up when the plugin stops, even if you forget to return a cleanup function.
 
 ### DOM Observation
-
-Watch for DOM changes on specific elements:
 
 ```typescript
 onStart(api) {
@@ -83,32 +86,26 @@ onStart(api) {
 
 ### Provider Events
 
-Kagi emits internal events through its provider system. Listen for specific event tags:
+Kagi emits internal events through its provider system, and you can listen for specific event tags:
 
 ```typescript
 onStart(api) {
   api.onProviderEvent('search', (data) => {
     console.log('Search results arrived:', data);
   });
-
-  api.onProviderEvent('free_search_remaining', (remaining) => {
-    console.log('Searches left:', remaining);
-  });
 }
 ```
 
 ### Event Interception
 
-Modify or suppress provider events before they reach Kagi's own handlers:
+You can modify or suppress provider events before they reach Kagi's own handlers:
 
 ```typescript
 onStart(api) {
   api.addEventInterceptor((tag, data) => {
     if (tag === 'search') {
-      // Modify data before Kagi processes it
       return { tag, data: { ...data, modified: true } };
     }
-    // Return unchanged to pass through
     return { tag, data };
   });
 }
@@ -120,12 +117,10 @@ Intercept outgoing fetch requests or transform responses:
 
 ```typescript
 onStart(api) {
-  // Modify requests before they fire
   api.addFetchRequestInterceptor((url, init) => {
     return { url, init };
   });
 
-  // Transform responses after they arrive
   api.addFetchResponseInterceptor(async (url, response) => {
     return response;
   });
@@ -134,7 +129,7 @@ onStart(api) {
 
 ### Global Traps
 
-Watch for assignments to global variables (useful for capturing Kagi's runtime objects):
+Watch for assignments to global variables, which is useful for capturing Kagi's runtime objects:
 
 ```typescript
 onStart(api) {
@@ -153,11 +148,9 @@ onStart(api) {
   api.wrapFunction(someObject, 'methodName', {
     before(...args) {
       console.log('Called with:', args);
-      // Return modified args array, or void to pass through
     },
     after(result) {
       console.log('Returned:', result);
-      // Return modified result, or void to pass through
     },
   });
 }
@@ -180,7 +173,7 @@ onStart(api) {
 
 ### Dynamic CSS Injection
 
-Inject CSS programmatically (for styles that depend on runtime state):
+For styles that depend on runtime state, inject CSS programmatically:
 
 ```typescript
 onStart(api) {
@@ -191,9 +184,20 @@ onStart(api) {
 }
 ```
 
+### Settings
+
+Plugins can declare user-facing settings and read/write them at runtime:
+
+```typescript
+onStart(api) {
+  const settings = await api.getSettings<{ color: string }>();
+  await api.setSettings({ color: '#ff0000' });
+}
+```
+
 ## Declarative Patches
 
-For simple method wrapping that does not need runtime logic, declare patches in the definition:
+For simple method wrapping that does not need runtime logic, you can declare patches directly in the definition:
 
 ```typescript
 definePlugin({
@@ -230,7 +234,7 @@ The registry uses topological sorting to start plugins in dependency order. If a
 
 ## Lifecycle
 
-Plugins go through a defined set of states:
+Plugins move through a defined set of states:
 
 ```
 registered -> started -> stopped
@@ -239,24 +243,12 @@ registered -> started -> stopped
                error
 ```
 
-1. **Register**: `registerPlugin(definition)` adds the plugin to the registry without starting it.
-2. **Start**: `startPlugin(name)` resolves dependencies, applies patches, registers hooks, injects CSS, and calls `onStart`.
-3. **Stop**: `stopPlugin(name)` calls `onStop`, then runs all tracked cleanups in reverse order.
-4. **Error**: If `onStart` throws or a dependency is missing, the plugin moves to error state and all partial cleanups run.
+1. **Register**: The plugin is added to the registry without starting.
+2. **Start**: Dependencies resolve, patches apply, hooks register, CSS injects, and `onStart` runs.
+3. **Stop**: `onStop` runs, then all tracked cleanups fire in reverse order.
+4. **Error**: If `onStart` throws or a dependency is missing, the plugin enters error state and all partial cleanups run.
 
-## Error Isolation
-
-Plugin errors never crash other plugins or the core extension. Each plugin runs in a try/catch boundary. If `onStart` throws, the plugin enters error state and any hooks registered up to that point are cleaned up. Other plugins continue running.
-
-## Registration
-
-Built-in plugins are registered in `corgi-main.ts` during the bridge `ready` handshake. To add a new built-in:
-
-1. Create your plugin file in `plugins/builtins/` (or `plugins/builtins/polish/` for polish plugins)
-2. Export from `plugins/builtins/index.ts`
-3. Import and call `registerPlugin()` in `corgi-main.ts`
-4. Add the plugin metadata to `BUILTIN_PLUGINS` in `utils/storage.ts`
-5. If it belongs to a group, add its name to the group's `plugins` array in `BUILTIN_GROUPS`
+Plugin errors never crash other plugins or the core extension. Each plugin runs in a try/catch boundary, so if one fails, the rest continue.
 
 ## Full API Reference
 
@@ -273,3 +265,5 @@ Built-in plugins are registered in `corgi-main.ts` during the bridge `ready` han
 | `removeVariable(name)` | Remove a CSS variable |
 | `getComputedVariable(name)` | Read the computed value of a CSS variable |
 | `injectCSS(css)` | Inject a `<style>` element (auto-removed on stop) |
+| `getSettings()` | Read the plugin's persisted settings |
+| `setSettings(values)` | Write to the plugin's persisted settings |

@@ -1,6 +1,6 @@
 # Plugin System
 
-Corgi's plugin system lets developers extend Kagi with new features by hooking into the page's JavaScript, DOM, network requests, and styles. The design is inspired by Vencord's plugin architecture: each plugin declares what it needs, and the runtime handles lifecycle, dependency resolution, and cleanup.
+Corgi's plugin system lets developers extend Kagi with new features by hooking into the page's JavaScript, DOM, network requests, and styles. Each plugin declares what it needs, and the runtime handles lifecycle, dependency resolution, and cleanup.
 
 ## Defining a Plugin
 
@@ -36,7 +36,7 @@ export const myPlugin = definePlugin({
 
 ## Plugin API
 
-The `api` object passed to `onStart` provides tracked access to all hook systems. "Tracked" means every listener or interceptor registered through the API is automatically cleaned up when the plugin stops, even if you forget to call the cleanup function.
+The `api` object passed to `onStart` provides tracked access to all hook systems, meaning every listener or interceptor registered through the API is automatically cleaned up when the plugin stops, even if you forget to call the cleanup function.
 
 | Method | Purpose |
 |--------|---------|
@@ -63,10 +63,10 @@ registered -> started -> stopped
                error
 ```
 
-1. **Register**: `registerPlugin(definition)` adds the plugin to the registry without starting it
-2. **Start**: `startPlugin(name)` resolves dependencies, applies patches, registers hooks, calls `onStart`
-3. **Stop**: `stopPlugin(name)` calls `onStop`, runs all tracked cleanups in reverse order
-4. **Error**: If `onStart` throws or a dependency is missing, the plugin moves to error state and all partial cleanups run
+1. **Register**: `registerPlugin(definition)` adds the plugin to the registry without starting it.
+2. **Start**: `startPlugin(name)` resolves dependencies, applies patches, registers hooks, and calls `onStart`.
+3. **Stop**: `stopPlugin(name)` calls `onStop` and then runs all tracked cleanups in reverse order.
+4. **Error**: If `onStart` throws or a dependency is missing, the plugin moves to error state and all partial cleanups run.
 
 ## Dependencies
 
@@ -80,7 +80,7 @@ definePlugin({
 });
 ```
 
-The registry uses topological sorting to start plugins in dependency order. If a dependency is missing or in an error state, the dependent plugin fails with a clear error message.
+The registry uses topological sorting to start plugins in dependency order, and if a dependency is missing or in an error state, the dependent plugin fails with a clear error message.
 
 ## Declarative Patches
 
@@ -105,7 +105,7 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-discovered via `discover.ts`, which uses `import.meta.glob` to eagerly import all `.ts` files under `builtins/` (excluding `index.ts`, `groups.ts`, and `discover.ts`). Placing a file there with an exported `definePlugin({...})` object registers it automatically. No manual registration needed.
+Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-discovered via `discover.ts`, which uses `import.meta.glob` to eagerly import all `.ts` files under `builtins/` (excluding `index.ts`, `groups.ts`, and `discover.ts`). Placing a file there with an exported `definePlugin({...})` object registers it automatically.
 
 ### Root-Level Plugins
 
@@ -127,7 +127,7 @@ Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-disco
 
 ### Corgi Polish
 
-Corgi ships with a group of CSS-only plugins under `plugins/builtins/polish/`. These provide visual refinements that make Kagi feel more polished without changing its core identity. All are disabled by default and bundled under the "Corgi Polish" plugin group.
+Corgi ships with a group of twelve CSS-only plugins under `plugins/builtins/polish/` that provide visual refinements making Kagi feel more polished without changing its core identity. All are disabled by default and bundled under the "Corgi Polish" plugin group; you can toggle the entire group at once or expand it and pick individually.
 
 | Plugin | Description |
 |--------|-------------|
@@ -144,7 +144,7 @@ Corgi ships with a group of CSS-only plugins under `plugins/builtins/polish/`. T
 | **sidebar-categories** | Styled sidebar categories. |
 | **sticky-sidebar** | Sticky right sidebar on SERP. |
 
-All polish plugins use theme-agnostic CSS exclusively. They rely on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
+All polish plugins use theme-agnostic CSS exclusively, relying on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
 
 ## Plugin Patterns
 
@@ -166,7 +166,7 @@ export const hideFaviconsPlugin = definePlugin({
 
 ### JS Plugins
 
-Plugins that need runtime behavior provide `onStart(api)`. The function can return an optional cleanup function. Async `onStart` is supported. The registry detects Promise returns and handles `.then()` + `.catch()` for cleanup registration.
+Plugins that need runtime behavior provide `onStart(api)`, which can return an optional cleanup function. Async `onStart` is supported since the registry detects Promise returns and handles `.then()` and `.catch()` for cleanup registration.
 
 ```typescript
 onStart(api) {
@@ -178,7 +178,7 @@ onStart(api) {
 
 ### Plugin Settings
 
-Plugins can declare per-plugin settings with the `settings` array. Supported types: `'boolean'`, `'string'`, `'number'`, `'select'`, and `'file'`. The select type uses `options: { label, value }[]`.
+Plugins can declare per-plugin settings with the `settings` array, supporting types `'boolean'`, `'string'`, `'number'`, `'select'`, and `'file'` (the select type uses `options: { label, value }[]`).
 
 ```typescript
 settings: [
@@ -195,7 +195,7 @@ Settings are read and written through bridge actions `plugin:settings:get` and `
 
 ## Plugin Groups
 
-Plugin groups bundle related plugins under a single toggle. Enabling a group enables all of its member plugins. Disabling a group disables all members. Users can also expand the group in settings and override individual plugins.
+Plugin groups bundle related plugins under a single toggle. Enabling a group enables all of its member plugins, disabling it disables all members, and users can also expand the group in settings to override individual plugins.
 
 Groups are defined in `groups.ts` as `BUILTIN_GROUP_DEFS`. The `GroupDef` interface lives in `groups.ts`, while `PluginGroupMeta` (used by the settings UI) is in `discover.ts`:
 
@@ -221,18 +221,18 @@ export interface PluginGroupMeta {
 }
 ```
 
-Plugins declare group membership via their `group` field. The `discover.ts` module computes group membership at build time by scanning all plugins for matching `group` values.
+Plugins declare group membership via their `group` field, and the `discover.ts` module computes group membership at build time by scanning all plugins for matching values.
 
-The group toggle writes to the same `pluginStates.disabled` array as individual toggles. When a group is toggled on, all its plugin names are removed from the disabled list. When toggled off, all are added.
+The group toggle writes to the same `pluginStates.disabled` array as individual toggles: when a group is toggled on all its plugin names are removed from the disabled list, and when toggled off all are added.
 
-Groups are a UI and storage concept only. The plugin runtime has no awareness of groups. It reads the flat disabled list and starts or skips plugins accordingly.
+Groups are a UI and storage concept only. The plugin runtime has no awareness of groups and simply reads the flat disabled list, starting or skipping plugins accordingly.
 
 ### Plugin State Persistence
 
-Plugin enabled/disabled state is stored in `pluginStates` (extension local storage). The settings page reads and writes this storage directly from the ISOLATED world. When plugins start in the MAIN world, they request the disabled list through a `plugin:state` bridge message and skip any plugins the user has turned off.
+Plugin enabled/disabled state is stored in `pluginStates` (extension local storage), and the settings page reads and writes this storage directly from the ISOLATED world. When plugins start in the MAIN world, they request the disabled list through a `plugin:state` bridge message and skip any plugins the user has turned off.
 
 Changes to plugin toggles take effect on the next page load because plugins initialize once during the bridge `ready` handshake.
 
 ## Error Isolation
 
-Plugin errors never crash other plugins or the core extension. Each plugin runs in a try/catch boundary. If `onStart` throws, the plugin enters an error state and any hooks it registered up to that point are cleaned up. Other plugins continue running normally.
+Plugin errors never crash other plugins or the core extension. Each plugin runs in a try/catch boundary, so if `onStart` throws the plugin enters an error state, any hooks it registered up to that point are cleaned up, and other plugins continue running normally.
