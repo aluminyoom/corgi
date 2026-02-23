@@ -1,5 +1,8 @@
 # Creating Plugins
 
+> [!NOTE]
+> **This page may be outdated.** The plugin API is evolving. Some examples below use an older API shape. Refer to existing plugins in `extension/src/plugins/builtins/` for current patterns.
+
 Plugins are TypeScript modules that use `definePlugin()` to declare their behavior. The plugin runtime handles lifecycle, dependency resolution, and cleanup.
 
 ## Minimal Plugin

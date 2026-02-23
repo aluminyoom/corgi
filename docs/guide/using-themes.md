@@ -1,5 +1,8 @@
 # Using Themes
 
+> [!NOTE]
+> **This page may be outdated.** The theming system is under active development and some features described here may not be fully implemented yet.
+
 Themes let you change how Kagi looks by overriding CSS variables and injecting custom styles. Corgi applies themes at the stylesheet level, so they integrate with Kagi's existing dark/light mode system.
 
 ## Managing Themes

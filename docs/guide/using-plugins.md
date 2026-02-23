@@ -1,5 +1,8 @@
 # Using Plugins
 
+> [!NOTE]
+> **This page may be outdated.** Corgi now ships with 29 built-in plugins. Some details below may not reflect the current plugin set or API.
+
 Plugins extend Kagi with new features by hooking into the page's JavaScript, DOM, network layer, and styles. Unlike themes (which only change how things look), plugins can change how things work.
 
 ## Managing Plugins

@@ -1,22 +1,15 @@
 # 🐾 Corgi
 
-**A theming engine and plugin API for [Kagi Search](https://kagi.com)** — think Vencord, but for Kagi.
+A plugin system and theming engine for [Kagi Search](https://kagi.com). Think Vencord, but for Kagi.
 
 > [!WARNING]
 > **Corgi is in heavy development.** Things will break, APIs will change, and dragons roam freely. If you encounter bugs, please [report them here](https://github.com/aluminyoom/corgi/issues).
 
-Corgi is an unofficial Chrome extension that adds a plugin system, theming engine, and settings integration to Kagi. It injects a settings tab directly into Kagi's settings page where you can manage plugins and customize your search experience.
+Corgi hooks into Kagi's page, patches its runtime, and gives you a plugin API to extend it. The settings UI lives inside Kagi's own settings page at `/settings/corgi`, so it looks and feels native.
 
-## Features
+**29 built-in plugins** across three categories:
 
-- **Plugin system** with auto-discovery — drop a file in `builtins/` and it just works
-- **Theming engine** with CSS variable overrides
-- **Settings integration** — Corgi lives inside Kagi's own settings page
-- **29 built-in plugins** across multiple categories
-
-### Built-in Plugins
-
-#### 🪄 Corgi Polish (12 plugins)
+### Corgi Polish (12)
 Visual refinements that make Kagi feel more polished:
 
 | Plugin | Description |
@@ -34,7 +27,7 @@ Visual refinements that make Kagi feel more polished:
 | Sticky Sidebar | Keeps the sidebar visible while scrolling |
 | Visual Hierarchy | Improves contrast and spacing between elements |
 
-#### 🎨 Customization (4 plugins)
+### Customization (4)
 | Plugin | Description |
 |--------|-------------|
 | Custom Background | Set a custom background image or color |
@@ -42,7 +35,7 @@ Visual refinements that make Kagi feel more polished:
 | Custom Logo | Replace the Kagi logo on the landing page |
 | Custom Placeholder | Change the search bar placeholder text |
 
-#### 🔧 Utilities (13 plugins)
+### Utilities (13)
 | Plugin | Description |
 |--------|-------------|
 | Feeling Lucky | Adds an "I'm Feeling Lucky" button to the search bar |
@@ -52,7 +45,7 @@ Visual refinements that make Kagi feel more polished:
 | Quick Copy | Hover to reveal a copy button on result URLs |
 | Raw URLs | Shows full URLs instead of breadcrumb paths |
 | Result Counter | Numbers each search result inline |
-| Result Scrambler | Randomizes the order of search results (chaos mode) |
+| Result Scrambler | Randomizes the order of search results |
 | Rounded Cards | Gives search results a cozy card treatment |
 | Support Redirect | Redirects Kagi support pages |
 | Usage Counter | Tracks how many searches you've made |
@@ -61,25 +54,14 @@ Visual refinements that make Kagi feel more polished:
 
 ## Installation
 
-### From Source
-
 ```bash
-# Clone the repo
 git clone https://github.com/aluminyoom/corgi.git
 cd corgi/extension
-
-# Install dependencies
 pnpm install
-
-# Build
 pnpm build
 ```
 
-Then load the unpacked extension from `extension/.output/chrome-mv3` in `chrome://extensions` (enable Developer Mode).
-
-### Chrome Web Store
-
-Coming soon.
+Load the unpacked extension from `extension/.output/chrome-mv3` in `chrome://extensions` (enable Developer Mode).
 
 ## Development
 
@@ -92,7 +74,7 @@ pnpm zip          # Package for distribution
 
 ### Creating a Plugin
 
-Drop a `.ts` file in `extension/src/plugins/builtins/` with:
+Drop a `.ts` file in `extension/src/plugins/builtins/`:
 
 ```ts
 import { definePlugin } from '@/plugins/api';
@@ -113,22 +95,14 @@ export const myPlugin = definePlugin({
 });
 ```
 
-That's it. The auto-discovery system picks it up automatically.
+Auto-discovery picks it up. No registration needed.
 
-## Documentation
+## Docs
 
-Full documentation is available in the `docs/` directory (VitePress-powered). Run locally:
-
-```bash
-cd docs
-pnpm install
-pnpm dev
-```
+VitePress docs live in `docs/`. Run locally with `cd docs && pnpm install && pnpm dev`.
 
 ## License
 
-[MIT](LICENSE) — made with care by [aluminyoom](https://github.com/aluminyoom).
+[MIT](LICENSE). Made by [aluminyoom](https://github.com/aluminyoom).
 
----
-
-*Corgi is not affiliated with or supported by Kagi Inc. Please do not contact Kagi support for Corgi-related issues.*
+*Corgi is not affiliated with or supported by Kagi Inc. Do not contact Kagi support for Corgi-related issues.*

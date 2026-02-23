@@ -1,5 +1,8 @@
 # Getting Started
 
+> [!NOTE]
+> **This page may be outdated.** Corgi is actively evolving and some details here may not reflect the current state. See the [README](https://github.com/aluminyoom/corgi) for the latest setup instructions.
+
 ## Install from Source
 
 Corgi is not yet published to browser extension stores. For now, install it from source.

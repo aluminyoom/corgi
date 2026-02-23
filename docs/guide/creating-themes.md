@@ -1,5 +1,8 @@
 # Creating Themes
 
+> [!NOTE]
+> **This page may be outdated.** The theme format is stabilizing but some features described here may change.
+
 A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools are needed.
 
 ## Minimal Theme

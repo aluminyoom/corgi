@@ -105,7 +105,7 @@ The `target` is a dot-separated path resolved from `window`. Patches are applied
 
 ## Built-in Plugins
 
-Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-discovered via `discover.ts`, which uses `import.meta.glob` to eagerly import all `.ts` files under `builtins/` (excluding `index.ts`, `groups.ts`, and `discover.ts`). Placing a file there with an exported `definePlugin({...})` object registers it automatically — no manual registration needed.
+Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-discovered via `discover.ts`, which uses `import.meta.glob` to eagerly import all `.ts` files under `builtins/` (excluding `index.ts`, `groups.ts`, and `discover.ts`). Placing a file there with an exported `definePlugin({...})` object registers it automatically. No manual registration needed.
 
 ### Root-Level Plugins
 
@@ -166,7 +166,7 @@ export const hideFaviconsPlugin = definePlugin({
 
 ### JS Plugins
 
-Plugins that need runtime behavior provide `onStart(api)`. The function can return an optional cleanup function. Async `onStart` is supported — the registry detects Promise returns and handles `.then()` + `.catch()` for cleanup registration.
+Plugins that need runtime behavior provide `onStart(api)`. The function can return an optional cleanup function. Async `onStart` is supported. The registry detects Promise returns and handles `.then()` + `.catch()` for cleanup registration.
 
 ```typescript
 onStart(api) {
