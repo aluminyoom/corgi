@@ -24,6 +24,7 @@ function showKagiContent(main: HTMLElement): void {
 }
 
 let mounted = false;
+let previousTitle = '';
 
 async function mountSettingsPage(): Promise<void> {
   if (mounted) return;
@@ -32,6 +33,8 @@ async function mountSettingsPage(): Promise<void> {
   const main = getMainElement();
   if (!main) { mounted = false; return; }
 
+  previousTitle = document.title;
+  document.title = 'Corgi - Kagi Settings';
   hideKagiContent(main);
 
   const existing = main.querySelector('#corgi-settings-page');
@@ -50,6 +53,11 @@ function unmountSettingsPage(): void {
   mounted = false;
   const main = getMainElement();
   if (!main) return;
+
+  if (previousTitle) {
+    document.title = previousTitle;
+    previousTitle = '';
+  }
 
   const page = main.querySelector('#corgi-settings-page');
   if (page) (page as HTMLElement).style.display = 'none';
