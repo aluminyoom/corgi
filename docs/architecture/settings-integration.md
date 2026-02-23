@@ -50,7 +50,7 @@ The page renders:
 - **Themes section** listing installed themes with per-theme enable/disable
 - **Import button** for loading theme JSON files
 
-All elements use Kagi's own CSS classes and markup patterns (`settings-row-box`, `k_ui_toggle_switch`, native spacing utilities) so they are visually indistinguishable from Kagi's own settings. No custom CSS is needed.
+All elements use Kagi's own CSS classes and markup patterns (`settings-row-box`, `k_ui_toggle_switch`, native spacing utilities) so they are visually indistinguishable from Kagi's own settings without any custom CSS.
 
 ## Control Center Shortcut
 

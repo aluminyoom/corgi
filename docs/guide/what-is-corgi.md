@@ -33,7 +33,7 @@ Corgi injects a MAIN world script at `document_start`, before any of Kagi's code
 
 Plugins register through `definePlugin()` and get a tracked API that handles cleanup automatically. Drop a `.ts` file in `builtins/` and the auto-discovery system picks it up.
 
-The settings UI embeds directly into Kagi's settings page. No popup, no separate window.
+The settings UI embeds directly into Kagi's settings page, so there is no popup or separate window to deal with.
 
 ## Inspired By
 

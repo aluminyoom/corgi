@@ -4,7 +4,7 @@
 Theming support works but is still rough around the edges. If you run into issues, you can achieve similar results through the plugin API's `injectCSS` method or through Kagi's own custom CSS setting while the theming engine is being stabilized.
 :::
 
-A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS. No build tools required.
+A Corgi theme is a JSON file that declares CSS variable overrides and optional custom CSS, and it requires no build tools to create.
 
 ## Minimal Theme
 
