@@ -10,7 +10,7 @@ export default defineConfig({
   description: 'A theming engine and plugin API for Kagi search',
 
   head: [
-    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/logo.svg' }],
+    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
   ],
 
   themeConfig: {

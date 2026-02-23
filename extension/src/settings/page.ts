@@ -468,13 +468,13 @@ function createAdmonition(): HTMLElement {
   issueLink.textContent = 'Report a Corgi issue';
 
   const kagiLink = el('a', {
-    href: 'https://kagifeedback.org',
+    href: 'https://github.com/aluminyoom/corgi',
     target: '_blank',
     rel: 'noopener',
     className: 'btn --secondary',
   });
   kagiLink.style.cssText = 'text-decoration: none; font-size: 0.8125rem; min-height: 32px; padding: 0 16px;';
-  kagiLink.textContent = 'Kagi Feedback';
+  kagiLink.textContent = 'View Source Code';
 
   actions.appendChild(issueLink);
   actions.appendChild(kagiLink);
