@@ -1,9 +1,15 @@
-# 🐾 Corgi
+<p align="center">
+  <img src="assets/icon.png" width="80" height="80" alt="Corgi" />
+</p>
 
-A plugin system and theming engine for [Kagi Search](https://kagi.com).
+<h1 align="center">Corgi</h1>
+
+<p align="center">A plugin system and theming engine for <a href="https://kagi.com">Kagi Search</a>.</p>
 
 > [!WARNING]
 > **Corgi is in heavy development.** Things will break, APIs will change, and dragons roam freely. If you hit a bug, please [open an issue](https://github.com/aluminyoom/corgi/issues).
+
+![Corgi Settings Page](assets/screenshot.png)
 
 Corgi hooks into Kagi's page, patches its runtime, and gives you a plugin API to extend everything. Settings live inside Kagi's own settings page at `/settings/corgi`, so the whole experience feels native.
 
