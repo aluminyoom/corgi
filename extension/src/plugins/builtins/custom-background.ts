@@ -1,13 +1,13 @@
 import { definePlugin } from '../api';
 import type { PluginAPI } from '../types';
 
-interface BackgroundSettings {
+type BackgroundSettings = {
   url: string;
   file: string;
   size: string;
   position: string;
   opacity: string;
-}
+};
 
 const DEFAULTS: BackgroundSettings = {
   url: '',

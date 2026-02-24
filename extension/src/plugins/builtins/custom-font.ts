@@ -3,10 +3,10 @@ import type { PluginAPI } from '../types';
 
 const STYLE_ID = 'corgi-custom-font-style';
 
-interface FontSettings {
+type FontSettings = {
   fontName: string;
   fontUrl: string;
-}
+};
 
 const DEFAULTS: FontSettings = {
   fontName: '',

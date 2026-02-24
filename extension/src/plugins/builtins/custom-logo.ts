@@ -5,13 +5,13 @@ const LOGO_SELECTOR = '.clouds .logo';
 
 type FitMode = 'contain' | 'cover' | 'fill' | 'scale-down' | 'none';
 
-interface LogoSettings {
+type LogoSettings = {
   url: string;
   file: string;
   maxWidth: string;
   maxHeight: string;
   fitMode: FitMode;
-}
+};
 
 const DEFAULTS: LogoSettings = {
   url: '',

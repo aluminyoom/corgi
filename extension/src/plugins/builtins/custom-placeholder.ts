@@ -22,14 +22,14 @@ function getActiveCategory(): string {
   return 'all';
 }
 
-interface PlaceholderSettings {
+type PlaceholderSettings = {
   global: string;
   all: string;
   images: string;
   videos: string;
   news: string;
   maps: string;
-}
+};
 
 const DEFAULTS: PlaceholderSettings = {
   global: '',
