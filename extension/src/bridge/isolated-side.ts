@@ -137,7 +137,12 @@ const FETCH_PROXY_ALLOWED_ORIGINS = [
 
 handlers.set('fetch:proxy', async (payload) => {
   const { url } = payload as { url: string };
-  const parsed = new URL(url);
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    throw new Error(`fetch:proxy invalid URL: ${url}`);
+  }
   const allowed = FETCH_PROXY_ALLOWED_ORIGINS.some((origin) => parsed.origin === origin);
   if (!allowed) throw new Error(`fetch:proxy blocked for origin: ${parsed.origin}`);
 
