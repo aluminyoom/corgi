@@ -56,7 +56,7 @@ function applyPlaceholder(settings: PlaceholderSettings): void {
 export const customPlaceholderPlugin = definePlugin({
   name: 'custom-placeholder',
   displayName: 'Custom Placeholder',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Customize the landing page search placeholder text, globally or per category',
 
@@ -70,14 +70,12 @@ export const customPlaceholderPlugin = definePlugin({
   ],
 
   onStart(api) {
-    const pagePath = document.documentElement.getAttribute('data-path');
-    if (pagePath !== '/landing') return;
+    if (!api.isPage('/landing')) return;
 
     let settings: PlaceholderSettings = { ...DEFAULTS };
 
     async function loadAndApply(): Promise<void> {
-      const stored = await api.getSettings<Partial<PlaceholderSettings>>();
-      settings = { ...DEFAULTS, ...stored };
+      settings = await api.loadSettings(DEFAULTS);
       applyPlaceholder(settings);
     }
 

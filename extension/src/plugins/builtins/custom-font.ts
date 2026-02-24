@@ -1,4 +1,5 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
 
 const STYLE_ID = 'corgi-custom-font-style';
 
@@ -19,25 +20,18 @@ function buildFontUrl(settings: FontSettings): string {
   return `https://fonts.googleapis.com/css2?family=${encoded}:wght@300;400;500;600;700&display=swap`;
 }
 
-function applyFont(settings: FontSettings): void {
-  let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
+function applyFont(api: PluginAPI, settings: FontSettings): void {
   const fontName = settings.fontName.trim();
 
   if (!fontName) {
-    styleEl?.remove();
+    api.removeStyle(STYLE_ID);
     return;
-  }
-
-  if (!styleEl) {
-    styleEl = document.createElement('style');
-    styleEl.id = STYLE_ID;
-    (document.head ?? document.documentElement).appendChild(styleEl);
   }
 
   const importUrl = buildFontUrl(settings);
   const importRule = importUrl ? `@import url("${importUrl}");` : '';
 
-  styleEl.textContent = `
+  api.injectStyle(STYLE_ID, `
     ${importRule}
 
     body, p, div, span, a, li, td, th,
@@ -46,13 +40,13 @@ function applyFont(settings: FontSettings): void {
     article, section, main, header, footer, nav, aside {
       font-family: '${fontName}', sans-serif !important;
     }
-  `;
+  `);
 }
 
 export const customFontPlugin = definePlugin({
   name: 'custom-font',
   displayName: 'Custom Font',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Override Kagi\'s font with a Google Font or any web font',
   defaultEnabled: false,
@@ -64,15 +58,10 @@ export const customFontPlugin = definePlugin({
 
   onStart(api) {
     async function loadAndApply(): Promise<void> {
-      const stored = await api.getSettings<Partial<FontSettings>>();
-      const settings = { ...DEFAULTS, ...stored };
-      applyFont(settings);
+      const settings = await api.loadSettings(DEFAULTS);
+      applyFont(api, settings);
     }
 
     loadAndApply();
-
-    return () => {
-      document.getElementById(STYLE_ID)?.remove();
-    };
   },
 });

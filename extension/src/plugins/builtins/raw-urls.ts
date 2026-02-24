@@ -1,12 +1,11 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
 
-const PROCESSED_ATTR = 'data-corgi-raw-url';
-
-function rewriteUrls(): void {
+function rewriteUrls(api: PluginAPI): void {
   const links = document.querySelectorAll<HTMLAnchorElement>('.__sri-url');
   for (const link of links) {
-    if (link.hasAttribute(PROCESSED_ATTR)) continue;
-    link.setAttribute(PROCESSED_ATTR, '');
+    if (api.isProcessed(link, 'processed')) continue;
+    api.markProcessed(link, 'processed');
 
     const pathBox = link.querySelector<HTMLElement>('.__sri_url_path_box');
     if (!pathBox || !link.href) continue;
@@ -21,33 +20,30 @@ function rewriteUrls(): void {
   }
 }
 
-function restoreUrls(): void {
-  for (const el of document.querySelectorAll<HTMLElement>(`[${PROCESSED_ATTR}]`)) {
-    el.removeAttribute(PROCESSED_ATTR);
-  }
+function restoreUrls(api: PluginAPI): void {
+  api.clearProcessed('processed');
 }
 
 export const rawUrlsPlugin = definePlugin({
   name: 'raw-urls',
   displayName: 'Raw URLs',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Show clean full URLs instead of the breadcrumb site › path › path format',
   defaultEnabled: false,
 
   onStart(api) {
-    const pagePath = document.documentElement.getAttribute('data-path');
-    if (pagePath !== '/search') return;
+    if (!api.isPage('/search')) return;
 
-    rewriteUrls();
+    rewriteUrls(api);
 
     const cleanup = api.observeElement('.center-content-box', () => {
-      rewriteUrls();
+      rewriteUrls(api);
     }, { childList: true, subtree: true });
 
     return () => {
       cleanup();
-      restoreUrls();
+      restoreUrls(api);
     };
   },
 });

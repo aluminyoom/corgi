@@ -25,10 +25,6 @@ const LOGO_ELEMENT_ID = 'corgi-custom-logo';
 const HIDDEN_ATTR = 'data-corgi-logo-hidden';
 const OVERFLOW_ATTR = 'data-corgi-logo-overflow';
 
-/**
- * Apply the custom logo. Returns true if the DOM elements were found
- * (regardless of whether a custom image was set).
- */
 function applyLogo(settings: LogoSettings): boolean {
   const src = settings.file || settings.url;
   const clouds = document.querySelector<HTMLElement>(CLOUDS_SELECTOR);
@@ -38,7 +34,6 @@ function applyLogo(settings: LogoSettings): boolean {
 
   const existing = document.getElementById(LOGO_ELEMENT_ID);
 
-  // always hide siblings of .logo inside .clouds (e.g. .doggo_sit_a)
   for (const child of clouds.children) {
     const el = child as HTMLElement;
     if (!el.classList.contains('logo')) {
@@ -47,19 +42,16 @@ function applyLogo(settings: LogoSettings): boolean {
     }
   }
 
-  // clip .logo so the custom image never bleeds into the search bar
   if (!logoDiv.hasAttribute(OVERFLOW_ATTR)) {
     logoDiv.style.overflow = 'hidden';
     logoDiv.setAttribute(OVERFLOW_ATTR, '');
   }
 
-  // no custom image — remove any leftover img but keep siblings hidden
   if (!src) {
     if (existing) existing.remove();
     return true;
   }
 
-  // hide original logo content inside .logo (e.g. the Kagi SVG)
   for (const child of logoDiv.children) {
     const el = child as HTMLElement;
     if (el.id !== LOGO_ELEMENT_ID) {
@@ -114,7 +106,7 @@ function restoreLogo(): void {
 export const customLogoPlugin = definePlugin({
   name: 'custom-logo',
   displayName: 'Custom Logo',
-  version: '0.3.0',
+  version: '0.4.0',
   authors: ['aluminyoom'],
   description: 'Replace the landing page logo with a custom image (URL or file upload)',
 
@@ -133,23 +125,19 @@ export const customLogoPlugin = definePlugin({
   ],
 
   onStart(api) {
-    const pagePath = document.documentElement.getAttribute('data-path');
-    if (pagePath !== '/landing') return;
+    if (!api.isPage('/landing')) return;
 
     let settled = false;
     let cachedSettings: LogoSettings = { ...DEFAULTS };
 
     async function loadAndApply(): Promise<void> {
-      const stored = await api.getSettings<Partial<LogoSettings>>();
-      cachedSettings = { ...DEFAULTS, ...stored };
+      cachedSettings = await api.loadSettings(DEFAULTS);
       settled = applyLogo(cachedSettings);
     }
 
     loadAndApply();
 
-    // re-apply whenever .logo DOM changes (e.g. Kagi re-renders the landing)
     const cleanup = api.observeElement(LOGO_SELECTOR, () => {
-      // always re-apply — DOM may have been replaced by Kagi
       if (settled) {
         applyLogo(cachedSettings);
       } else {

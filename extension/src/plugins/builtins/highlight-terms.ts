@@ -1,8 +1,9 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
+import { escapeRegex } from '@/utils/strings';
 
 const SNIPPET_SELECTOR = '.__sri-desc';
 const MARK_CLASS = 'corgi-highlight';
-const MARKED_ATTR = 'data-corgi-highlighted';
 const STYLE_ID = 'corgi-highlight-terms-style';
 
 const DEFAULT_COLOR = '#6366f1';
@@ -27,11 +28,7 @@ function getSearchTerms(): string[] {
     .filter((t) => t.length >= 2);
 }
 
-function escapeRegex(str: string): string {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-function highlightSnippets(terms: string[]): void {
+function highlightSnippets(api: PluginAPI, terms: string[]): void {
   if (!terms.length) return;
 
   const pattern = new RegExp(
@@ -41,8 +38,8 @@ function highlightSnippets(terms: string[]): void {
 
   const snippets = document.querySelectorAll<HTMLElement>(SNIPPET_SELECTOR);
   for (const snippet of snippets) {
-    if (snippet.hasAttribute(MARKED_ATTR)) continue;
-    snippet.setAttribute(MARKED_ATTR, '');
+    if (api.isProcessed(snippet, 'highlighted')) continue;
+    api.markProcessed(snippet, 'highlighted');
 
     const walker = document.createTreeWalker(snippet, NodeFilter.SHOW_TEXT);
     const textNodes: Text[] = [];
@@ -73,22 +70,20 @@ function highlightSnippets(terms: string[]): void {
   }
 }
 
-function removeHighlights(): void {
+function removeHighlights(api: PluginAPI): void {
   for (const mark of document.querySelectorAll<HTMLElement>(`.${MARK_CLASS}`)) {
     const parent = mark.parentNode;
     if (!parent) continue;
     parent.replaceChild(document.createTextNode(mark.textContent || ''), mark);
     parent.normalize();
   }
-  for (const el of document.querySelectorAll<HTMLElement>(`[${MARKED_ATTR}]`)) {
-    el.removeAttribute(MARKED_ATTR);
-  }
+  api.clearProcessed('highlighted');
 }
 
 export const highlightTermsPlugin = definePlugin({
   name: 'highlight-terms',
   displayName: 'Highlight Search Terms',
-  version: '0.2.0',
+  version: '0.3.0',
   authors: ['aluminyoom'],
   description: 'Highlight your search terms in result snippets',
   defaultEnabled: false,
@@ -98,30 +93,24 @@ export const highlightTermsPlugin = definePlugin({
   ],
 
   async onStart(api) {
-    const pagePath = document.documentElement.getAttribute('data-path');
-    if (pagePath !== '/search') return;
+    if (!api.isPage('/search')) return;
 
     const terms = getSearchTerms();
     if (!terms.length) return;
 
-    const saved = await api.getSettings<{ highlightColor?: string }>();
-    const color = saved.highlightColor || DEFAULT_COLOR;
+    const { highlightColor: color } = await api.loadSettings({ highlightColor: DEFAULT_COLOR });
 
-    const styleEl = document.createElement('style');
-    styleEl.id = STYLE_ID;
-    styleEl.textContent = buildHighlightCSS(color);
-    (document.head ?? document.documentElement).appendChild(styleEl);
+    api.injectStyle(STYLE_ID, buildHighlightCSS(color));
 
-    highlightSnippets(terms);
+    highlightSnippets(api, terms);
 
     const cleanup = api.observeElement('.right-content-box', () => {
-      highlightSnippets(terms);
+      highlightSnippets(api, terms);
     }, { childList: true, subtree: true });
 
     return () => {
       cleanup();
-      removeHighlights();
-      styleEl.remove();
+      removeHighlights(api);
     };
   },
 });

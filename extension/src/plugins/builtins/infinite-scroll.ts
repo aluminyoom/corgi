@@ -7,7 +7,7 @@ const DEBOUNCE_MS = 300;
 export const infiniteScrollPlugin = definePlugin({
   name: 'infinite-scroll',
   displayName: 'Infinite Scroll',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Automatically loads more results as you scroll down the search page',
   defaultEnabled: false,
@@ -18,9 +18,8 @@ export const infiniteScrollPlugin = definePlugin({
     }
   `,
 
-  onStart() {
-    const page = document.documentElement.getAttribute('data-path');
-    if (page !== '/search') return;
+  onStart(api) {
+    if (!api.isPage('/search')) return;
 
     let loading = false;
     let timer: ReturnType<typeof setTimeout> | undefined;

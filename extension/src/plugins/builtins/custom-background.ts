@@ -1,4 +1,5 @@
 import { definePlugin } from '../api';
+import type { PluginAPI } from '../types';
 
 interface BackgroundSettings {
   url: string;
@@ -18,25 +19,16 @@ const DEFAULTS: BackgroundSettings = {
 
 const STYLE_ID = 'corgi-custom-bg-style';
 
-function applyBackground(settings: BackgroundSettings): void {
+function applyBackground(api: PluginAPI, settings: BackgroundSettings): void {
   const src = settings.file || settings.url;
-  let styleEl = document.getElementById(STYLE_ID) as HTMLStyleElement | null;
 
   if (!src) {
-    styleEl?.remove();
+    api.removeStyle(STYLE_ID);
     return;
   }
 
-  if (!styleEl) {
-    styleEl = document.createElement('style');
-    styleEl.id = STYLE_ID;
-    (document.head ?? document.documentElement).appendChild(styleEl);
-  }
-
-  // use body::before pseudo-element so we can control opacity independently
-  // without affecting body content — also clears kagi's own body/html background
   const cssUrl = src.replace(/"/g, '\\"');
-  styleEl.textContent = `
+  api.injectStyle(STYLE_ID, `
     [data-path="/landing"] body {
       background: transparent !important;
       position: relative;
@@ -59,13 +51,13 @@ function applyBackground(settings: BackgroundSettings): void {
     [data-path="/landing"] footer {
       background: transparent !important;
     }
-  `;
+  `);
 }
 
 export const customBackgroundPlugin = definePlugin({
   name: 'custom-background',
   displayName: 'Custom Background',
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Set a custom background image for the landing page (URL or file upload)',
 
@@ -98,19 +90,13 @@ export const customBackgroundPlugin = definePlugin({
   ],
 
   onStart(api) {
-    const pagePath = document.documentElement.getAttribute('data-path');
-    if (pagePath !== '/landing') return;
+    if (!api.isPage('/landing')) return;
 
     async function loadAndApply(): Promise<void> {
-      const stored = await api.getSettings<Partial<BackgroundSettings>>();
-      const settings = { ...DEFAULTS, ...stored };
-      applyBackground(settings);
+      const settings = await api.loadSettings(DEFAULTS);
+      applyBackground(api, settings);
     }
 
     loadAndApply();
-
-    return () => {
-      document.getElementById(STYLE_ID)?.remove();
-    };
   },
 });

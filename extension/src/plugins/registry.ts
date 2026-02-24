@@ -6,6 +6,8 @@ import { addFetchRequestInterceptor, addFetchResponseInterceptor } from '@/hooks
 import { observeElement } from '@/hooks/observer';
 import { setVariable, removeVariable, getComputedVariable } from '@/styles/variables';
 import { bridgeRequest } from '@/bridge/main-side';
+import { getCurrentPagePath } from '@/utils/engine';
+import { onUrlChange } from '@/hooks/navigation';
 
 const plugins = new Map<string, PluginInstance>();
 
@@ -17,6 +19,9 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
       return cleanup;
     }) as T;
   }
+
+  const pluginName = instance.definition.name;
+  const PROCESSED_PREFIX = `data-corgi-${pluginName}`;
 
   return {
     trapGlobal: tracked(trapGlobal),
@@ -34,7 +39,7 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     getComputedVariable,
     injectCSS(css: string): HTMLStyleElement {
       const style = document.createElement('style');
-      style.setAttribute('data-corgi-plugin', instance.definition.name);
+      style.setAttribute('data-corgi-plugin', pluginName);
       style.textContent = css;
       (document.head ?? document.documentElement).appendChild(style);
       instance.cleanups.push(() => style.remove());
@@ -42,16 +47,81 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     },
     async getSettings<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
       const result = await bridgeRequest<T>('plugin:settings:get', {
-        pluginName: instance.definition.name,
+        pluginName,
       });
       return result ?? ({} as T);
     },
     async setSettings(values: Record<string, unknown>): Promise<void> {
       await bridgeRequest('plugin:settings:set', {
-        pluginName: instance.definition.name,
+        pluginName,
         values,
       });
     },
+
+    getPagePath(): string | null {
+      return getCurrentPagePath();
+    },
+    isPage(path: string): boolean {
+      return getCurrentPagePath() === path;
+    },
+
+    injectStyle(id: string, css: string): HTMLStyleElement {
+      let el = document.getElementById(id) as HTMLStyleElement | null;
+      if (!el) {
+        el = document.createElement('style');
+        el.id = id;
+        el.setAttribute('data-corgi-plugin', pluginName);
+        (document.head ?? document.documentElement).appendChild(el);
+        instance.cleanups.push(() => document.getElementById(id)?.remove());
+      }
+      el.textContent = css;
+      return el;
+    },
+    updateStyle(id: string, css: string): void {
+      const el = document.getElementById(id);
+      if (el) el.textContent = css;
+    },
+    removeStyle(id: string): void {
+      document.getElementById(id)?.remove();
+    },
+
+    markProcessed(el: Element, key: string): void {
+      el.setAttribute(`${PROCESSED_PREFIX}-${key}`, '');
+    },
+    isProcessed(el: Element, key: string): boolean {
+      return el.hasAttribute(`${PROCESSED_PREFIX}-${key}`);
+    },
+    clearProcessed(key: string): void {
+      const attr = `${PROCESSED_PREFIX}-${key}`;
+      for (const el of document.querySelectorAll(`[${attr}]`)) {
+        el.removeAttribute(attr);
+      }
+    },
+
+    async loadSettings<T extends Record<string, unknown>>(defaults: T): Promise<T> {
+      const stored = await bridgeRequest<Partial<T>>('plugin:settings:get', {
+        pluginName,
+      });
+      return { ...defaults, ...(stored ?? {}) };
+    },
+
+    async getAssetURL(path: string): Promise<string> {
+      return bridgeRequest<string>('runtime:getURL', { path });
+    },
+
+    async proxyFetch(url: string): Promise<string> {
+      return bridgeRequest<string>('fetch:proxy', { url });
+    },
+    async fetchJSON<T>(url: string): Promise<T | null> {
+      try {
+        const text = await bridgeRequest<string>('fetch:proxy', { url });
+        return JSON.parse(text) as T;
+      } catch {
+        return null;
+      }
+    },
+
+    onUrlChange: tracked(onUrlChange),
   };
 }
 

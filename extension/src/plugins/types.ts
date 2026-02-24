@@ -69,6 +69,26 @@ export interface PluginAPI {
   injectCSS: (css: string) => HTMLStyleElement;
   getSettings: <T extends Record<string, unknown> = Record<string, unknown>>() => Promise<T>;
   setSettings: (values: Record<string, unknown>) => Promise<void>;
+
+  getPagePath: () => string | null;
+  isPage: (path: string) => boolean;
+
+  injectStyle: (id: string, css: string) => HTMLStyleElement;
+  updateStyle: (id: string, css: string) => void;
+  removeStyle: (id: string) => void;
+
+  markProcessed: (el: Element, key: string) => void;
+  isProcessed: (el: Element, key: string) => boolean;
+  clearProcessed: (key: string) => void;
+
+  loadSettings: <T extends Record<string, unknown>>(defaults: T) => Promise<T>;
+
+  getAssetURL: (path: string) => Promise<string>;
+
+  proxyFetch: (url: string) => Promise<string>;
+  fetchJSON: <T>(url: string) => Promise<T | null>;
+
+  onUrlChange: (callback: () => void) => () => void;
 }
 
 export type PluginState = 'registered' | 'started' | 'stopped' | 'error';
