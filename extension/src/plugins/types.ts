@@ -22,7 +22,7 @@ export interface PluginDefinition {
 
   patches?: PluginPatch[];
 
-  onStart?: (api: PluginAPI) => void | (() => void);
+  onStart?: (api: PluginAPI) => void | (() => void) | Promise<void | (() => void)>;
   onStop?: () => void;
 
   eventInterceptors?: EventInterceptor[];

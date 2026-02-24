@@ -1,3 +1,4 @@
+import type { PublicPath } from 'wxt/browser';
 import {
   BRIDGE_SOURCE,
   type BridgeAction,
@@ -38,7 +39,7 @@ export function pushToMain(action: BridgeAction, payload?: unknown): void {
 
 handlers.set('runtime:getURL', async (payload) => {
   const { path } = payload as { path: string };
-  return browser.runtime.getURL(path);
+  return browser.runtime.getURL(path as PublicPath);
 });
 
 handlers.set('storage:get', async (payload) => {
@@ -66,6 +67,11 @@ handlers.set('theme:clear', async () => {
   return null;
 });
 
+interface PluginStatesMeta {
+  initialized?: boolean;
+  knownPlugins?: string[];
+}
+
 let pluginStatesInitialized = false;
 
 handlers.set('plugin:state', async () => {
@@ -73,7 +79,7 @@ handlers.set('plugin:state', async () => {
 
   if (!pluginStatesInitialized) {
     pluginStatesInitialized = true;
-    const meta = await pluginStates.getMeta();
+    const meta = (await pluginStates.getMeta()) as PluginStatesMeta | null;
 
     if (!meta?.initialized) {
       // First-time install: apply all default-disabled plugins
@@ -88,7 +94,7 @@ handlers.set('plugin:state', async () => {
     } else {
       // Existing install: check for newly added defaultEnabled:false plugins
       const allDefaults = getDefaultDisabled();
-      const knownPlugins = (meta.knownPlugins as string[] | undefined) ?? [];
+      const knownPlugins = meta.knownPlugins ?? [];
       const knownSet = new Set(knownPlugins);
       const newlyDisabled = allDefaults.filter((name) => !knownSet.has(name));
 

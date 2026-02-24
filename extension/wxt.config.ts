@@ -13,6 +13,16 @@ export default defineConfig({
   manifest: {
     name: 'Corgi',
     description: 'Theming engine and plugin API for Kagi',
+    browser_specific_settings: {
+      gecko: {
+        id: 'corgi@aluminyoom',
+        strict_min_version: '140.0',
+        // @ts-expect-error WXT types don't yet include data_collection_permissions (Firefox 140+)
+        data_collection_permissions: {
+          required: ['none'],
+        },
+      },
+    },
     permissions: ['storage', 'declarativeNetRequest'],
     icons: {
       16: '/icon-16.png',
