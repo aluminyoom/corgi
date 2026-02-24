@@ -130,6 +130,23 @@ handlers.set('plugin:settings:set', async (payload) => {
   return null;
 });
 
+const FETCH_PROXY_ALLOWED_ORIGINS = [
+  'https://geocoding-api.open-meteo.com',
+  'https://api.open-meteo.com',
+];
+
+handlers.set('fetch:proxy', async (payload) => {
+  const { url } = payload as { url: string };
+  const parsed = new URL(url);
+  const allowed = FETCH_PROXY_ALLOWED_ORIGINS.some((origin) => parsed.origin === origin);
+  if (!allowed) throw new Error(`fetch:proxy blocked for origin: ${parsed.origin}`);
+
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`fetch:proxy ${resp.status} ${resp.statusText}`);
+  const text = await resp.text();
+  return text;
+});
+
 export function startBridge(): void {
   window.addEventListener('message', async (event) => {
     if (event.source !== window) return;
