@@ -402,12 +402,12 @@ function buildHourlyGraphSvg(hourlyTimes: string[], hourlyTemps: number[]): stri
   return `
     <div class="weather_graph_box">
       <svg class="weather-graph" viewBox="0 -140 645 140" width="100%" height="100%" preserveAspectRatio="none">
-        <linearGradient id="grad" x1="0%" x2="0%" y1="100%" y2="0%">
+        <linearGradient id="weather-widget-grad" x1="0%" x2="0%" y1="100%" y2="0%">
           <stop offset="0%" style="stop-color:var(--inline-widget-bg);stop-opacity:1"></stop>
           <stop offset="25%" style="stop-color:var(--inline-widget-bg);stop-opacity:1"></stop>
           <stop offset="100%" style="stop-color:orange;stop-opacity:0.2"></stop>
         </linearGradient>
-        <path d="${fillD}" fill="url(#grad)"></path>
+        <path d="${fillD}" fill="url(#weather-widget-grad)"></path>
         <path d="${lineD}" fill="none" stroke="#febb35" stroke-width="2"></path>
         ${labelsHtml}
       </svg>

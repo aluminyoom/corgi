@@ -49,8 +49,17 @@ function loadPosition(storageKey: string): { x: number; y: number } | null {
   try {
     const raw = localStorage.getItem(storageKey);
     if (!raw) return null;
-    const parsed = JSON.parse(raw) as { x: number; y: number };
-    if (typeof parsed.x === 'number' && typeof parsed.y === 'number') return parsed;
+    const parsed = JSON.parse(raw) as { x: unknown; y: unknown };
+    if (
+      typeof parsed.x === 'number' &&
+      Number.isFinite(parsed.x) &&
+      typeof parsed.y === 'number' &&
+      Number.isFinite(parsed.y)
+    ) {
+      const x = Math.min(Math.max(parsed.x, 0), window.innerWidth);
+      const y = Math.min(Math.max(parsed.y, 0), window.innerHeight);
+      return { x, y };
+    }
   } catch {
     /* ignore corrupt data */
   }

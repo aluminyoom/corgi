@@ -116,7 +116,8 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
       try {
         const text = await bridgeRequest<string>('fetch:proxy', { url });
         return JSON.parse(text) as T;
-      } catch {
+      } catch (error) {
+        console.error(`[plugins] fetchJSON failed for "${pluginName}" (${url}):`, error);
         return null;
       }
     },
