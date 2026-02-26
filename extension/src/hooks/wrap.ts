@@ -1,4 +1,6 @@
-export type BeforeHook<T extends unknown[] = unknown[]> = (...args: T) => T | void;
+export type BeforeHook<T extends unknown[] = unknown[]> = (
+  ...args: T
+) => T | void;
 export type AfterHook<R = unknown> = (result: R) => R | void;
 export type ReplacementHook<T extends unknown[] = unknown[], R = unknown> = (
   original: (...args: T) => R,
@@ -11,7 +13,10 @@ interface WrapOptions<T extends unknown[] = unknown[], R = unknown> {
   replace?: ReplacementHook<T, R>;
 }
 
-const wrappedFunctions = new Map<string, { original: Function; restore: () => void }>();
+const wrappedFunctions = new Map<
+  string,
+  { original: Function; restore: () => void }
+>();
 
 export function wrapFunction<T extends unknown[] = unknown[], R = unknown>(
   target: Record<string, unknown>,
@@ -19,11 +24,11 @@ export function wrapFunction<T extends unknown[] = unknown[], R = unknown>(
   options: WrapOptions<T, R>,
 ): () => void {
   const original = target[methodName] as (...args: T) => R;
-  if (typeof original !== 'function') {
+  if (typeof original !== "function") {
     return () => {};
   }
 
-  const key = `${String(target.constructor?.name ?? 'obj')}.${methodName}`;
+  const key = `${String(target.constructor?.name ?? "obj")}.${methodName}`;
 
   const patched = function (this: unknown, ...args: T): R {
     let finalArgs = args;
@@ -35,7 +40,10 @@ export function wrapFunction<T extends unknown[] = unknown[], R = unknown>(
 
     let result: R;
     if (options.replace) {
-      result = options.replace(original.bind(this) as (...a: T) => R, ...finalArgs);
+      result = options.replace(
+        original.bind(this) as (...a: T) => R,
+        ...finalArgs,
+      );
     } else {
       result = original.apply(this, finalArgs) as R;
     }
@@ -48,8 +56,8 @@ export function wrapFunction<T extends unknown[] = unknown[], R = unknown>(
     return result;
   };
 
-  Object.defineProperty(patched, 'name', { value: original.name });
-  Object.defineProperty(patched, 'length', { value: original.length });
+  Object.defineProperty(patched, "name", { value: original.name });
+  Object.defineProperty(patched, "length", { value: original.length });
 
   target[methodName] = patched;
 
@@ -64,7 +72,10 @@ export function wrapFunction<T extends unknown[] = unknown[], R = unknown>(
   return restore;
 }
 
-export function wrapPrototypeMethod<T extends unknown[] = unknown[], R = unknown>(
+export function wrapPrototypeMethod<
+  T extends unknown[] = unknown[],
+  R = unknown,
+>(
   prototype: Record<string, unknown>,
   methodName: string,
   options: WrapOptions<T, R>,

@@ -1,14 +1,15 @@
-import { definePlugin } from '../api';
+import { definePlugin } from "../api";
 
-const LUCKY_PARAM = 'corgi_lucky';
-const BUTTON_ID = 'corgi-feeling-lucky';
+const LUCKY_PARAM = "corgi_lucky";
+const BUTTON_ID = "corgi-feeling-lucky";
 
 export const feelingLuckyPlugin = definePlugin({
-  name: 'feeling-lucky',
+  name: "feeling-lucky",
   displayName: "I'm Feeling Lucky",
-  version: '0.2.0',
-  authors: ['aluminyoom'],
-  description: 'Adds an "I\'m Feeling Lucky" button to the landing page that takes you straight to the first result',
+  version: "0.2.0",
+  authors: ["aluminyoom"],
+  description:
+    'Adds an "I\'m Feeling Lucky" button to the landing page that takes you straight to the first result',
   defaultEnabled: false,
 
   css: `
@@ -40,11 +41,11 @@ export const feelingLuckyPlugin = definePlugin({
   onStart(api) {
     const page = api.getPagePath();
 
-    if (page === '/search') {
+    if (page === "/search") {
       return handleSerp();
     }
 
-    if (page === '/landing') {
+    if (page === "/landing") {
       return handleLanding();
     }
   },
@@ -52,12 +53,12 @@ export const feelingLuckyPlugin = definePlugin({
 
 function handleSerp(): (() => void) | undefined {
   const url = new URL(window.location.href);
-  if (url.searchParams.get(LUCKY_PARAM) !== '1') return;
+  if (url.searchParams.get(LUCKY_PARAM) !== "1") return;
 
   url.searchParams.delete(LUCKY_PARAM);
-  window.history.replaceState(null, '', url.toString());
+  window.history.replaceState(null, "", url.toString());
 
-  const FIRST_LINK = '._0_main-search-results .search-result .__sri_title_link';
+  const FIRST_LINK = "._0_main-search-results .search-result .__sri_title_link";
 
   const redirect = (): void => {
     const firstLink = document.querySelector<HTMLAnchorElement>(FIRST_LINK);
@@ -86,40 +87,40 @@ function handleSerp(): (() => void) | undefined {
 }
 
 function handleLanding(): (() => void) | undefined {
-  const form = document.querySelector<HTMLFormElement>('#searchForm');
-  const input = document.querySelector<HTMLInputElement>('#searchBar');
+  const form = document.querySelector<HTMLFormElement>("#searchForm");
+  const input = document.querySelector<HTMLInputElement>("#searchBar");
   if (!form || !input) return;
 
-  const btn = document.createElement('button');
+  const btn = document.createElement("button");
   btn.id = BUTTON_ID;
-  btn.type = 'button';
+  btn.type = "button";
   btn.textContent = "I'm Feeling Lucky";
 
-  btn.addEventListener('click', () => {
+  btn.addEventListener("click", () => {
     const query = input.value.trim();
     if (!query) {
       input.focus();
       return;
     }
-    const url = new URL('/search', window.location.origin);
-    url.searchParams.set('q', query);
-    url.searchParams.set(LUCKY_PARAM, '1');
+    const url = new URL("/search", window.location.origin);
+    url.searchParams.set("q", query);
+    url.searchParams.set(LUCKY_PARAM, "1");
     window.location.href = url.toString();
   });
 
   const wrapper =
-    form.closest('.search-form-wrapper') ??
-    form.closest('.s-f-w') ??
-    form.closest('.search-form-container');
+    form.closest(".search-form-wrapper") ??
+    form.closest(".s-f-w") ??
+    form.closest(".search-form-container");
 
   if (wrapper) {
-    const container = document.createElement('div');
-    container.style.textAlign = 'center';
+    const container = document.createElement("div");
+    container.style.textAlign = "center";
     container.appendChild(btn);
-    wrapper.insertAdjacentElement('afterend', container);
+    wrapper.insertAdjacentElement("afterend", container);
     return () => container.remove();
   }
 
-  form.insertAdjacentElement('afterend', btn);
+  form.insertAdjacentElement("afterend", btn);
   return () => btn.remove();
 }

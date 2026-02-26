@@ -1,13 +1,25 @@
-import type { PluginDefinition, PluginInstance, PluginAPI, PluginState } from './types';
-import { trapGlobal } from '@/hooks/traps';
-import { wrapFunction } from '@/hooks/wrap';
-import { addEventInterceptor, onProviderEvent } from '@/hooks/events';
-import { addFetchRequestInterceptor, addFetchResponseInterceptor } from '@/hooks/fetch';
-import { observeElement } from '@/hooks/observer';
-import { setVariable, removeVariable, getComputedVariable } from '@/styles/variables';
-import { bridgeRequest } from '@/bridge/main-side';
-import { getCurrentPagePath } from '@/utils/engine';
-import { onUrlChange } from '@/hooks/navigation';
+import type {
+  PluginDefinition,
+  PluginInstance,
+  PluginAPI,
+  PluginState,
+} from "./types";
+import { trapGlobal } from "@/hooks/traps";
+import { wrapFunction } from "@/hooks/wrap";
+import { addEventInterceptor, onProviderEvent } from "@/hooks/events";
+import {
+  addFetchRequestInterceptor,
+  addFetchResponseInterceptor,
+} from "@/hooks/fetch";
+import { observeElement } from "@/hooks/observer";
+import {
+  setVariable,
+  removeVariable,
+  getComputedVariable,
+} from "@/styles/variables";
+import { bridgeRequest } from "@/bridge/main-side";
+import { getCurrentPagePath } from "@/utils/engine";
+import { onUrlChange } from "@/hooks/navigation";
 
 const plugins = new Map<string, PluginInstance>();
 
@@ -38,21 +50,23 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     removeVariable,
     getComputedVariable,
     injectCSS(css: string): HTMLStyleElement {
-      const style = document.createElement('style');
-      style.setAttribute('data-corgi-plugin', pluginName);
+      const style = document.createElement("style");
+      style.setAttribute("data-corgi-plugin", pluginName);
       style.textContent = css;
       (document.head ?? document.documentElement).appendChild(style);
       instance.cleanups.push(() => style.remove());
       return style;
     },
-    async getSettings<T extends Record<string, unknown> = Record<string, unknown>>(): Promise<T> {
-      const result = await bridgeRequest<T>('plugin:settings:get', {
+    async getSettings<
+      T extends Record<string, unknown> = Record<string, unknown>,
+    >(): Promise<T> {
+      const result = await bridgeRequest<T>("plugin:settings:get", {
         pluginName,
       });
       return result ?? ({} as T);
     },
     async setSettings(values: Record<string, unknown>): Promise<void> {
-      await bridgeRequest('plugin:settings:set', {
+      await bridgeRequest("plugin:settings:set", {
         pluginName,
         values,
       });
@@ -68,9 +82,9 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     injectStyle(id: string, css: string): HTMLStyleElement {
       let el = document.getElementById(id) as HTMLStyleElement | null;
       if (!el) {
-        el = document.createElement('style');
+        el = document.createElement("style");
         el.id = id;
-        el.setAttribute('data-corgi-plugin', pluginName);
+        el.setAttribute("data-corgi-plugin", pluginName);
         (document.head ?? document.documentElement).appendChild(el);
         instance.cleanups.push(() => document.getElementById(id)?.remove());
       }
@@ -86,7 +100,7 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
     },
 
     markProcessed(el: Element, key: string): void {
-      el.setAttribute(`${PROCESSED_PREFIX}-${key}`, '');
+      el.setAttribute(`${PROCESSED_PREFIX}-${key}`, "");
     },
     isProcessed(el: Element, key: string): boolean {
       return el.hasAttribute(`${PROCESSED_PREFIX}-${key}`);
@@ -98,26 +112,31 @@ function createPluginAPI(instance: PluginInstance): PluginAPI {
       }
     },
 
-    async loadSettings<T extends Record<string, unknown>>(defaults: T): Promise<T> {
-      const stored = await bridgeRequest<Partial<T>>('plugin:settings:get', {
+    async loadSettings<T extends Record<string, unknown>>(
+      defaults: T,
+    ): Promise<T> {
+      const stored = await bridgeRequest<Partial<T>>("plugin:settings:get", {
         pluginName,
       });
       return { ...defaults, ...(stored ?? {}) };
     },
 
     async getAssetURL(path: string): Promise<string> {
-      return bridgeRequest<string>('runtime:getURL', { path });
+      return bridgeRequest<string>("runtime:getURL", { path });
     },
 
     async proxyFetch(url: string): Promise<string> {
-      return bridgeRequest<string>('fetch:proxy', { url });
+      return bridgeRequest<string>("fetch:proxy", { url });
     },
     async fetchJSON<T>(url: string): Promise<T | null> {
       try {
-        const text = await bridgeRequest<string>('fetch:proxy', { url });
+        const text = await bridgeRequest<string>("fetch:proxy", { url });
         return JSON.parse(text) as T;
       } catch (error) {
-        console.error(`[plugins] fetchJSON failed for "${pluginName}" (${url}):`, error);
+        console.error(
+          `[plugins] fetchJSON failed for "${pluginName}" (${url}):`,
+          error,
+        );
         return null;
       }
     },
@@ -131,20 +150,20 @@ export function registerPlugin(definition: PluginDefinition): void {
 
   plugins.set(definition.name, {
     definition,
-    state: 'registered',
+    state: "registered",
     cleanups: [],
   });
 }
 
 export function startPlugin(name: string): void {
   const instance = plugins.get(name);
-  if (!instance || instance.state === 'started') return;
+  if (!instance || instance.state === "started") return;
 
   const deps = instance.definition.dependencies ?? [];
   for (const dep of deps) {
     const depInstance = plugins.get(dep);
-    if (!depInstance || depInstance.state !== 'started') {
-      instance.state = 'error';
+    if (!depInstance || depInstance.state !== "started") {
+      instance.state = "error";
       instance.error = new Error(`missing dependency: ${dep}`);
       return;
     }
@@ -198,23 +217,26 @@ export function startPlugin(name: string): void {
     if (def.onStart) {
       const result = def.onStart(api);
       if (result instanceof Promise) {
-        result.then((cleanup) => {
-          if (typeof cleanup === 'function') {
-            instance.cleanups.push(cleanup);
-          }
-        }).catch((err) => {
-          instance.state = 'error';
-          instance.error = err instanceof Error ? err : new Error(String(err));
-          console.warn(`[corgi] async plugin ${def.name} failed:`, err);
-        });
-      } else if (typeof result === 'function') {
+        result
+          .then((cleanup) => {
+            if (typeof cleanup === "function") {
+              instance.cleanups.push(cleanup);
+            }
+          })
+          .catch((err) => {
+            instance.state = "error";
+            instance.error =
+              err instanceof Error ? err : new Error(String(err));
+            console.warn(`[corgi] async plugin ${def.name} failed:`, err);
+          });
+      } else if (typeof result === "function") {
         instance.cleanups.push(result);
       }
     }
 
-    instance.state = 'started';
+    instance.state = "started";
   } catch (err) {
-    instance.state = 'error';
+    instance.state = "error";
     instance.error = err instanceof Error ? err : new Error(String(err));
     cleanupInstance(instance);
   }
@@ -222,7 +244,7 @@ export function startPlugin(name: string): void {
 
 export function stopPlugin(name: string): void {
   const instance = plugins.get(name);
-  if (!instance || instance.state !== 'started') return;
+  if (!instance || instance.state !== "started") return;
 
   try {
     instance.definition.onStop?.();
@@ -231,7 +253,7 @@ export function stopPlugin(name: string): void {
   }
 
   cleanupInstance(instance);
-  instance.state = 'stopped';
+  instance.state = "stopped";
 }
 
 function cleanupInstance(instance: PluginInstance): void {
@@ -271,13 +293,13 @@ export function listPlugins(): PluginInstance[] {
 }
 
 function resolveTarget(path: string): Record<string, unknown> | null {
-  const parts = path.split('.');
+  const parts = path.split(".");
   let current: unknown = window;
   for (const part of parts) {
-    if (current == null || typeof current !== 'object') return null;
+    if (current == null || typeof current !== "object") return null;
     current = (current as Record<string, unknown>)[part];
   }
-  if (current == null || typeof current !== 'object') return null;
+  if (current == null || typeof current !== "object") return null;
   return current as Record<string, unknown>;
 }
 

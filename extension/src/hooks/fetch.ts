@@ -53,13 +53,17 @@ function installFetchInterception(): void {
   };
 }
 
-export function addFetchRequestInterceptor(interceptor: FetchInterceptor): () => void {
+export function addFetchRequestInterceptor(
+  interceptor: FetchInterceptor,
+): () => void {
   installFetchInterception();
   requestInterceptors.add(interceptor);
   return () => requestInterceptors.delete(interceptor);
 }
 
-export function addFetchResponseInterceptor(interceptor: FetchResponseInterceptor): () => void {
+export function addFetchResponseInterceptor(
+  interceptor: FetchResponseInterceptor,
+): () => void {
   installFetchInterception();
   responseInterceptors.add(interceptor);
   return () => responseInterceptors.delete(interceptor);

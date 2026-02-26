@@ -4,7 +4,7 @@ import {
   type BridgeRequest,
   isBridgeResponse,
   isBridgePush,
-} from './protocol';
+} from "./protocol";
 
 type PendingRequest = {
   resolve: (data: unknown) => void;
@@ -20,7 +20,7 @@ function generateId(): string {
   return `k-${++requestCounter}-${Date.now().toString(36)}`;
 }
 
-window.addEventListener('message', (event) => {
+window.addEventListener("message", (event) => {
   if (event.source !== window) return;
 
   if (isBridgeResponse(event)) {
@@ -31,7 +31,7 @@ window.addEventListener('message', (event) => {
     if (event.data.ok) {
       handler.resolve(event.data.data);
     } else {
-      handler.reject(new Error(event.data.error ?? 'bridge request failed'));
+      handler.reject(new Error(event.data.error ?? "bridge request failed"));
     }
     return;
   }
@@ -39,7 +39,10 @@ window.addEventListener('message', (event) => {
   if (isBridgePush(event)) {
     const listeners = pushListeners.get(event.data.action);
     if (!listeners || listeners.size === 0) {
-      queuedPushes.push({ action: event.data.action, payload: event.data.payload });
+      queuedPushes.push({
+        action: event.data.action,
+        payload: event.data.payload,
+      });
       return;
     }
     for (const fn of listeners) {
@@ -52,20 +55,23 @@ window.addEventListener('message', (event) => {
   }
 });
 
-export function bridgeRequest<T = unknown>(action: BridgeAction, payload?: unknown): Promise<T> {
+export function bridgeRequest<T = unknown>(
+  action: BridgeAction,
+  payload?: unknown,
+): Promise<T> {
   return new Promise((resolve, reject) => {
     const id = generateId();
     pending.set(id, { resolve: resolve as (data: unknown) => void, reject });
 
     const message: BridgeRequest = {
       source: BRIDGE_SOURCE,
-      direction: 'main-to-isolated',
+      direction: "main-to-isolated",
       id,
       action,
       payload,
     };
 
-    window.postMessage(message, '*');
+    window.postMessage(message, "*");
 
     setTimeout(() => {
       if (pending.has(id)) {
@@ -76,7 +82,10 @@ export function bridgeRequest<T = unknown>(action: BridgeAction, payload?: unkno
   });
 }
 
-export function onBridgePush(action: BridgeAction, fn: (payload: unknown) => void): () => void {
+export function onBridgePush(
+  action: BridgeAction,
+  fn: (payload: unknown) => void,
+): () => void {
   let set = pushListeners.get(action);
   if (!set) {
     set = new Set();
@@ -91,8 +100,7 @@ export function onBridgePush(action: BridgeAction, fn: (payload: unknown) => voi
   for (const queued of replay) {
     try {
       fn(queued.payload);
-    } catch {
-    }
+    } catch {}
   }
 
   return () => set!.delete(fn);

@@ -1,5 +1,5 @@
-import { defineExtensionMessaging } from '@webext-core/messaging';
-import type { Theme } from './types';
+import { defineExtensionMessaging } from "@webext-core/messaging";
+import type { Theme } from "./types";
 
 interface ProtocolMap {
   getActiveThemes(): Theme[];
@@ -11,4 +11,5 @@ interface ProtocolMap {
   reloadThemes(): void;
 }
 
-export const { sendMessage, onMessage } = defineExtensionMessaging<ProtocolMap>();
+export const { sendMessage, onMessage } =
+  defineExtensionMessaging<ProtocolMap>();

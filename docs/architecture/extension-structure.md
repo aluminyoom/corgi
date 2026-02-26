@@ -113,6 +113,7 @@ Key scripts (all run from the `extension/` directory):
 ## WXT Configuration
 
 `wxt.config.ts` configures:
+
 - **Modules**: `@wxt-dev/module-svelte` for Svelte 5 support with runes
 - **Manifest overrides**: permissions, CSP bypass rules, web-accessible resources
 - **Vite options**: Svelte compiler settings (runes mode)
@@ -135,6 +136,7 @@ The MAIN world script (`corgi-main.ts`) is registered as an unlisted WXT script,
 Corgi embeds its management UI directly into Kagi's settings at `/settings/corgi`. The popup exists only as a launcher that opens this page.
 
 The settings integration:
+
 - Injects a "Corgi" link into `nav#settings-menu` before the `<hr>` separator
 - Detects the `/settings/corgi` route and replaces `<main>` content with Corgi's UI
 - Uses Kagi's own CSS classes (`nav-link`, `heading-2`, `text-sm`, `rounded-lg`) for a native look
@@ -142,9 +144,9 @@ The settings integration:
 
 ## Permissions
 
-| Permission | Reason |
-|------------|--------|
-| `storage` | Persist themes, plugins, and settings |
+| Permission              | Reason                                                    |
+| ----------------------- | --------------------------------------------------------- |
+| `storage`               | Persist themes, plugins, and settings                     |
 | `declarativeNetRequest` | Modify response headers to bypass CSP for style injection |
 
 ## Documentation Package

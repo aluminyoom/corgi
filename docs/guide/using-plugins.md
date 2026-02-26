@@ -14,47 +14,47 @@ Corgi ships with **29 plugins** across three categories.
 
 The Corgi Polish group contains visual refinements that sharpen Kagi without changing its identity. The group is disabled by default, but you can toggle it on to enable all twelve at once or expand it to pick individually.
 
-| Plugin | Effect |
-|--------|--------|
-| Centered Header | Centers the search header on results pages |
-| Cleaner Cards | Strips visual noise from result cards |
-| Edge-to-Edge Nav | Extends navigation to full width |
-| Modern Landing Tabs | Modernizes tab styling on the landing page |
-| Pill Filters | Turns filter buttons into pills |
-| QoL Tweaks | Small CSS quality-of-life fixes |
-| Refined Typography | Better font sizing, weight, and spacing |
-| SERP Card Wrapping | Wraps search results in card containers |
-| Sidebar Categories | Styles sidebar category links |
-| Smoother Interactions | Adds transitions and hover effects |
-| Sticky Sidebar | Keeps the sidebar visible while scrolling |
-| Visual Hierarchy | Improves contrast and section separation |
+| Plugin                | Effect                                     |
+| --------------------- | ------------------------------------------ |
+| Centered Header       | Centers the search header on results pages |
+| Cleaner Cards         | Strips visual noise from result cards      |
+| Edge-to-Edge Nav      | Extends navigation to full width           |
+| Modern Landing Tabs   | Modernizes tab styling on the landing page |
+| Pill Filters          | Turns filter buttons into pills            |
+| QoL Tweaks            | Small CSS quality-of-life fixes            |
+| Refined Typography    | Better font sizing, weight, and spacing    |
+| SERP Card Wrapping    | Wraps search results in card containers    |
+| Sidebar Categories    | Styles sidebar category links              |
+| Smoother Interactions | Adds transitions and hover effects         |
+| Sticky Sidebar        | Keeps the sidebar visible while scrolling  |
+| Visual Hierarchy      | Improves contrast and section separation   |
 
 ### Customization (4 plugins)
 
-| Plugin | Effect |
-|--------|--------|
-| Custom Background | Set a custom background image or color |
-| Custom Font | Override the default font family |
-| Custom Logo | Replace the Kagi logo on the landing page |
-| Custom Placeholder | Change the search bar placeholder text |
+| Plugin             | Effect                                    |
+| ------------------ | ----------------------------------------- |
+| Custom Background  | Set a custom background image or color    |
+| Custom Font        | Override the default font family          |
+| Custom Logo        | Replace the Kagi logo on the landing page |
+| Custom Placeholder | Change the search bar placeholder text    |
 
 ### Utilities (13 plugins)
 
-| Plugin | Effect |
-|--------|--------|
-| Feeling Lucky | Adds an "I'm Feeling Lucky" button |
-| Hide Favicons | Removes favicons from search results |
-| Highlight Terms | Highlights search terms in results |
-| Infinite Scroll | Auto-loads the next page of results |
-| Quick Copy | Hover to reveal a copy button on result URLs |
-| Raw URLs | Shows full URLs instead of breadcrumb paths |
-| Result Counter | Numbers each search result inline |
-| Result Scrambler | Randomizes result order |
-| Rounded Cards | Gives results a cozy card treatment |
-| Support Redirect | Redirects Kagi support pages |
-| Usage Counter | Shows a progress bar of remaining searches |
-| Oneko | A cat that follows your cursor |
-| Fatass Horse | A horse that vibes on your screen |
+| Plugin           | Effect                                       |
+| ---------------- | -------------------------------------------- |
+| Feeling Lucky    | Adds an "I'm Feeling Lucky" button           |
+| Hide Favicons    | Removes favicons from search results         |
+| Highlight Terms  | Highlights search terms in results           |
+| Infinite Scroll  | Auto-loads the next page of results          |
+| Quick Copy       | Hover to reveal a copy button on result URLs |
+| Raw URLs         | Shows full URLs instead of breadcrumb paths  |
+| Result Counter   | Numbers each search result inline            |
+| Result Scrambler | Randomizes result order                      |
+| Rounded Cards    | Gives results a cozy card treatment          |
+| Support Redirect | Redirects Kagi support pages                 |
+| Usage Counter    | Shows a progress bar of remaining searches   |
+| Oneko            | A cat that follows your cursor               |
+| Fatass Horse     | A horse that vibes on your screen            |
 
 ## Plugin Groups
 

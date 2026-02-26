@@ -1,4 +1,4 @@
-import { waitForBody } from '@/utils/dom';
+import { waitForBody } from "@/utils/dom";
 
 /** Configuration for creating a sprite follower. */
 export interface SpriteFollowerConfig {
@@ -51,9 +51,9 @@ function loadPosition(storageKey: string): { x: number; y: number } | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as { x: unknown; y: unknown };
     if (
-      typeof parsed.x === 'number' &&
+      typeof parsed.x === "number" &&
       Number.isFinite(parsed.x) &&
-      typeof parsed.y === 'number' &&
+      typeof parsed.y === "number" &&
       Number.isFinite(parsed.y)
     ) {
       const x = Math.min(Math.max(parsed.x, 0), window.innerWidth);
@@ -70,14 +70,18 @@ function persistPosition(storageKey: string, x: number, y: number): void {
   localStorage.setItem(storageKey, JSON.stringify({ x, y }));
 }
 
-function computeDirection(diffX: number, diffY: number, distance: number): string {
-  if (distance === 0) return 'S';
-  let dir = '';
-  if (diffY / distance > 0.5) dir += 'N';
-  else if (diffY / distance < -0.5) dir += 'S';
-  if (diffX / distance > 0.5) dir += 'W';
-  else if (diffX / distance < -0.5) dir += 'E';
-  return dir || 'S';
+function computeDirection(
+  diffX: number,
+  diffY: number,
+  distance: number,
+): string {
+  if (distance === 0) return "S";
+  let dir = "";
+  if (diffY / distance > 0.5) dir += "N";
+  else if (diffY / distance < -0.5) dir += "S";
+  if (diffX / distance > 0.5) dir += "W";
+  else if (diffX / distance < -0.5) dir += "E";
+  return dir || "S";
 }
 
 export async function createSpriteFollower(
@@ -99,15 +103,15 @@ export async function createSpriteFollower(
 
   await waitForBody();
 
-  const el = document.createElement('div');
+  const el = document.createElement("div");
   el.id = id;
-  el.setAttribute('aria-hidden', 'true');
+  el.setAttribute("aria-hidden", "true");
   el.style.cssText =
     `position:fixed;pointer-events:none;z-index:2147483647;` +
     `width:${spriteSize}px;height:${spriteSize}px;` +
     `image-rendering:pixelated;background-image:url(${spriteUrl});` +
     `top:0;left:0;` +
-    (extraStyle ?? '');
+    (extraStyle ?? "");
   document.body.appendChild(el);
 
   const saved = loadPosition(storageKey);
@@ -127,12 +131,12 @@ export async function createSpriteFollower(
     mousePosX = e.clientX;
     mousePosY = e.clientY;
   };
-  document.addEventListener('mousemove', onMouseMove);
+  document.addEventListener("mousemove", onMouseMove);
 
   const onBeforeUnload = () => {
     persistPosition(storageKey, posX, posY);
   };
-  window.addEventListener('beforeunload', onBeforeUnload);
+  window.addEventListener("beforeunload", onBeforeUnload);
 
   function tick(timestamp: number) {
     if (destroyed) return;
@@ -189,8 +193,8 @@ export async function createSpriteFollower(
       if (destroyed) return;
       destroyed = true;
       cancelAnimationFrame(animId);
-      document.removeEventListener('mousemove', onMouseMove);
-      window.removeEventListener('beforeunload', onBeforeUnload);
+      document.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("beforeunload", onBeforeUnload);
       persistPosition(storageKey, posX, posY);
       el.remove();
     },

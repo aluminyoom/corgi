@@ -1,13 +1,13 @@
-import { definePlugin } from '../../api';
+import { definePlugin } from "../../api";
 
 export const modernLandingTabsPlugin = definePlugin({
-  name: 'corgi-polish/modern-landing-tabs',
-  displayName: 'Modern Landing Tabs',
-  version: '0.2.0',
-  authors: ['aluminyoom'],
+  name: "corgi-polish/modern-landing-tabs",
+  displayName: "Modern Landing Tabs",
+  version: "0.2.0",
+  authors: ["aluminyoom"],
   description:
-    'Redesigns the landing page search options into a centered card with colorful category pills and cleaner filters',
-  group: 'corgi-polish',
+    "Redesigns the landing page search options into a centered card with colorful category pills and cleaner filters",
+  group: "corgi-polish",
   css: `
     /* ═══════════════════════════════════════════
        SECTION 1 — Card wrapper & centering
@@ -354,7 +354,7 @@ export const modernLandingTabsPlugin = definePlugin({
   `,
   onStart() {
     const dotsIcon = document.querySelector(
-      '.landing-category-select .k_ui_dropdown_first_item i',
+      ".landing-category-select .k_ui_dropdown_first_item i",
     );
     if (dotsIcon) dotsIcon.remove();
   },

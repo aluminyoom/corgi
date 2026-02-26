@@ -5,20 +5,20 @@ Corgi's plugin system lets developers extend Kagi with new features by hooking i
 ## Defining a Plugin
 
 ```typescript
-import { definePlugin } from '@/plugins/api';
+import { definePlugin } from "@/plugins/api";
 
 export const myPlugin = definePlugin({
-  name: 'my-plugin',
-  displayName: 'My Plugin',
-  version: '1.0.0',
-  authors: ['your-name'],
-  description: 'What this plugin does',
+  name: "my-plugin",
+  displayName: "My Plugin",
+  version: "1.0.0",
+  authors: ["your-name"],
+  description: "What this plugin does",
 
   onStart(api) {
     // Called when the plugin activates.
     // Return a cleanup function or nothing.
-    const cleanup = api.onProviderEvent('search', (tag, data) => {
-      console.log('Search results arrived:', data);
+    const cleanup = api.onProviderEvent("search", (tag, data) => {
+      console.log("Search results arrived:", data);
     });
 
     return () => {
@@ -38,19 +38,19 @@ export const myPlugin = definePlugin({
 
 The `api` object passed to `onStart` provides tracked access to all hook systems, meaning every listener or interceptor registered through the API is automatically cleaned up when the plugin stops, even if you forget to call the cleanup function.
 
-| Method | Purpose |
-|--------|---------|
-| `trapGlobal(property, callback)` | Watch for global variable assignments |
-| `wrapFunction(target, method, options)` | Patch object methods with before/after/replace |
-| `onProviderEvent(tag, listener)` | Listen to Kagi provider events |
-| `addEventInterceptor(interceptor)` | Modify or suppress provider events |
-| `addFetchRequestInterceptor(interceptor)` | Modify outgoing fetch requests |
-| `addFetchResponseInterceptor(interceptor)` | Transform fetch responses |
-| `observeElement(selector, handler, options)` | Watch DOM elements for changes |
-| `setVariable(name, value)` | Set a CSS variable on `:root` |
-| `removeVariable(name)` | Remove a CSS variable |
-| `getComputedVariable(name)` | Read the computed value of a CSS variable |
-| `injectCSS(css)` | Inject a `<style>` element (auto-removed on stop) |
+| Method                                       | Purpose                                           |
+| -------------------------------------------- | ------------------------------------------------- |
+| `trapGlobal(property, callback)`             | Watch for global variable assignments             |
+| `wrapFunction(target, method, options)`      | Patch object methods with before/after/replace    |
+| `onProviderEvent(tag, listener)`             | Listen to Kagi provider events                    |
+| `addEventInterceptor(interceptor)`           | Modify or suppress provider events                |
+| `addFetchRequestInterceptor(interceptor)`    | Modify outgoing fetch requests                    |
+| `addFetchResponseInterceptor(interceptor)`   | Transform fetch responses                         |
+| `observeElement(selector, handler, options)` | Watch DOM elements for changes                    |
+| `setVariable(name, value)`                   | Set a CSS variable on `:root`                     |
+| `removeVariable(name)`                       | Remove a CSS variable                             |
+| `getComputedVariable(name)`                  | Read the computed value of a CSS variable         |
+| `injectCSS(css)`                             | Inject a `<style>` element (auto-removed on stop) |
 
 ## Lifecycle
 
@@ -74,8 +74,8 @@ Plugins can declare dependencies on other plugins:
 
 ```typescript
 definePlugin({
-  name: 'my-plugin',
-  dependencies: ['base-plugin'],
+  name: "my-plugin",
+  dependencies: ["base-plugin"],
   // ...
 });
 ```
@@ -88,13 +88,13 @@ For simple method wrapping, plugins can declare patches without writing imperati
 
 ```typescript
 definePlugin({
-  name: 'my-plugin',
+  name: "my-plugin",
   patches: [
     {
-      target: 'Client.prototype',
-      method: 'onSocketMessage',
+      target: "Client.prototype",
+      method: "onSocketMessage",
       before(...args) {
-        console.log('Message received:', args);
+        console.log("Message received:", args);
       },
     },
   ],
@@ -109,40 +109,40 @@ Corgi ships with built-in plugins in `plugins/builtins/`. Plugins are auto-disco
 
 ### Root-Level Plugins
 
-| Plugin | Type | Description |
-|--------|------|-------------|
-| **usage-counter** | JS | Fetches account usage data from the billing page and displays a progress bar of remaining searches. Uses `sessionStorage` caching. |
-| **support-redirect** | JS | Redirects support page links. |
-| **custom-background** | JS + CSS | Custom background image for the landing page via CSS injection. Uses `file` setting for image upload. |
-| **custom-font** | JS | Google Fonts injection with configurable font family and weight. |
-| **custom-logo** | JS | Replaces the landing page doggo with a custom logo. Supports fit modes (contain/cover/fill/scale-down/none). |
-| **custom-placeholder** | JS | Custom search bar placeholder text. |
-| **hide-favicons** | CSS-only | Hides favicons from search results. |
-| **result-counter** | CSS-only | Adds result numbers using CSS counters. |
-| **highlight-terms** | JS + CSS | Highlights search terms in results with a configurable color. |
-| **oneko** | JS | Interactive cat sprite that chases the cursor. Bundled sprite, position persisted via localStorage across pages. |
-| **fatass-horse** | JS | Interactive horse sprite that chases the cursor. Bundled sprite sheet, position persisted via localStorage. |
-| **infinite-scroll** | JS + CSS | Auto-loads more SERP results on scroll. Hides the native load-more button and clicks it programmatically. Uses MutationObserver to detect new content. |
-| **feeling-lucky** | JS + CSS | Adds an "I'm Feeling Lucky" pill button on the landing page. Navigates to the first search result using a `corgi_lucky` URL parameter. |
+| Plugin                 | Type     | Description                                                                                                                                            |
+| ---------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **usage-counter**      | JS       | Fetches account usage data from the billing page and displays a progress bar of remaining searches. Uses `sessionStorage` caching.                     |
+| **support-redirect**   | JS       | Redirects support page links.                                                                                                                          |
+| **custom-background**  | JS + CSS | Custom background image for the landing page via CSS injection. Uses `file` setting for image upload.                                                  |
+| **custom-font**        | JS       | Google Fonts injection with configurable font family and weight.                                                                                       |
+| **custom-logo**        | JS       | Replaces the landing page doggo with a custom logo. Supports fit modes (contain/cover/fill/scale-down/none).                                           |
+| **custom-placeholder** | JS       | Custom search bar placeholder text.                                                                                                                    |
+| **hide-favicons**      | CSS-only | Hides favicons from search results.                                                                                                                    |
+| **result-counter**     | CSS-only | Adds result numbers using CSS counters.                                                                                                                |
+| **highlight-terms**    | JS + CSS | Highlights search terms in results with a configurable color.                                                                                          |
+| **oneko**              | JS       | Interactive cat sprite that chases the cursor. Bundled sprite, position persisted via localStorage across pages.                                       |
+| **fatass-horse**       | JS       | Interactive horse sprite that chases the cursor. Bundled sprite sheet, position persisted via localStorage.                                            |
+| **infinite-scroll**    | JS + CSS | Auto-loads more SERP results on scroll. Hides the native load-more button and clicks it programmatically. Uses MutationObserver to detect new content. |
+| **feeling-lucky**      | JS + CSS | Adds an "I'm Feeling Lucky" pill button on the landing page. Navigates to the first search result using a `corgi_lucky` URL parameter.                 |
 
 ### Corgi Polish
 
 Corgi ships with a group of twelve CSS-only plugins under `plugins/builtins/polish/` that provide visual refinements making Kagi feel more polished without changing its core identity. All are disabled by default and bundled under the "Corgi Polish" plugin group; you can toggle the entire group at once or expand it and pick individually.
 
-| Plugin | Description |
-|--------|-------------|
-| **refined-typography** | Tighter line heights, improved font weights on headings, better letter spacing. |
-| **smoother-interactions** | Subtle transitions on hover states, focus rings, scale transforms. |
-| **cleaner-cards** | Soft backgrounds using `color-mix`, consistent border-radius and padding. |
-| **visual-hierarchy** | Muted secondary text through opacity, stronger result group separation. |
-| **centered-header** | Centers the SERP header. |
-| **edge-to-edge-nav** | Full-width navigation bar. |
-| **modern-landing-tabs** | Modernized landing page tab bar. |
-| **pill-filters** | Pill-shaped search filter buttons. |
-| **qol** | Quality-of-life CSS tweaks. |
-| **serp-card-wrapping** | Card wrapping for search results. |
-| **sidebar-categories** | Styled sidebar categories. |
-| **sticky-sidebar** | Sticky right sidebar on SERP. |
+| Plugin                    | Description                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------- |
+| **refined-typography**    | Tighter line heights, improved font weights on headings, better letter spacing. |
+| **smoother-interactions** | Subtle transitions on hover states, focus rings, scale transforms.              |
+| **cleaner-cards**         | Soft backgrounds using `color-mix`, consistent border-radius and padding.       |
+| **visual-hierarchy**      | Muted secondary text through opacity, stronger result group separation.         |
+| **centered-header**       | Centers the SERP header.                                                        |
+| **edge-to-edge-nav**      | Full-width navigation bar.                                                      |
+| **modern-landing-tabs**   | Modernized landing page tab bar.                                                |
+| **pill-filters**          | Pill-shaped search filter buttons.                                              |
+| **qol**                   | Quality-of-life CSS tweaks.                                                     |
+| **serp-card-wrapping**    | Card wrapping for search results.                                               |
+| **sidebar-categories**    | Styled sidebar categories.                                                      |
+| **sticky-sidebar**        | Sticky right sidebar on SERP.                                                   |
 
 All polish plugins use theme-agnostic CSS exclusively, relying on `currentColor`, `color-mix()`, and Kagi's own CSS variables (`--primary`, `--secondary`, `--yellow`) so they work in both light and dark mode without any color hardcoding.
 
@@ -154,11 +154,11 @@ The simplest plugins just provide a `css` property. The runtime injects this as 
 
 ```typescript
 export const hideFaviconsPlugin = definePlugin({
-  name: 'hide-favicons',
-  displayName: 'Hide Favicons',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Hides favicons from search results',
+  name: "hide-favicons",
+  displayName: "Hide Favicons",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description: "Hides favicons from search results",
   defaultEnabled: false,
   css: `.sri-url .favicon { display: none !important; }`,
 });
@@ -217,7 +217,7 @@ export interface PluginGroupMeta {
   version: string;
   authors: string[];
   description: string;
-  plugins: string[];  // Computed from plugins with matching group field
+  plugins: string[]; // Computed from plugins with matching group field
 }
 ```
 

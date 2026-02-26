@@ -1,12 +1,15 @@
-import type { EventInterceptor, EventListener } from '@/hooks/events';
-import type { FetchInterceptor, FetchResponseInterceptor } from '@/hooks/fetch';
+import type { EventInterceptor, EventListener } from "@/hooks/events";
+import type { FetchInterceptor, FetchResponseInterceptor } from "@/hooks/fetch";
 
 export interface PluginPatch {
   target: string;
   method: string;
   before?: (...args: unknown[]) => unknown[] | void;
   after?: (result: unknown) => unknown | void;
-  replace?: (original: (...args: unknown[]) => unknown, ...args: unknown[]) => unknown;
+  replace?: (
+    original: (...args: unknown[]) => unknown,
+    ...args: unknown[]
+  ) => unknown;
 }
 
 export interface PluginDefinition {
@@ -22,7 +25,9 @@ export interface PluginDefinition {
 
   patches?: PluginPatch[];
 
-  onStart?: (api: PluginAPI) => void | (() => void) | Promise<void | (() => void)>;
+  onStart?: (
+    api: PluginAPI,
+  ) => void | (() => void) | Promise<void | (() => void)>;
   onStop?: () => void;
 
   eventInterceptors?: EventInterceptor[];
@@ -37,7 +42,7 @@ export interface PluginDefinition {
 export interface PluginSetting {
   key: string;
   label: string;
-  type: 'boolean' | 'string' | 'number' | 'select' | 'file';
+  type: "boolean" | "string" | "number" | "select" | "file";
   default: unknown;
   options?: { label: string; value: unknown }[];
   accept?: string;
@@ -51,13 +56,18 @@ export interface PluginAPI {
     options: {
       before?: (...args: unknown[]) => unknown[] | void;
       after?: (result: unknown) => unknown | void;
-      replace?: (original: (...args: unknown[]) => unknown, ...args: unknown[]) => unknown;
+      replace?: (
+        original: (...args: unknown[]) => unknown,
+        ...args: unknown[]
+      ) => unknown;
     },
   ) => () => void;
   onProviderEvent: (tag: string, listener: EventListener) => () => void;
   addEventInterceptor: (interceptor: EventInterceptor) => () => void;
   addFetchRequestInterceptor: (interceptor: FetchInterceptor) => () => void;
-  addFetchResponseInterceptor: (interceptor: FetchResponseInterceptor) => () => void;
+  addFetchResponseInterceptor: (
+    interceptor: FetchResponseInterceptor,
+  ) => () => void;
   observeElement: (
     selector: string,
     handler: (mutations: MutationRecord[]) => void,
@@ -67,7 +77,9 @@ export interface PluginAPI {
   removeVariable: (name: string) => void;
   getComputedVariable: (name: string) => string;
   injectCSS: (css: string) => HTMLStyleElement;
-  getSettings: <T extends Record<string, unknown> = Record<string, unknown>>() => Promise<T>;
+  getSettings: <
+    T extends Record<string, unknown> = Record<string, unknown>,
+  >() => Promise<T>;
   setSettings: (values: Record<string, unknown>) => Promise<void>;
 
   getPagePath: () => string | null;
@@ -91,7 +103,7 @@ export interface PluginAPI {
   onUrlChange: (callback: () => void) => () => void;
 }
 
-export type PluginState = 'registered' | 'started' | 'stopped' | 'error';
+export type PluginState = "registered" | "started" | "stopped" | "error";
 
 export interface PluginInstance {
   definition: PluginDefinition;

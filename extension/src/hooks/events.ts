@@ -13,8 +13,8 @@ function installEventInterception(): void {
   const originalDispatchEvent = window.dispatchEvent.bind(window);
 
   window.dispatchEvent = function (event: Event): boolean {
-    if (event instanceof CustomEvent && event.type.startsWith('provider:')) {
-      const tag = event.type.slice('provider:'.length);
+    if (event instanceof CustomEvent && event.type.startsWith("provider:")) {
+      const tag = event.type.slice("provider:".length);
       let current: { tag: string; data: unknown } | null = {
         tag,
         data: event.detail,
@@ -55,7 +55,10 @@ export type EventListener = (tag: string, data: unknown) => void;
 
 const listeners = new Map<string, Set<EventListener>>();
 
-export function onProviderEvent(tag: string, listener: EventListener): () => void {
+export function onProviderEvent(
+  tag: string,
+  listener: EventListener,
+): () => void {
   installEventInterception();
 
   let set = listeners.get(tag);

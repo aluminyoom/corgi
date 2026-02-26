@@ -1,8 +1,8 @@
-import { definePlugin } from '../api';
+import { definePlugin } from "../api";
 
-const FILTER_PANEL = '._0_filters-panel';
-const WIDGET_ID = 'corgi-usage-counter';
-const CACHE_KEY = 'corgi:billing';
+const FILTER_PANEL = "._0_filters-panel";
+const WIDGET_ID = "corgi-usage-counter";
+const CACHE_KEY = "corgi:billing";
 const CACHE_TTL = 5 * 60 * 1000;
 
 interface BillingEntry {
@@ -18,20 +18,20 @@ interface BillingData {
 }
 
 function parseBillingHTML(html: string): BillingData | null {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const doc = new DOMParser().parseFromString(html, "text/html");
 
   const account =
-    doc.querySelector('.billing_box_title span')?.textContent?.trim() ?? '';
+    doc.querySelector(".billing_box_title span")?.textContent?.trim() ?? "";
 
-  const boxes = doc.querySelectorAll('.billing_box_count_box');
+  const boxes = doc.querySelectorAll(".billing_box_count_box");
   if (boxes.length === 0) return null;
 
   const entries: BillingEntry[] = [];
   for (const box of boxes) {
     const label =
-      box.querySelector('.billing_box_count_title')?.textContent?.trim() ?? '';
+      box.querySelector(".billing_box_count_title")?.textContent?.trim() ?? "";
     const raw =
-      box.querySelector('.billing_box_count_num')?.textContent?.trim() ?? '';
+      box.querySelector(".billing_box_count_num")?.textContent?.trim() ?? "";
     const match = raw.match(/^(\d+)\s*\/\s*(\d+)$/);
     if (!match) continue;
     entries.push({
@@ -69,9 +69,9 @@ async function fetchBillingData(): Promise<BillingData | null> {
   if (cached) return cached;
 
   try {
-    const resp = await fetch('/settings/billing', {
-      credentials: 'same-origin',
-      headers: { Accept: 'text/html' },
+    const resp = await fetch("/settings/billing", {
+      credentials: "same-origin",
+      headers: { Accept: "text/html" },
     });
     if (!resp.ok) return null;
 
@@ -91,7 +91,7 @@ function findSearchEntry(data: BillingData): BillingEntry | null {
 }
 
 function buildWidget(data: BillingData): HTMLElement {
-  const el = document.createElement('div');
+  const el = document.createElement("div");
   el.id = WIDGET_ID;
 
   const search = findSearchEntry(data);
@@ -119,19 +119,19 @@ function updateWidget(data: BillingData): void {
   const remaining = search.limit - search.used;
   const pct = Math.min(Math.round((remaining / search.limit) * 100), 100);
 
-  const fill = existing.querySelector<HTMLElement>('.corgi-usage-fill');
-  const text = existing.querySelector('.corgi-usage-text');
+  const fill = existing.querySelector<HTMLElement>(".corgi-usage-fill");
+  const text = existing.querySelector(".corgi-usage-text");
 
   if (fill) fill.style.width = `${pct}%`;
   if (text) text.textContent = `${remaining}/${search.limit} searches left`;
 }
 
 export const usageCounterPlugin = definePlugin({
-  name: 'usage-counter',
-  displayName: 'Usage Counter',
-  version: '0.2.0',
-  authors: ['aluminyoom'],
-  description: 'Displays account usage stats below the filter bar',
+  name: "usage-counter",
+  displayName: "Usage Counter",
+  version: "0.2.0",
+  authors: ["aluminyoom"],
+  description: "Displays account usage stats below the filter bar",
 
   css: `
     #${WIDGET_ID} {
@@ -180,11 +180,15 @@ export const usageCounterPlugin = definePlugin({
 
     tryInject();
 
-    const cleanup = api.observeElement(FILTER_PANEL, () => {
-      if (!mounted) tryInject();
-    }, { childList: true, subtree: false });
+    const cleanup = api.observeElement(
+      FILTER_PANEL,
+      () => {
+        if (!mounted) tryInject();
+      },
+      { childList: true, subtree: false },
+    );
 
-    api.onProviderEvent('free_search_remaining', (payload: unknown) => {
+    api.onProviderEvent("free_search_remaining", (payload: unknown) => {
       const remaining = Number(payload);
       if (!Number.isFinite(remaining)) return;
 

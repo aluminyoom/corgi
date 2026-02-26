@@ -1,12 +1,13 @@
-import { definePlugin } from '../../api';
+import { definePlugin } from "../../api";
 
 export const qolPlugin = definePlugin({
-  name: 'corgi-polish/qol',
-  displayName: 'Quality of Life',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Small quality-of-life fixes: centered sidebar icons, aligned inline elements',
-  group: 'corgi-polish',
+  name: "corgi-polish/qol",
+  displayName: "Quality of Life",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description:
+    "Small quality-of-life fixes: centered sidebar icons, aligned inline elements",
+  group: "corgi-polish",
   css: `
     .cth_settings_nav_menu .nav-link > i {
       align-self: center;

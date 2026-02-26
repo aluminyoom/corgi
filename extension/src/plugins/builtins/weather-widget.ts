@@ -1,38 +1,38 @@
-import { definePlugin } from '../api';
-import { escapeRegex, escapeHtml } from '@/utils/strings';
-import type { PluginAPI } from '../types';
+import { definePlugin } from "../api";
+import { escapeRegex, escapeHtml } from "@/utils/strings";
+import type { PluginAPI } from "../types";
 
-const DEFAULT_EXTRA_KEYWORDS = '';
-const PAGE_PATH = '/search';
-const WIDGET_SELECTOR = '#weather.widget_weather';
-const WIDGET_HOLDER_SELECTOR = '.widget_holder';
-const DEFAULT_LOCALE = 'en-US';
+const DEFAULT_EXTRA_KEYWORDS = "";
+const PAGE_PATH = "/search";
+const WIDGET_SELECTOR = "#weather.widget_weather";
+const WIDGET_HOLDER_SELECTOR = ".widget_holder";
+const DEFAULT_LOCALE = "en-US";
 
 const BASE_KEYWORDS = [
-  'wetter',
-  'wettervorhersage',
-  'météo',
-  'meteo',
-  'tiempo',
-  'clima',
-  'pronóstico',
-  'previsión',
-  'prevision',
-  'previsioni',
-  'tempo',
-  'previsão',
-  'previsao',
-  'weer',
-  'weerbericht',
-  'pogoda',
-  'погода',
-  '天気',
-  '天気予報',
-  '날씨',
-  '天气',
-  '天氣',
-  'hava durumu',
-  'طقس',
+  "wetter",
+  "wettervorhersage",
+  "météo",
+  "meteo",
+  "tiempo",
+  "clima",
+  "pronóstico",
+  "previsión",
+  "prevision",
+  "previsioni",
+  "tempo",
+  "previsão",
+  "previsao",
+  "weer",
+  "weerbericht",
+  "pogoda",
+  "погода",
+  "天気",
+  "天気予報",
+  "날씨",
+  "天气",
+  "天氣",
+  "hava durumu",
+  "طقس",
 ];
 
 const LOCATION_ICON = `
@@ -235,7 +235,7 @@ function roundTemp(value: number): number {
 }
 
 function safeNumber(value: number | undefined): number {
-  return typeof value === 'number' && Number.isFinite(value) ? value : 0;
+  return typeof value === "number" && Number.isFinite(value) ? value : 0;
 }
 
 function formatNumber(value: number, decimals = 1): string {
@@ -246,15 +246,15 @@ function formatNumber(value: number, decimals = 1): string {
 
 function buildKeywordPattern(keyword: string): RegExp {
   const parts = keyword.trim().split(/\s+/).map(escapeRegex);
-  const escaped = parts.join('\\s+');
-  const boundaryStart = '(?:^|[^\\p{L}\\p{N}])';
-  const boundaryEnd = '(?:$|[^\\p{L}\\p{N}])';
-  return new RegExp(`${boundaryStart}(${escaped})${boundaryEnd}`, 'iu');
+  const escaped = parts.join("\\s+");
+  const boundaryStart = "(?:^|[^\\p{L}\\p{N}])";
+  const boundaryEnd = "(?:$|[^\\p{L}\\p{N}])";
+  return new RegExp(`${boundaryStart}(${escaped})${boundaryEnd}`, "iu");
 }
 
 function buildKeywordList(extraKeywords: string | undefined): string[] {
-  const extras = (extraKeywords ?? '')
-    .split(',')
+  const extras = (extraKeywords ?? "")
+    .split(",")
     .map((keyword) => keyword.trim())
     .filter((keyword) => keyword.length > 0);
 
@@ -266,15 +266,15 @@ function buildKeywordList(extraKeywords: string | undefined): string[] {
   return Array.from(unique.values()).sort((a, b) => b.length - a.length);
 }
 
-function findWeatherQuery(query: string, keywords: string[]): { keyword: string; location: string } | null {
+function findWeatherQuery(
+  query: string,
+  keywords: string[],
+): { keyword: string; location: string } | null {
   for (const keyword of keywords) {
     const pattern = buildKeywordPattern(keyword);
     if (!pattern.test(query)) continue;
 
-    const location = query
-      .replace(pattern, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
+    const location = query.replace(pattern, " ").replace(/\s+/g, " ").trim();
 
     return { keyword, location };
   }
@@ -282,37 +282,53 @@ function findWeatherQuery(query: string, keywords: string[]): { keyword: string;
 }
 
 function formatLocationName(place: GeoResult): string {
-  const parts = [place.name, place.admin1, place.country].filter(Boolean) as string[];
-  return parts.join(', ');
+  const parts = [place.name, place.admin1, place.country].filter(
+    Boolean,
+  ) as string[];
+  return parts.join(", ");
 }
 
-async function geocodeLocation(api: PluginAPI, location: string): Promise<GeoResult | null> {
-  const url = new URL('https://geocoding-api.open-meteo.com/v1/search');
-  url.searchParams.set('name', location);
-  url.searchParams.set('count', '1');
-  url.searchParams.set('language', 'en');
+async function geocodeLocation(
+  api: PluginAPI,
+  location: string,
+): Promise<GeoResult | null> {
+  const url = new URL("https://geocoding-api.open-meteo.com/v1/search");
+  url.searchParams.set("name", location);
+  url.searchParams.set("count", "1");
+  url.searchParams.set("language", "en");
 
   const data = await api.fetchJSON<GeocodingResponse>(url.toString());
   if (!data?.results?.length) return null;
   return data.results[0] ?? null;
 }
 
-async function fetchForecast(api: PluginAPI, latitude: number, longitude: number): Promise<ForecastResponse | null> {
-  const url = new URL('https://api.open-meteo.com/v1/forecast');
-  url.searchParams.set('latitude', latitude.toString());
-  url.searchParams.set('longitude', longitude.toString());
-  url.searchParams.set('current',
-    'temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m',
+async function fetchForecast(
+  api: PluginAPI,
+  latitude: number,
+  longitude: number,
+): Promise<ForecastResponse | null> {
+  const url = new URL("https://api.open-meteo.com/v1/forecast");
+  url.searchParams.set("latitude", latitude.toString());
+  url.searchParams.set("longitude", longitude.toString());
+  url.searchParams.set(
+    "current",
+    "temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m,wind_direction_10m",
   );
-  url.searchParams.set('daily', 'weather_code,temperature_2m_max,temperature_2m_min');
-  url.searchParams.set('hourly', 'temperature_2m');
-  url.searchParams.set('timezone', 'auto');
-  url.searchParams.set('forecast_days', '7');
+  url.searchParams.set(
+    "daily",
+    "weather_code,temperature_2m_max,temperature_2m_min",
+  );
+  url.searchParams.set("hourly", "temperature_2m");
+  url.searchParams.set("timezone", "auto");
+  url.searchParams.set("forecast_days", "7");
 
   return api.fetchJSON<ForecastResponse>(url.toString());
 }
 
-async function loadWeather(api: PluginAPI, location: string): Promise<WeatherWidgetData | null> {
+async function loadWeather(
+  api: PluginAPI,
+  location: string,
+): Promise<WeatherWidgetData | null> {
   const place = await geocodeLocation(api, location);
   if (!place) return null;
 
@@ -323,40 +339,58 @@ async function loadWeather(api: PluginAPI, location: string): Promise<WeatherWid
 }
 
 function getWeatherVisual(code: number): { icon: string; description: string } {
-  if (code === 0) return { icon: ICON_CLEAR, description: 'Clear sky' };
-  if (code >= 1 && code <= 3) return { icon: ICON_PARTLY_CLOUDY, description: 'Partly cloudy' };
-  if (code === 45 || code === 48) return { icon: ICON_FOG, description: 'Fog' };
-  if (code >= 51 && code <= 55) return { icon: ICON_DRIZZLE, description: 'Drizzle' };
-  if (code === 56 || code === 57) return { icon: ICON_DRIZZLE, description: 'Freezing drizzle' };
-  if (code >= 61 && code <= 65) return { icon: ICON_RAIN, description: 'Rain' };
-  if (code === 66 || code === 67) return { icon: ICON_RAIN, description: 'Freezing rain' };
-  if (code >= 71 && code <= 75) return { icon: ICON_SNOW, description: 'Snow' };
-  if (code === 77) return { icon: ICON_SNOW_GRAINS, description: 'Snow grains' };
-  if (code >= 80 && code <= 82) return { icon: ICON_RAIN_SHOWERS, description: 'Rain showers' };
-  if (code === 85 || code === 86) return { icon: ICON_SNOW_SHOWERS, description: 'Snow showers' };
-  if (code === 95) return { icon: ICON_THUNDER, description: 'Thunderstorm' };
-  if (code === 96 || code === 99) return { icon: ICON_HAIL, description: 'Thunderstorm with hail' };
-  return { icon: ICON_CLOUDY, description: 'Cloudy' };
+  if (code === 0) return { icon: ICON_CLEAR, description: "Clear sky" };
+  if (code >= 1 && code <= 3)
+    return { icon: ICON_PARTLY_CLOUDY, description: "Partly cloudy" };
+  if (code === 45 || code === 48) return { icon: ICON_FOG, description: "Fog" };
+  if (code >= 51 && code <= 55)
+    return { icon: ICON_DRIZZLE, description: "Drizzle" };
+  if (code === 56 || code === 57)
+    return { icon: ICON_DRIZZLE, description: "Freezing drizzle" };
+  if (code >= 61 && code <= 65) return { icon: ICON_RAIN, description: "Rain" };
+  if (code === 66 || code === 67)
+    return { icon: ICON_RAIN, description: "Freezing rain" };
+  if (code >= 71 && code <= 75) return { icon: ICON_SNOW, description: "Snow" };
+  if (code === 77)
+    return { icon: ICON_SNOW_GRAINS, description: "Snow grains" };
+  if (code >= 80 && code <= 82)
+    return { icon: ICON_RAIN_SHOWERS, description: "Rain showers" };
+  if (code === 85 || code === 86)
+    return { icon: ICON_SNOW_SHOWERS, description: "Snow showers" };
+  if (code === 95) return { icon: ICON_THUNDER, description: "Thunderstorm" };
+  if (code === 96 || code === 99)
+    return { icon: ICON_HAIL, description: "Thunderstorm with hail" };
+  return { icon: ICON_CLOUDY, description: "Cloudy" };
 }
 
-function formatCurrentDate(date: Date): { dayLabel: string; dateLabel: string } {
-  const dayLabel = new Intl.DateTimeFormat(DEFAULT_LOCALE, { weekday: 'long' }).format(date);
+function formatCurrentDate(date: Date): {
+  dayLabel: string;
+  dateLabel: string;
+} {
+  const dayLabel = new Intl.DateTimeFormat(DEFAULT_LOCALE, {
+    weekday: "long",
+  }).format(date);
   const dateLabel = new Intl.DateTimeFormat(DEFAULT_LOCALE, {
-    month: 'long',
-    day: 'numeric',
-    year: 'numeric',
+    month: "long",
+    day: "numeric",
+    year: "numeric",
   }).format(date);
 
   return { dayLabel, dateLabel };
 }
 
 function formatDayShort(date: Date): string {
-  return new Intl.DateTimeFormat(DEFAULT_LOCALE, { weekday: 'short' }).format(date);
+  return new Intl.DateTimeFormat(DEFAULT_LOCALE, { weekday: "short" }).format(
+    date,
+  );
 }
 
-function buildHourlyGraphSvg(hourlyTimes: string[], hourlyTemps: number[]): string {
+function buildHourlyGraphSvg(
+  hourlyTimes: string[],
+  hourlyTemps: number[],
+): string {
   const count = Math.min(hourlyTimes.length, hourlyTemps.length, 24);
-  if (count < 2) return '';
+  if (count < 2) return "";
 
   const temps = hourlyTemps.slice(0, count);
   const times = hourlyTimes.slice(0, count);
@@ -370,24 +404,27 @@ function buildHourlyGraphSvg(hourlyTimes: string[], hourlyTemps: number[]): stri
   const yBottom = -30;
   const yRange = Math.abs(yTop - yBottom);
 
-  const points: { x: number; y: number; tempC: number; timeLabel: string }[] = [];
+  const points: { x: number; y: number; tempC: number; timeLabel: string }[] =
+    [];
   for (let i = 0; i < count; i++) {
     const x = (i / (count - 1)) * svgWidth;
     const normalized = (temps[i] - minTemp) / tempRange;
     const y = yBottom - normalized * yRange;
 
     const d = new Date(times[i]);
-    const hh = String(d.getHours()).padStart(2, '0');
-    const mm = String(d.getMinutes()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
 
     points.push({ x, y, tempC: temps[i], timeLabel: `${hh}:${mm}` });
   }
 
-  const lineD = points.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+  const lineD = points
+    .map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(2)} ${p.y.toFixed(2)}`)
+    .join(" ");
   const fillD = `${lineD} V${yBottom} V0 H0 Z`;
 
   const labelInterval = 3;
-  let labelsHtml = '';
+  let labelsHtml = "";
   for (let i = 0; i < count; i += labelInterval) {
     const p = points[i];
     const tempC = roundTemp(p.tempC);
@@ -418,7 +455,7 @@ function buildHourlyGraphSvg(hourlyTimes: string[], hourlyTemps: number[]): stri
 function buildWeatherHtml(data: WeatherWidgetData): string {
   const current = data.forecast.current;
   const daily = data.forecast.daily;
-  if (!current || !daily) return '';
+  if (!current || !daily) return "";
 
   const locationLabel = escapeHtml(formatLocationName(data.place));
   const currentTime = current.time ?? daily.time[0];
@@ -437,7 +474,9 @@ function buildWeatherHtml(data: WeatherWidgetData): string {
   const currentVisual = getWeatherVisual(currentCode);
 
   const hourly = data.forecast.hourly;
-  const graphHtml = hourly ? buildHourlyGraphSvg(hourly.time, hourly.temperature_2m) : '';
+  const graphHtml = hourly
+    ? buildHourlyGraphSvg(hourly.time, hourly.temperature_2m)
+    : "";
 
   const daysHtml = daily.time
     .slice(0, 7)
@@ -464,7 +503,7 @@ function buildWeatherHtml(data: WeatherWidgetData): string {
         </div>
       `;
     })
-    .join('');
+    .join("");
 
   return `
 <div id="weather" class="widget_weather">
@@ -526,9 +565,11 @@ function buildWeatherHtml(data: WeatherWidgetData): string {
 
 function dispatchWeatherWidget(content: string): void {
   if (!content) return;
-  window.dispatchEvent(new CustomEvent('provider:widget_weather', {
-    detail: { payload: { content, full_page: false } },
-  }));
+  window.dispatchEvent(
+    new CustomEvent("provider:widget_weather", {
+      detail: { payload: { content, full_page: false } },
+    }),
+  );
 }
 
 function removeInjectedWidget(): void {
@@ -537,28 +578,31 @@ function removeInjectedWidget(): void {
 }
 
 export const weatherWidgetPlugin = definePlugin({
-  name: 'weather-widget',
-  displayName: 'Weather Widget (Multilingual)',
-  version: '0.2.0',
-  authors: ['corgi'],
-  description: 'Loads weather widget for non-English weather queries (e.g. "wetter", "météo", "tiempo")',
+  name: "weather-widget",
+  displayName: "Weather Widget (Multilingual)",
+  version: "0.2.0",
+  authors: ["corgi"],
+  description:
+    'Loads weather widget for non-English weather queries (e.g. "wetter", "météo", "tiempo")',
   defaultEnabled: false,
 
   settings: [
     {
-      key: 'extraKeywords',
-      label: 'Extra weather keywords (comma-separated)',
-      type: 'string',
+      key: "extraKeywords",
+      label: "Extra weather keywords (comma-separated)",
+      type: "string",
       default: DEFAULT_EXTRA_KEYWORDS,
     },
   ],
 
   async onStart(api) {
-    const settings = await api.loadSettings({ extraKeywords: DEFAULT_EXTRA_KEYWORDS });
+    const settings = await api.loadSettings({
+      extraKeywords: DEFAULT_EXTRA_KEYWORDS,
+    });
     const keywords = buildKeywordList(settings.extraKeywords);
 
     let activeCleanup: (() => void) | null = null;
-    let lastProcessedQuery = '';
+    let lastProcessedQuery = "";
     let activationId = 0;
 
     async function tryActivate(): Promise<void> {
@@ -568,12 +612,12 @@ export const weatherWidgetPlugin = definePlugin({
           activeCleanup();
           activeCleanup = null;
         }
-        lastProcessedQuery = '';
+        lastProcessedQuery = "";
         return;
       }
 
       const params = new URLSearchParams(window.location.search);
-      const query = params.get('q')?.trim() ?? '';
+      const query = params.get("q")?.trim() ?? "";
 
       if (query === lastProcessedQuery) return;
       lastProcessedQuery = query;
@@ -604,12 +648,16 @@ export const weatherWidgetPlugin = definePlugin({
 
       dispatchWeatherWidget(html);
 
-      const cleanupObserver = api.observeElement(WIDGET_HOLDER_SELECTOR, () => {
-        const holder = document.querySelector(WIDGET_HOLDER_SELECTOR);
-        if (!holder) return;
-        if (holder.querySelector(WIDGET_SELECTOR)) return;
-        dispatchWeatherWidget(html);
-      }, { childList: true, subtree: true });
+      const cleanupObserver = api.observeElement(
+        WIDGET_HOLDER_SELECTOR,
+        () => {
+          const holder = document.querySelector(WIDGET_HOLDER_SELECTOR);
+          if (!holder) return;
+          if (holder.querySelector(WIDGET_SELECTOR)) return;
+          dispatchWeatherWidget(html);
+        },
+        { childList: true, subtree: true },
+      );
 
       activeCleanup = () => {
         cleanupObserver();
@@ -624,7 +672,7 @@ export const weatherWidgetPlugin = definePlugin({
     });
     pathObserver.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-path'],
+      attributeFilter: ["data-path"],
     });
 
     const cleanupUrlWatch = api.onUrlChange(() => {

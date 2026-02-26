@@ -1,6 +1,6 @@
 export interface ModalButton {
   label: string;
-  variant?: 'primary' | 'secondary' | 'danger' | 'danger-secondary';
+  variant?: "primary" | "secondary" | "danger" | "danger-secondary";
   action: () => void;
 }
 
@@ -86,57 +86,61 @@ const MODAL_CSS = `
 
 function ensureCSS(): void {
   if (injectedCSS) return;
-  const style = document.createElement('style');
-  style.setAttribute('data-corgi', 'modal');
+  const style = document.createElement("style");
+  style.setAttribute("data-corgi", "modal");
   style.textContent = MODAL_CSS;
   (document.head ?? document.documentElement).appendChild(style);
   injectedCSS = true;
 }
 
-function variantClass(variant: ModalButton['variant']): string {
+function variantClass(variant: ModalButton["variant"]): string {
   switch (variant) {
-    case 'danger': return 'btn --danger';
-    case 'danger-secondary': return 'btn --danger-secondary';
-    case 'secondary': return 'btn --secondary';
-    default: return 'btn --primary';
+    case "danger":
+      return "btn --danger";
+    case "danger-secondary":
+      return "btn --danger-secondary";
+    case "secondary":
+      return "btn --secondary";
+    default:
+      return "btn --primary";
   }
 }
 
 export function showModal(options: ModalOptions): ModalHandle {
   ensureCSS();
 
-  const overlay = document.createElement('div');
-  overlay.className = 'corgi-modal-overlay';
+  const overlay = document.createElement("div");
+  overlay.className = "corgi-modal-overlay";
   document.body.appendChild(overlay);
 
-  const dialog = document.createElement('div');
-  dialog.className = 'corgi-modal';
-  dialog.setAttribute('role', 'dialog');
-  dialog.setAttribute('aria-modal', 'true');
+  const dialog = document.createElement("div");
+  dialog.className = "corgi-modal";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
 
-  const titleEl = document.createElement('div');
-  titleEl.className = 'corgi-modal-title';
+  const titleEl = document.createElement("div");
+  titleEl.className = "corgi-modal-title";
   titleEl.textContent = options.title;
-  dialog.setAttribute('aria-labelledby', 'corgi-modal-title');
-  titleEl.id = 'corgi-modal-title';
+  dialog.setAttribute("aria-labelledby", "corgi-modal-title");
+  titleEl.id = "corgi-modal-title";
 
-  const bodyEl = document.createElement('div');
-  bodyEl.className = 'corgi-modal-body';
-  if (typeof options.body === 'string') {
+  const bodyEl = document.createElement("div");
+  bodyEl.className = "corgi-modal-body";
+  if (typeof options.body === "string") {
     bodyEl.innerHTML = options.body;
   } else {
     bodyEl.appendChild(options.body);
   }
 
-  const footer = document.createElement('div');
-  footer.className = 'corgi-modal-footer';
+  const footer = document.createElement("div");
+  footer.className = "corgi-modal-footer";
 
   for (const btn of options.buttons) {
-    const button = document.createElement('button');
+    const button = document.createElement("button");
     button.className = variantClass(btn.variant);
-    button.type = 'button';
+    button.type = "button";
     button.textContent = btn.label;
-    button.addEventListener('click', () => {
+    button.addEventListener("click", () => {
       btn.action();
     });
     footer.appendChild(button);
@@ -148,36 +152,40 @@ export function showModal(options: ModalOptions): ModalHandle {
   document.body.appendChild(dialog);
 
   function close(): void {
-    overlay.classList.remove('--active');
-    dialog.classList.remove('__0_show');
-    document.body.classList.remove('_0_no-scroll');
+    overlay.classList.remove("--active");
+    dialog.classList.remove("__0_show");
+    document.body.classList.remove("_0_no-scroll");
 
     const onEnd = (): void => {
-      dialog.removeEventListener('transitionend', onEnd);
+      dialog.removeEventListener("transitionend", onEnd);
       overlay.remove();
       dialog.remove();
-      document.removeEventListener('keydown', onKeydown, true);
+      document.removeEventListener("keydown", onKeydown, true);
     };
-    dialog.addEventListener('transitionend', onEnd);
+    dialog.addEventListener("transitionend", onEnd);
     setTimeout(onEnd, 200);
   }
 
   function onKeydown(e: Event): void {
-    if ((e as KeyboardEvent).key === 'Escape' && options.closeOnEscape !== false) close();
+    if (
+      (e as KeyboardEvent).key === "Escape" &&
+      options.closeOnEscape !== false
+    )
+      close();
   }
 
   if (options.closeOnOverlay !== false) {
-    overlay.addEventListener('click', (e) => {
+    overlay.addEventListener("click", (e) => {
       if (e.target === overlay) close();
     });
   }
 
-  document.addEventListener('keydown', onKeydown, true);
+  document.addEventListener("keydown", onKeydown, true);
 
   requestAnimationFrame(() => {
-    overlay.classList.add('--active');
-    dialog.classList.add('__0_show');
-    document.body.classList.add('_0_no-scroll');
+    overlay.classList.add("--active");
+    dialog.classList.add("__0_show");
+    document.body.classList.add("_0_no-scroll");
   });
 
   return { close, element: dialog };
@@ -188,7 +196,7 @@ export function showConfirm(options: {
   body: string | HTMLElement;
   confirmLabel?: string;
   cancelLabel?: string;
-  confirmVariant?: ModalButton['variant'];
+  confirmVariant?: ModalButton["variant"];
   onConfirm: () => void;
   onCancel?: () => void;
 }): ModalHandle {
@@ -198,14 +206,20 @@ export function showConfirm(options: {
     body: options.body,
     buttons: [
       {
-        label: options.cancelLabel ?? 'Cancel',
-        variant: 'secondary',
-        action() { handle.close(); options.onCancel?.(); },
+        label: options.cancelLabel ?? "Cancel",
+        variant: "secondary",
+        action() {
+          handle.close();
+          options.onCancel?.();
+        },
       },
       {
-        label: options.confirmLabel ?? 'Confirm',
-        variant: options.confirmVariant ?? 'primary',
-        action() { handle.close(); options.onConfirm(); },
+        label: options.confirmLabel ?? "Confirm",
+        variant: options.confirmVariant ?? "primary",
+        action() {
+          handle.close();
+          options.onConfirm();
+        },
       },
     ],
   });
@@ -216,7 +230,7 @@ export function showAlert(options: {
   title: string;
   body: string | HTMLElement;
   buttonLabel?: string;
-  variant?: ModalButton['variant'];
+  variant?: ModalButton["variant"];
   onDismiss?: () => void;
 }): ModalHandle {
   let handle: ModalHandle;
@@ -225,9 +239,12 @@ export function showAlert(options: {
     body: options.body,
     buttons: [
       {
-        label: options.buttonLabel ?? 'OK',
-        variant: options.variant ?? 'primary',
-        action() { handle.close(); options.onDismiss?.(); },
+        label: options.buttonLabel ?? "OK",
+        variant: options.variant ?? "primary",
+        action() {
+          handle.close();
+          options.onDismiss?.();
+        },
       },
     ],
   });

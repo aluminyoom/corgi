@@ -22,7 +22,7 @@ export function onUrlChange(callback: () => void): () => void {
   history.pushState = patchedPushState as typeof history.pushState;
   history.replaceState = patchedReplaceState as typeof history.replaceState;
 
-  window.addEventListener('popstate', callback);
+  window.addEventListener("popstate", callback);
 
   return () => {
     if (history.pushState === patchedPushState) {
@@ -31,6 +31,6 @@ export function onUrlChange(callback: () => void): () => void {
     if (history.replaceState === patchedReplaceState) {
       history.replaceState = prevReplaceState;
     }
-    window.removeEventListener('popstate', callback);
+    window.removeEventListener("popstate", callback);
   };
 }

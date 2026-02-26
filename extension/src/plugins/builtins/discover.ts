@@ -1,11 +1,11 @@
-import type { PluginDefinition, PluginSetting } from '../types';
-import { BUILTIN_GROUP_DEFS } from './groups';
-import type { GroupDef } from './groups';
+import type { PluginDefinition, PluginSetting } from "../types";
+import { BUILTIN_GROUP_DEFS } from "./groups";
+import type { GroupDef } from "./groups";
 
 type PluginModule = Record<string, unknown>;
 
 const modules = import.meta.glob<PluginModule>(
-  ['./**/*.ts', '!./index.ts', '!./groups.ts', '!./discover.ts'],
+  ["./**/*.ts", "!./index.ts", "!./groups.ts", "!./discover.ts"],
   { eager: true },
 );
 
@@ -13,10 +13,10 @@ function extractPlugin(mod: PluginModule): PluginDefinition | undefined {
   for (const value of Object.values(mod)) {
     if (
       value &&
-      typeof value === 'object' &&
-      'name' in value &&
-      'displayName' in value &&
-      'version' in value
+      typeof value === "object" &&
+      "name" in value &&
+      "displayName" in value &&
+      "version" in value
     ) {
       return value as PluginDefinition;
     }
@@ -71,24 +71,32 @@ export function getBuiltinGroups(): PluginGroupMeta[] {
     membersByGroup.set(p.group, members);
   }
 
-  return BUILTIN_GROUP_DEFS.filter((g) => membersByGroup.has(g.name)).map((g) => ({
-    name: g.name,
-    displayName: g.displayName,
-    version: g.version,
-    authors: g.authors,
-    description: g.description,
-    plugins: membersByGroup.get(g.name)!,
-  }));
+  return BUILTIN_GROUP_DEFS.filter((g) => membersByGroup.has(g.name)).map(
+    (g) => ({
+      name: g.name,
+      displayName: g.displayName,
+      version: g.version,
+      authors: g.authors,
+      description: g.description,
+      plugins: membersByGroup.get(g.name)!,
+    }),
+  );
 }
 
 export function getDefaultDisabled(): string[] {
   const groupDefaults = new Map<string, boolean>();
-  for (const g of BUILTIN_GROUP_DEFS) groupDefaults.set(g.name, g.defaultEnabled);
+  for (const g of BUILTIN_GROUP_DEFS)
+    groupDefaults.set(g.name, g.defaultEnabled);
 
   return builtinPlugins
     .filter((p) => {
       if (p.defaultEnabled === false) return true;
-      if (p.group && groupDefaults.get(p.group) === false && p.defaultEnabled !== true) return true;
+      if (
+        p.group &&
+        groupDefaults.get(p.group) === false &&
+        p.defaultEnabled !== true
+      )
+        return true;
       return false;
     })
     .map((p) => p.name);

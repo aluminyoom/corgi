@@ -9,14 +9,14 @@ The plugin hook API (`onProviderEvent`, `addEventInterceptor`, `observeElement`,
 ## Minimal Plugin
 
 ```typescript
-import { definePlugin } from '@/plugins/api';
+import { definePlugin } from "@/plugins/api";
 
 export const myPlugin = definePlugin({
-  name: 'my-plugin',
-  displayName: 'My Plugin',
-  version: '1.0.0',
-  authors: ['your-name'],
-  description: 'What this plugin does',
+  name: "my-plugin",
+  displayName: "My Plugin",
+  version: "1.0.0",
+  authors: ["your-name"],
+  description: "What this plugin does",
 
   onStart(api) {
     // Called when the plugin activates.
@@ -41,11 +41,11 @@ The simplest plugin type injects CSS without any JavaScript logic. Declare the `
 
 ```typescript
 export const myThemePlugin = definePlugin({
-  name: 'my-theme-tweak',
-  displayName: 'My Theme Tweak',
-  version: '0.1.0',
-  authors: ['your-name'],
-  description: 'Rounds all search result cards',
+  name: "my-theme-tweak",
+  displayName: "My Theme Tweak",
+  version: "0.1.0",
+  authors: ["your-name"],
+  description: "Rounds all search result cards",
   css: `
     .search-result {
       border-radius: 12px;
@@ -201,13 +201,13 @@ For simple method wrapping that does not need runtime logic, you can declare pat
 
 ```typescript
 definePlugin({
-  name: 'my-plugin',
+  name: "my-plugin",
   patches: [
     {
-      target: 'Client.prototype',
-      method: 'onSocketMessage',
+      target: "Client.prototype",
+      method: "onSocketMessage",
       before(...args) {
-        console.log('Message received:', args);
+        console.log("Message received:", args);
       },
     },
   ],
@@ -222,8 +222,8 @@ Plugins can depend on other plugins:
 
 ```typescript
 definePlugin({
-  name: 'my-plugin',
-  dependencies: ['base-plugin'],
+  name: "my-plugin",
+  dependencies: ["base-plugin"],
   onStart(api) {
     // base-plugin is guaranteed to be running
   },
@@ -252,18 +252,18 @@ Plugin errors never crash other plugins or the core extension. Each plugin runs 
 
 ## Full API Reference
 
-| Method | Purpose |
-|--------|---------|
-| `trapGlobal(property, callback)` | Watch for global variable assignments |
-| `wrapFunction(target, method, options)` | Patch object methods with before/after/replace |
-| `onProviderEvent(tag, listener)` | Listen to Kagi provider events |
-| `addEventInterceptor(interceptor)` | Modify or suppress provider events |
-| `addFetchRequestInterceptor(interceptor)` | Modify outgoing fetch requests |
-| `addFetchResponseInterceptor(interceptor)` | Transform fetch responses |
-| `observeElement(selector, handler, options)` | Watch DOM elements for changes |
-| `setVariable(name, value)` | Set a CSS variable on `:root` |
-| `removeVariable(name)` | Remove a CSS variable |
-| `getComputedVariable(name)` | Read the computed value of a CSS variable |
-| `injectCSS(css)` | Inject a `<style>` element (auto-removed on stop) |
-| `getSettings()` | Read the plugin's persisted settings |
-| `setSettings(values)` | Write to the plugin's persisted settings |
+| Method                                       | Purpose                                           |
+| -------------------------------------------- | ------------------------------------------------- |
+| `trapGlobal(property, callback)`             | Watch for global variable assignments             |
+| `wrapFunction(target, method, options)`      | Patch object methods with before/after/replace    |
+| `onProviderEvent(tag, listener)`             | Listen to Kagi provider events                    |
+| `addEventInterceptor(interceptor)`           | Modify or suppress provider events                |
+| `addFetchRequestInterceptor(interceptor)`    | Modify outgoing fetch requests                    |
+| `addFetchResponseInterceptor(interceptor)`   | Transform fetch responses                         |
+| `observeElement(selector, handler, options)` | Watch DOM elements for changes                    |
+| `setVariable(name, value)`                   | Set a CSS variable on `:root`                     |
+| `removeVariable(name)`                       | Remove a CSS variable                             |
+| `getComputedVariable(name)`                  | Read the computed value of a CSS variable         |
+| `injectCSS(css)`                             | Inject a `<style>` element (auto-removed on stop) |
+| `getSettings()`                              | Read the plugin's persisted settings              |
+| `setSettings(values)`                        | Write to the plugin's persisted settings          |

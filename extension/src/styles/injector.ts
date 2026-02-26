@@ -1,7 +1,7 @@
-import type { Theme } from '@/utils/types';
-import { getThemeId } from '@/utils/types';
+import type { Theme } from "@/utils/types";
+import { getThemeId } from "@/utils/types";
 
-const CONTAINER_TAG = 'corgi-styles';
+const CONTAINER_TAG = "corgi-styles";
 
 let container: HTMLElement | null = null;
 
@@ -12,7 +12,7 @@ function getContainer(): HTMLElement {
   if (container) return container;
 
   container = document.createElement(CONTAINER_TAG);
-  container.setAttribute('data-corgi', 'true');
+  container.setAttribute("data-corgi", "true");
 
   const target = document.head ?? document.documentElement;
   const firstLink = target.querySelector('link[rel="stylesheet"]');
@@ -38,9 +38,9 @@ export function applyThemes(themes: Theme[], pagePath: string | null): void {
 
   for (let i = 0; i < themes.length; i++) {
     const theme = themes[i];
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.id = buildThemeStyleId(i);
-    style.setAttribute('data-theme', getThemeId(theme));
+    style.setAttribute("data-theme", getThemeId(theme));
 
     const parts: string[] = [];
 
@@ -50,14 +50,14 @@ export function applyThemes(themes: Theme[], pagePath: string | null): void {
     if (Object.keys(mergedVars).length > 0) {
       const declarations = Object.entries(mergedVars)
         .map(([key, value]) => `  ${key}: ${value} !important;`)
-        .join('\n');
+        .join("\n");
       parts.push(`:root {\n${declarations}\n}`);
     }
 
     if (theme.css) parts.push(theme.css);
     if (pageOverride?.css) parts.push(pageOverride.css);
 
-    style.textContent = parts.join('\n\n');
+    style.textContent = parts.join("\n\n");
     root.appendChild(style);
   }
 }
@@ -80,9 +80,9 @@ export function interceptKagiStylesheets(): () => void {
     for (const mutation of mutations) {
       for (const node of mutation.addedNodes) {
         if (!(node instanceof HTMLLinkElement)) continue;
-        if (node.rel !== 'stylesheet') continue;
-        const href = node.getAttribute('href') ?? '';
-        if (href.includes('/_s/custom_css')) {
+        if (node.rel !== "stylesheet") continue;
+        const href = node.getAttribute("href") ?? "";
+        if (href.includes("/_s/custom_css")) {
           // Kagi's built-in custom CSS link. We can optionally disable it
           // when Corgi is managing styles, or leave it for composability.
         }
@@ -90,6 +90,9 @@ export function interceptKagiStylesheets(): () => void {
     }
   });
 
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  observer.observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
   return () => observer.disconnect();
 }

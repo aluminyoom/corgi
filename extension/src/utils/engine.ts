@@ -1,8 +1,11 @@
-import type { Theme } from './types';
+import type { Theme } from "./types";
 
-const STYLE_ELEMENT_ID = 'corgi-theme-styles';
+const STYLE_ELEMENT_ID = "corgi-theme-styles";
 
-export function buildThemeCSS(themes: Theme[], pagePath: string | null): string {
+export function buildThemeCSS(
+  themes: Theme[],
+  pagePath: string | null,
+): string {
   const parts: string[] = [];
 
   for (const theme of themes) {
@@ -13,7 +16,7 @@ export function buildThemeCSS(themes: Theme[], pagePath: string | null): string 
     if (Object.keys(mergedVars).length > 0) {
       const varDeclarations = Object.entries(mergedVars)
         .map(([key, value]) => `  ${key}: ${value} !important;`)
-        .join('\n');
+        .join("\n");
       parts.push(`:root {\n${varDeclarations}\n}`);
     }
 
@@ -26,7 +29,7 @@ export function buildThemeCSS(themes: Theme[], pagePath: string | null): string 
     }
   }
 
-  return parts.join('\n\n');
+  return parts.join("\n\n");
 }
 
 export function injectCSS(css: string): void {
@@ -38,9 +41,9 @@ export function injectCSS(css: string): void {
   }
 
   if (!styleEl) {
-    styleEl = document.createElement('style');
+    styleEl = document.createElement("style");
     styleEl.id = STYLE_ELEMENT_ID;
-    styleEl.setAttribute('data-corgi', 'true');
+    styleEl.setAttribute("data-corgi", "true");
     (document.head ?? document.documentElement).appendChild(styleEl);
   }
 
@@ -52,12 +55,17 @@ export function removeInjectedCSS(): void {
 }
 
 export function getCurrentPagePath(): string | null {
-  return document.documentElement.getAttribute('data-path');
+  return document.documentElement.getAttribute("data-path");
 }
 
 export function getCurrentKagiTheme(): string | null {
   const classes = document.documentElement.classList;
-  const themeClasses = ['theme_dark', 'theme_light', 'theme_calm_blue', 'theme_moon_dark'];
+  const themeClasses = [
+    "theme_dark",
+    "theme_light",
+    "theme_calm_blue",
+    "theme_moon_dark",
+  ];
   for (const cls of themeClasses) {
     if (classes.contains(cls)) return cls;
   }

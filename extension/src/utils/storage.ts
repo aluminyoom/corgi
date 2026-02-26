@@ -1,4 +1,4 @@
-import type { Theme, ThemeState } from './types';
+import type { Theme, ThemeState } from "./types";
 
 export interface PluginStates {
   disabled: string[];
@@ -12,15 +12,18 @@ const DEFAULT_STATE: ThemeState = {
   enabled: true,
 };
 
-export const themeState = storage.defineItem<ThemeState>('local:themeState', {
+export const themeState = storage.defineItem<ThemeState>("local:themeState", {
   fallback: DEFAULT_STATE,
 });
 
-export const activeThemePrefs = storage.defineItem<string[]>('sync:activeThemeIds', {
-  fallback: [],
-});
+export const activeThemePrefs = storage.defineItem<string[]>(
+  "sync:activeThemeIds",
+  {
+    fallback: [],
+  },
+);
 
-export const extensionEnabled = storage.defineItem<boolean>('sync:enabled', {
+export const extensionEnabled = storage.defineItem<boolean>("sync:enabled", {
   fallback: true,
 });
 
@@ -29,10 +32,16 @@ export const extensionEnabled = storage.defineItem<boolean>('sync:enabled', {
 // code that uses `window` — unavailable in the background service worker).
 // The actual default-disabled list is applied on first storage access in
 // contexts that have `window` (content script / settings page).
-export const pluginStates = storage.defineItem<PluginStates>('local:pluginStates', {
-  fallback: { disabled: [] },
-});
+export const pluginStates = storage.defineItem<PluginStates>(
+  "local:pluginStates",
+  {
+    fallback: { disabled: [] },
+  },
+);
 
-export const pluginSettings = storage.defineItem<PluginSettingsStore>('local:pluginSettings', {
-  fallback: {},
-});
+export const pluginSettings = storage.defineItem<PluginSettingsStore>(
+  "local:pluginSettings",
+  {
+    fallback: {},
+  },
+);

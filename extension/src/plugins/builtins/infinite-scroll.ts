@@ -1,15 +1,16 @@
-import { definePlugin } from '../api';
+import { definePlugin } from "../api";
 
-const LOAD_MORE_SELECTOR = '#load_more_results';
+const LOAD_MORE_SELECTOR = "#load_more_results";
 const SCROLL_THRESHOLD = 600;
 const DEBOUNCE_MS = 300;
 
 export const infiniteScrollPlugin = definePlugin({
-  name: 'infinite-scroll',
-  displayName: 'Infinite Scroll',
-  version: '0.2.0',
-  authors: ['aluminyoom'],
-  description: 'Automatically loads more results as you scroll down the search page',
+  name: "infinite-scroll",
+  displayName: "Infinite Scroll",
+  version: "0.2.0",
+  authors: ["aluminyoom"],
+  description:
+    "Automatically loads more results as you scroll down the search page",
   defaultEnabled: false,
 
   css: `
@@ -19,7 +20,7 @@ export const infiniteScrollPlugin = definePlugin({
   `,
 
   onStart(api) {
-    if (!api.isPage('/search')) return;
+    if (!api.isPage("/search")) return;
 
     let loading = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -60,10 +61,10 @@ export const infiniteScrollPlugin = definePlugin({
       timer = setTimeout(tryLoadMore, DEBOUNCE_MS);
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener("scroll", onScroll);
       if (timer) clearTimeout(timer);
     };
   },
