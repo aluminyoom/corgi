@@ -26,7 +26,10 @@ content.ts
 The settings sidebar uses `nav#settings-menu` with a `div.cth_settings_nav_menu` container, and each link follows a consistent pattern:
 
 ```html
-<a href="/settings/slug" class="nav-link ws-nowrap py-8 px-10 mx-n10 flex align-center rounded-full ws-normal">
+<a
+  href="/settings/slug"
+  class="nav-link ws-nowrap py-8 px-10 mx-n10 flex align-center rounded-full ws-normal"
+>
   <i class="mr-8 flex icon-sm align-self-start mt-2">
     <svg>...</svg>
   </i>
@@ -43,6 +46,7 @@ When the Corgi route is active, all other nav links are deactivated and the Corg
 The settings page replaces Kagi's `<main>` element content with Corgi's own UI. The page is built with vanilla DOM manipulation (no framework) to keep the content script lightweight and avoid framework conflicts with Kagi's page.
 
 The page renders:
+
 - **Header** with the Corgi title and version
 - **Enable/disable toggle** for the entire extension
 - **Plugin groups section** with batch toggles and expandable member lists

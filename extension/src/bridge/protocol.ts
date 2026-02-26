@@ -1,24 +1,24 @@
-export const BRIDGE_SOURCE = 'corgi-bridge' as const;
+export const BRIDGE_SOURCE = "corgi-bridge" as const;
 
 export type BridgeAction =
-  | 'storage:get'
-  | 'storage:set'
-  | 'storage:watch'
-  | 'storage:unwatch'
-  | 'runtime:send'
-  | 'runtime:getURL'
-  | 'theme:apply'
-  | 'theme:clear'
-  | 'plugin:list'
-  | 'plugin:state'
-  | 'plugin:settings:get'
-  | 'plugin:settings:set'
-  | 'fetch:proxy'
-  | 'ready';
+  | "storage:get"
+  | "storage:set"
+  | "storage:watch"
+  | "storage:unwatch"
+  | "runtime:send"
+  | "runtime:getURL"
+  | "theme:apply"
+  | "theme:clear"
+  | "plugin:list"
+  | "plugin:state"
+  | "plugin:settings:get"
+  | "plugin:settings:set"
+  | "fetch:proxy"
+  | "ready";
 
 export interface BridgeRequest {
   source: typeof BRIDGE_SOURCE;
-  direction: 'main-to-isolated';
+  direction: "main-to-isolated";
   id: string;
   action: BridgeAction;
   payload?: unknown;
@@ -26,7 +26,7 @@ export interface BridgeRequest {
 
 export interface BridgeResponse {
   source: typeof BRIDGE_SOURCE;
-  direction: 'isolated-to-main';
+  direction: "isolated-to-main";
   id: string;
   ok: boolean;
   data?: unknown;
@@ -35,7 +35,7 @@ export interface BridgeResponse {
 
 export interface BridgePush {
   source: typeof BRIDGE_SOURCE;
-  direction: 'isolated-to-main';
+  direction: "isolated-to-main";
   id: null;
   action: BridgeAction;
   payload?: unknown;
@@ -43,26 +43,32 @@ export interface BridgePush {
 
 export type BridgeMessage = BridgeRequest | BridgeResponse | BridgePush;
 
-export function isBridgeRequest(event: MessageEvent): event is MessageEvent<BridgeRequest> {
+export function isBridgeRequest(
+  event: MessageEvent,
+): event is MessageEvent<BridgeRequest> {
   return (
     event.data?.source === BRIDGE_SOURCE &&
-    event.data?.direction === 'main-to-isolated' &&
-    typeof event.data?.id === 'string'
+    event.data?.direction === "main-to-isolated" &&
+    typeof event.data?.id === "string"
   );
 }
 
-export function isBridgeResponse(event: MessageEvent): event is MessageEvent<BridgeResponse> {
+export function isBridgeResponse(
+  event: MessageEvent,
+): event is MessageEvent<BridgeResponse> {
   return (
     event.data?.source === BRIDGE_SOURCE &&
-    event.data?.direction === 'isolated-to-main' &&
-    typeof event.data?.id === 'string'
+    event.data?.direction === "isolated-to-main" &&
+    typeof event.data?.id === "string"
   );
 }
 
-export function isBridgePush(event: MessageEvent): event is MessageEvent<BridgePush> {
+export function isBridgePush(
+  event: MessageEvent,
+): event is MessageEvent<BridgePush> {
   return (
     event.data?.source === BRIDGE_SOURCE &&
-    event.data?.direction === 'isolated-to-main' &&
+    event.data?.direction === "isolated-to-main" &&
     event.data?.id === null
   );
 }

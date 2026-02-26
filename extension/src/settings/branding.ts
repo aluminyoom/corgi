@@ -1,14 +1,14 @@
-const BRAND_ID = 'corgi-branding';
-const MEMBER_BRAND_ID = 'corgi-member-branding';
+const BRAND_ID = "corgi-branding";
+const MEMBER_BRAND_ID = "corgi-member-branding";
 
-const COPYRIGHT_SELECTOR = 'div.copyright';
-const MEMBER_BADGE_SELECTOR = 'div.member-number-badge';
+const COPYRIGHT_SELECTOR = "div.copyright";
+const MEMBER_BADGE_SELECTOR = "div.member-number-badge";
 
 function getVersion(): string {
   try {
-    return browser.runtime.getManifest().version ?? '0.0.0';
+    return browser.runtime.getManifest().version ?? "0.0.0";
   } catch {
-    return '0.0.0';
+    return "0.0.0";
   }
 }
 
@@ -18,7 +18,7 @@ function injectCopyrightBranding(): boolean {
   const copyright = document.querySelector(COPYRIGHT_SELECTOR);
   if (!copyright) return false;
 
-  const span = document.createElement('span');
+  const span = document.createElement("span");
   span.id = BRAND_ID;
   span.textContent = ` \u00B7 Corgi v${getVersion()}`;
   copyright.appendChild(span);
@@ -31,7 +31,7 @@ function injectMemberBadgeBranding(): boolean {
   const badge = document.querySelector(MEMBER_BADGE_SELECTOR);
   if (!badge) return false;
 
-  const el = document.createElement('div');
+  const el = document.createElement("div");
   el.id = MEMBER_BRAND_ID;
   el.className = badge.className;
   el.textContent = `Corgi v${getVersion()}`;
@@ -40,7 +40,7 @@ function injectMemberBadgeBranding(): boolean {
 }
 
 function isSettingsPage(): boolean {
-  return window.location.pathname.startsWith('/settings');
+  return window.location.pathname.startsWith("/settings");
 }
 
 export function initBranding(): void {
@@ -51,8 +51,8 @@ export function initBranding(): void {
     }
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tryInject);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tryInject);
   } else {
     tryInject();
   }

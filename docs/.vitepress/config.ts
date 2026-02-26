@@ -1,88 +1,95 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from "vitepress";
 
 const kagiHelpLink = {
-  text: 'Kagi Help Docs',
-  link: 'https://help.kagi.com/kagi/',
-}
+  text: "Kagi Help Docs",
+  link: "https://help.kagi.com/kagi/",
+};
 
 export default defineConfig({
-  title: 'Corgi',
-  description: 'A theming engine and plugin API for Kagi search',
+  title: "Corgi",
+  description: "A theming engine and plugin API for Kagi search",
 
-  head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
-  ],
+  head: [["link", { rel: "icon", type: "image/png", href: "/favicon.png" }]],
 
   themeConfig: {
     nav: [
-      { text: 'Guide', link: '/guide/what-is-corgi' },
-      { text: 'Architecture', link: '/architecture/overview' },
-      { text: 'API Reference', link: '/api/theme-format' },
+      { text: "Guide", link: "/guide/what-is-corgi" },
+      { text: "Architecture", link: "/architecture/overview" },
+      { text: "API Reference", link: "/api/theme-format" },
     ],
 
     sidebar: {
-      '/guide/': [
+      "/guide/": [
         {
-          text: 'Introduction',
+          text: "Introduction",
           items: [
-            { text: 'What is Corgi?', link: '/guide/what-is-corgi' },
-            { text: 'Getting Started', link: '/guide/getting-started' },
+            { text: "What is Corgi?", link: "/guide/what-is-corgi" },
+            { text: "Getting Started", link: "/guide/getting-started" },
           ],
         },
         {
-          text: 'Themes',
+          text: "Themes",
           items: [
-            { text: 'Using Themes', link: '/guide/using-themes' },
-            { text: 'Creating Themes', link: '/guide/creating-themes' },
+            { text: "Using Themes", link: "/guide/using-themes" },
+            { text: "Creating Themes", link: "/guide/creating-themes" },
           ],
         },
         {
-          text: 'Plugins',
+          text: "Plugins",
           items: [
-            { text: 'Using Plugins', link: '/guide/using-plugins' },
-            { text: 'Creating Plugins', link: '/guide/creating-plugins' },
+            { text: "Using Plugins", link: "/guide/using-plugins" },
+            { text: "Creating Plugins", link: "/guide/creating-plugins" },
           ],
         },
-        { text: '―', items: [kagiHelpLink] },
+        { text: "―", items: [kagiHelpLink] },
       ],
-      '/architecture/': [
+      "/architecture/": [
         {
-          text: 'Architecture',
+          text: "Architecture",
           items: [
-            { text: 'Overview', link: '/architecture/overview' },
-            { text: 'Content Scripts', link: '/architecture/content-scripts' },
-            { text: 'Hooks and Patches', link: '/architecture/hooks-and-patches' },
-            { text: 'Theming Engine', link: '/architecture/theming-engine' },
-            { text: 'Plugin System', link: '/architecture/plugin-system' },
-            { text: 'Settings Integration', link: '/architecture/settings-integration' },
-            { text: 'Extension Structure', link: '/architecture/extension-structure' },
+            { text: "Overview", link: "/architecture/overview" },
+            { text: "Content Scripts", link: "/architecture/content-scripts" },
+            {
+              text: "Hooks and Patches",
+              link: "/architecture/hooks-and-patches",
+            },
+            { text: "Theming Engine", link: "/architecture/theming-engine" },
+            { text: "Plugin System", link: "/architecture/plugin-system" },
+            {
+              text: "Settings Integration",
+              link: "/architecture/settings-integration",
+            },
+            {
+              text: "Extension Structure",
+              link: "/architecture/extension-structure",
+            },
           ],
         },
-        { text: '―', items: [kagiHelpLink] },
+        { text: "―", items: [kagiHelpLink] },
       ],
-      '/api/': [
+      "/api/": [
         {
-          text: 'API Reference',
+          text: "API Reference",
           items: [
-            { text: 'Theme Format', link: '/api/theme-format' },
-            { text: 'CSS Variables', link: '/api/css-variables' },
-            { text: 'DOM Selectors', link: '/api/dom-selectors' },
+            { text: "Theme Format", link: "/api/theme-format" },
+            { text: "CSS Variables", link: "/api/css-variables" },
+            { text: "DOM Selectors", link: "/api/dom-selectors" },
           ],
         },
-        { text: '―', items: [kagiHelpLink] },
+        { text: "―", items: [kagiHelpLink] },
       ],
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/aluminyoom/corgi' },
+      { icon: "github", link: "https://github.com/aluminyoom/corgi" },
     ],
 
     search: {
-      provider: 'local',
+      provider: "local",
     },
 
     footer: {
-      message: 'Not affiliated with Kagi Inc.',
+      message: "Not affiliated with Kagi Inc.",
     },
   },
-})
+});

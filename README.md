@@ -79,14 +79,14 @@ pnpm zip:firefox     # package for Firefox distribution
 To create a plugin, drop a `.ts` file in `extension/src/plugins/builtins/` and auto-discovery handles the rest:
 
 ```ts
-import { definePlugin } from '@/plugins/api';
+import { definePlugin } from "@/plugins/api";
 
 export const myPlugin = definePlugin({
-  name: 'my-plugin',
-  displayName: 'My Plugin',
-  version: '0.1.0',
-  authors: ['your-name'],
-  description: 'Does something cool',
+  name: "my-plugin",
+  displayName: "My Plugin",
+  version: "0.1.0",
+  authors: ["your-name"],
+  description: "Does something cool",
   onStart(api) {
     // Your code here
   },
@@ -107,4 +107,4 @@ cd docs && pnpm install && pnpm dev
 
 [MIT](LICENSE). Made by [aluminyoom](https://github.com/aluminyoom).
 
-*Not affiliated with Kagi Inc. Do not contact Kagi support for Corgi issues.*
+_Not affiliated with Kagi Inc. Do not contact Kagi support for Corgi issues._

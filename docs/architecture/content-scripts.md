@@ -7,6 +7,7 @@ Corgi uses two content scripts running in different execution contexts. This dua
 The MAIN world script runs in the same JavaScript context as Kagi's page code. It executes at `document_start`, before any of Kagi's scripts load.
 
 **Responsibilities:**
+
 - Monkey-patch global functions (`window.client`, `getKagiSetting`, `fetchStream`)
 - Set `Object.defineProperty` traps for globals that Kagi assigns later during page init
 - Intercept SSE provider events before they reach page handlers
@@ -17,18 +18,21 @@ The MAIN world script runs in the same JavaScript context as Kagi's page code. I
 **Timing matters.** Because this script runs at `document_start`, it executes before `<head>` content is parsed and the DOM is essentially empty. The script must set up all interception traps immediately, use `MutationObserver` or `DOMContentLoaded` for any DOM-dependent work, and never assume that any element exists during initial execution.
 
 **Registration in WXT:**
+
 ```typescript
 // wxt.config.ts
 export default defineConfig({
   manifest: {
-    content_scripts: [{
-      matches: ['*://*.kagi.com/*'],
-      js: ['content-scripts/main.js'],
-      run_at: 'document_start',
-      world: 'MAIN'
-    }]
-  }
-})
+    content_scripts: [
+      {
+        matches: ["*://*.kagi.com/*"],
+        js: ["content-scripts/main.js"],
+        run_at: "document_start",
+        world: "MAIN",
+      },
+    ],
+  },
+});
 ```
 
 ## ISOLATED World Script
@@ -36,21 +40,23 @@ export default defineConfig({
 The ISOLATED world script runs in Chrome's default sandboxed context. It has access to `chrome.*` extension APIs but cannot see page JavaScript globals.
 
 **Responsibilities:**
+
 - Listen for `window.postMessage` from the MAIN world
 - Read and write `chrome.storage.local` (themes, plugins, settings)
 - Relay messages to the background service worker via `chrome.runtime.sendMessage`
 - Forward storage data back to the MAIN world via `window.postMessage`
 
 **Registration in WXT:**
+
 ```typescript
 // src/entrypoints/content.ts (default WXT content script)
 export default defineContentScript({
-  matches: ['*://*.kagi.com/*'],
-  runAt: 'document_start',
+  matches: ["*://*.kagi.com/*"],
+  runAt: "document_start",
   main() {
     // Set up postMessage listener for MAIN world bridge
-  }
-})
+  },
+});
 ```
 
 ## Bridge Protocol
@@ -59,20 +65,20 @@ The two worlds communicate through `window.postMessage` with a structured messag
 
 ```typescript
 interface BridgeRequest {
-  source: 'corgi-bridge'
-  direction: 'main-to-isolated'
-  id: string        // correlation ID for request/response pairing
-  action: BridgeAction
-  payload?: unknown
+  source: "corgi-bridge";
+  direction: "main-to-isolated";
+  id: string; // correlation ID for request/response pairing
+  action: BridgeAction;
+  payload?: unknown;
 }
 
 interface BridgeResponse {
-  source: 'corgi-bridge'
-  direction: 'isolated-to-main'
-  id: string
-  ok: boolean
-  data?: unknown
-  error?: string
+  source: "corgi-bridge";
+  direction: "isolated-to-main";
+  id: string;
+  ok: boolean;
+  data?: unknown;
+  error?: string;
 }
 ```
 

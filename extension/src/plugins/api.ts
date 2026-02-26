@@ -1,5 +1,5 @@
-import type { PluginDefinition } from './types';
-import { registerPlugin, startPlugin } from './registry';
+import type { PluginDefinition } from "./types";
+import { registerPlugin, startPlugin } from "./registry";
 
 export function definePlugin(definition: PluginDefinition): PluginDefinition {
   return definition;

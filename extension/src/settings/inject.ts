@@ -1,45 +1,53 @@
-import { injectNavLink, activateNavLink, deactivateNavLink, isCorgiRoute } from './nav';
-import { buildSettingsPage, isSettingsPageMounted } from './page';
+import {
+  injectNavLink,
+  activateNavLink,
+  deactivateNavLink,
+  isCorgiRoute,
+} from "./nav";
+import { buildSettingsPage, isSettingsPageMounted } from "./page";
 
 function isSettingsPage(): boolean {
-  return window.location.pathname.startsWith('/settings');
+  return window.location.pathname.startsWith("/settings");
 }
 
 function getMainElement(): HTMLElement | null {
-  return document.querySelector('main');
+  return document.querySelector("main");
 }
 
 function hideKagiContent(main: HTMLElement): void {
   for (const child of Array.from(main.children)) {
-    if (child.id === 'corgi-settings-page') continue;
-    (child as HTMLElement).style.display = 'none';
+    if (child.id === "corgi-settings-page") continue;
+    (child as HTMLElement).style.display = "none";
   }
 }
 
 function showKagiContent(main: HTMLElement): void {
   for (const child of Array.from(main.children)) {
-    if (child.id === 'corgi-settings-page') continue;
-    (child as HTMLElement).style.display = '';
+    if (child.id === "corgi-settings-page") continue;
+    (child as HTMLElement).style.display = "";
   }
 }
 
 let mounted = false;
-let previousTitle = '';
+let previousTitle = "";
 
 async function mountSettingsPage(): Promise<void> {
   if (mounted) return;
   mounted = true;
 
   const main = getMainElement();
-  if (!main) { mounted = false; return; }
+  if (!main) {
+    mounted = false;
+    return;
+  }
 
   previousTitle = document.title;
-  document.title = 'Corgi - Kagi Settings';
+  document.title = "Corgi - Kagi Settings";
   hideKagiContent(main);
 
-  const existing = main.querySelector('#corgi-settings-page');
+  const existing = main.querySelector("#corgi-settings-page");
   if (existing) {
-    (existing as HTMLElement).style.display = '';
+    (existing as HTMLElement).style.display = "";
     activateNavLink();
     return;
   }
@@ -56,11 +64,11 @@ function unmountSettingsPage(): void {
 
   if (previousTitle) {
     document.title = previousTitle;
-    previousTitle = '';
+    previousTitle = "";
   }
 
-  const page = main.querySelector('#corgi-settings-page');
-  if (page) (page as HTMLElement).style.display = 'none';
+  const page = main.querySelector("#corgi-settings-page");
+  if (page) (page as HTMLElement).style.display = "none";
 
   showKagiContent(main);
   deactivateNavLink();
@@ -85,9 +93,9 @@ export function initSettingsIntegration(): void {
 
     if (!linkWired) {
       linkWired = true;
-      navLink.addEventListener('click', (event) => {
+      navLink.addEventListener("click", (event) => {
         event.preventDefault();
-        window.history.pushState(null, '', '/settings/corgi');
+        window.history.pushState(null, "", "/settings/corgi");
         handleRouteChange();
       });
     }
@@ -95,14 +103,14 @@ export function initSettingsIntegration(): void {
     handleRouteChange();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', tryInject);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", tryInject);
   } else {
     tryInject();
   }
 
   const navObserver = new MutationObserver(() => {
-    if (!document.getElementById('corgi-nav-link')) {
+    if (!document.getElementById("corgi-nav-link")) {
       linkWired = false;
       tryInject();
     }
@@ -117,5 +125,5 @@ export function initSettingsIntegration(): void {
   };
   waitForBody();
 
-  window.addEventListener('popstate', handleRouteChange);
+  window.addEventListener("popstate", handleRouteChange);
 }

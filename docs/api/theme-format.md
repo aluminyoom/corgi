@@ -18,10 +18,13 @@ interface Theme {
   tags: string[];
   variables: Record<string, string>;
   css: string;
-  pages?: Record<string, {
-    variables?: Record<string, string>;
-    css?: string;
-  }>;
+  pages?: Record<
+    string,
+    {
+      variables?: Record<string, string>;
+      css?: string;
+    }
+  >;
   meta?: {
     kagiThemes?: string[];
     minCorgiVersion?: string;
@@ -33,39 +36,39 @@ interface Theme {
 
 ### Required
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `name` | `string` | Unique identifier for the theme (used as theme ID) |
-| `displayName` | `string` | Human-readable name shown in the UI |
-| `version` | `string` | Semver version string |
-| `authors` | `string[]` | Author identifiers (mapped to profiles in the author registry) |
-| `description` | `string` | Short description of the theme |
-| `tags` | `string[]` | Searchable tags (e.g., `["dark", "minimal"]`) |
-| `variables` | `Record<string, string>` | CSS variable overrides applied to `:root` |
-| `css` | `string` | Raw CSS injected into the page |
+| Field         | Type                     | Description                                                    |
+| ------------- | ------------------------ | -------------------------------------------------------------- |
+| `name`        | `string`                 | Unique identifier for the theme (used as theme ID)             |
+| `displayName` | `string`                 | Human-readable name shown in the UI                            |
+| `version`     | `string`                 | Semver version string                                          |
+| `authors`     | `string[]`               | Author identifiers (mapped to profiles in the author registry) |
+| `description` | `string`                 | Short description of the theme                                 |
+| `tags`        | `string[]`               | Searchable tags (e.g., `["dark", "minimal"]`)                  |
+| `variables`   | `Record<string, string>` | CSS variable overrides applied to `:root`                      |
+| `css`         | `string`                 | Raw CSS injected into the page                                 |
 
 ### Optional
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field   | Type                           | Description                         |
+| ------- | ------------------------------ | ----------------------------------- |
 | `pages` | `Record<string, PageOverride>` | Per-page variable and CSS overrides |
-| `meta` | `ThemeMeta` | Engine hints and compatibility info |
+| `meta`  | `ThemeMeta`                    | Engine hints and compatibility info |
 
 ### PageOverride
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Field       | Type                     | Description                      |
+| ----------- | ------------------------ | -------------------------------- |
 | `variables` | `Record<string, string>` | CSS variables for this page only |
-| `css` | `string` | CSS injected only on this page |
+| `css`       | `string`                 | CSS injected only on this page   |
 
 Page keys match the `data-path` attribute on `<html>`.
 
 ### ThemeMeta
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `kagiThemes` | `string[]` | Kagi base themes this is designed for (`"dark"`, `"light"`) |
-| `minCorgiVersion` | `string` | Minimum Corgi version required |
+| Field             | Type       | Description                                                 |
+| ----------------- | ---------- | ----------------------------------------------------------- |
+| `kagiThemes`      | `string[]` | Kagi base themes this is designed for (`"dark"`, `"light"`) |
+| `minCorgiVersion` | `string`   | Minimum Corgi version required                              |
 
 ## Theme ID
 

@@ -17,10 +17,7 @@
     },
     "condition": {
       "urlFilter": "*://*.kagi.com/*",
-      "resourceTypes": [
-        "main_frame",
-        "sub_frame"
-      ]
+      "resourceTypes": ["main_frame", "sub_frame"]
     }
   }
 ]

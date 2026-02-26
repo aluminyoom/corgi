@@ -1,39 +1,51 @@
-import { definePlugin } from '../../api';
-import type { PluginAPI } from '../../types';
+import { definePlugin } from "../../api";
+import type { PluginAPI } from "../../types";
 
 const CATEGORY_HREFS: Record<string, string> = {
-  '/settings/search': 'Search',
-  '/settings/billing': 'Billing',
+  "/settings/search": "Search",
+  "/settings/billing": "Billing",
 };
 
-const SUB_CLASSES = ['nav-link-sub', 'ml-20', 'my-8', 'py-2', 'px-8'];
-const TOP_CLASSES = ['nav-link', 'py-8', 'px-10', 'mx-n10', 'rounded-full', 'corgi-promoted-sub'];
+const SUB_CLASSES = ["nav-link-sub", "ml-20", "my-8", "py-2", "px-8"];
+const TOP_CLASSES = [
+  "nav-link",
+  "py-8",
+  "px-10",
+  "mx-n10",
+  "rounded-full",
+  "corgi-promoted-sub",
+];
 
 function transformNavCategories(menu: Element): () => void {
-  const originals = new Map<HTMLElement, { className: string; innerHTML: string; href: string }>();
+  const originals = new Map<
+    HTMLElement,
+    { className: string; innerHTML: string; href: string }
+  >();
 
   for (const [href, label] of Object.entries(CATEGORY_HREFS)) {
-    const categoryLink = menu.querySelector<HTMLAnchorElement>(`a.nav-link[href="${href}"]`);
+    const categoryLink = menu.querySelector<HTMLAnchorElement>(
+      `a.nav-link[href="${href}"]`,
+    );
     if (!categoryLink) continue;
 
     originals.set(categoryLink, {
       className: categoryLink.className,
       innerHTML: categoryLink.innerHTML,
-      href: categoryLink.getAttribute('href') ?? href,
+      href: categoryLink.getAttribute("href") ?? href,
     });
 
-    const heading = document.createElement('div');
-    heading.className = 'corgi-nav-category';
+    const heading = document.createElement("div");
+    heading.className = "corgi-nav-category";
     heading.textContent = label;
     heading.dataset.corgiCategory = href;
 
-    const separator = document.createElement('hr');
-    separator.className = 'corgi-nav-separator';
+    const separator = document.createElement("hr");
+    separator.className = "corgi-nav-separator";
 
     categoryLink.replaceWith(separator, heading);
 
     let sibling = heading.nextElementSibling;
-    while (sibling && sibling.classList.contains('nav-link-sub')) {
+    while (sibling && sibling.classList.contains("nav-link-sub")) {
       for (const cls of SUB_CLASSES) sibling.classList.remove(cls);
       for (const cls of TOP_CLASSES) sibling.classList.add(cls);
       sibling = sibling.nextElementSibling;
@@ -41,16 +53,22 @@ function transformNavCategories(menu: Element): () => void {
   }
 
   return () => {
-    for (const sep of menu.querySelectorAll<HTMLElement>('.corgi-nav-separator')) {
+    for (const sep of menu.querySelectorAll<HTMLElement>(
+      ".corgi-nav-separator",
+    )) {
       sep.remove();
     }
 
-    for (const heading of menu.querySelectorAll<HTMLElement>('.corgi-nav-category')) {
+    for (const heading of menu.querySelectorAll<HTMLElement>(
+      ".corgi-nav-category",
+    )) {
       const href = heading.dataset.corgiCategory;
       if (!href) continue;
 
-      const link = document.createElement('a');
-      const original = [...originals.entries()].find(([, v]) => v.href === href);
+      const link = document.createElement("a");
+      const original = [...originals.entries()].find(
+        ([, v]) => v.href === href,
+      );
       if (original) {
         link.className = original[1].className;
         link.innerHTML = original[1].innerHTML;
@@ -59,7 +77,9 @@ function transformNavCategories(menu: Element): () => void {
       heading.replaceWith(link);
     }
 
-    for (const promoted of menu.querySelectorAll<HTMLElement>('.corgi-promoted-sub')) {
+    for (const promoted of menu.querySelectorAll<HTMLElement>(
+      ".corgi-promoted-sub",
+    )) {
       for (const cls of TOP_CLASSES) promoted.classList.remove(cls);
       for (const cls of SUB_CLASSES) promoted.classList.add(cls);
     }
@@ -67,13 +87,14 @@ function transformNavCategories(menu: Element): () => void {
 }
 
 export const sidebarCategoriesPlugin = definePlugin({
-  name: 'corgi-polish/sidebar-categories',
-  displayName: 'Sidebar Categories',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Displays Search and Billing as category headings with sub-items promoted to top-level styling',
+  name: "corgi-polish/sidebar-categories",
+  displayName: "Sidebar Categories",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description:
+    "Displays Search and Billing as category headings with sub-items promoted to top-level styling",
 
-  group: 'corgi-polish',
+  group: "corgi-polish",
   css: `
     .corgi-nav-category {
       font-size: 11px;
@@ -101,19 +122,24 @@ export const sidebarCategoriesPlugin = definePlugin({
   `,
 
   onStart(api: PluginAPI) {
-    const menu = document.querySelector('.cth_settings_nav_menu');
+    const menu = document.querySelector(".cth_settings_nav_menu");
     if (menu && menu.querySelector('a.nav-link[href="/settings/search"]')) {
       return transformNavCategories(menu);
     }
 
     let transformCleanup: (() => void) | undefined;
-    const observerCleanup = api.observeElement('.cth_settings_nav_menu', () => {
-      const m = document.querySelector('.cth_settings_nav_menu');
-      if (!m || !m.querySelector('a.nav-link[href="/settings/search"]')) return;
-      if (m.querySelector('.corgi-nav-category')) return;
-      observerCleanup();
-      transformCleanup = transformNavCategories(m);
-    }, { childList: true, subtree: true });
+    const observerCleanup = api.observeElement(
+      ".cth_settings_nav_menu",
+      () => {
+        const m = document.querySelector(".cth_settings_nav_menu");
+        if (!m || !m.querySelector('a.nav-link[href="/settings/search"]'))
+          return;
+        if (m.querySelector(".corgi-nav-category")) return;
+        observerCleanup();
+        transformCleanup = transformNavCategories(m);
+      },
+      { childList: true, subtree: true },
+    );
 
     return () => {
       observerCleanup();

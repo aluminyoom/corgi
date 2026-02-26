@@ -1,11 +1,11 @@
-import { definePlugin } from '../api';
+import { definePlugin } from "../api";
 
 export const roundedCardsPlugin = definePlugin({
-  name: 'rounded-cards',
-  displayName: 'Rounded Cards',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Wrap each search result in a subtle card with rounded corners',
+  name: "rounded-cards",
+  displayName: "Rounded Cards",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description: "Wrap each search result in a subtle card with rounded corners",
   defaultEnabled: false,
 
   css: `

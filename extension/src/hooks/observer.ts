@@ -41,7 +41,10 @@ export function observeElement(
   observers.set(selector, entry);
 
   const attach = () => {
-    const target = selector === 'document' ? document.documentElement : document.querySelector(selector);
+    const target =
+      selector === "document"
+        ? document.documentElement
+        : document.querySelector(selector);
     if (target) {
       observer.observe(target, options);
       return true;
@@ -55,7 +58,10 @@ export function observeElement(
         waitObserver.disconnect();
       }
     });
-    waitObserver.observe(document.documentElement, { childList: true, subtree: true });
+    waitObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   return () => {

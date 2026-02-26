@@ -1,11 +1,11 @@
-import { definePlugin } from '../api';
+import { definePlugin } from "../api";
 
 export const resultCounterPlugin = definePlugin({
-  name: 'result-counter',
-  displayName: 'Search Result Counter',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Show position numbers (1, 2, 3…) next to each search result',
+  name: "result-counter",
+  displayName: "Search Result Counter",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description: "Show position numbers (1, 2, 3…) next to each search result",
   defaultEnabled: false,
 
   css: `

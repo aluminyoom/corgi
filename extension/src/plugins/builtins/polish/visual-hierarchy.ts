@@ -1,12 +1,13 @@
-import { definePlugin } from '../../api';
+import { definePlugin } from "../../api";
 
 export const visualHierarchyPlugin = definePlugin({
-  name: 'corgi-polish/visual-hierarchy',
-  displayName: 'Visual Hierarchy',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Muted secondary text, stronger title contrast, clearer result group separation',
-  group: 'corgi-polish',
+  name: "corgi-polish/visual-hierarchy",
+  displayName: "Visual Hierarchy",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description:
+    "Muted secondary text, stronger title contrast, clearer result group separation",
+  group: "corgi-polish",
   css: `
     :not(.ranked-box-overlay) > .__sri-url {
       opacity: 0.7;

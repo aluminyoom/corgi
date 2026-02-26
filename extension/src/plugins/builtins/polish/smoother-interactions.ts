@@ -1,12 +1,13 @@
-import { definePlugin } from '../../api';
+import { definePlugin } from "../../api";
 
 export const smootherInteractionsPlugin = definePlugin({
-  name: 'corgi-polish/smoother-interactions',
-  displayName: 'Smoother Interactions',
-  version: '0.1.0',
-  authors: ['aluminyoom'],
-  description: 'Subtle transitions on hover states, focus rings, and interactive elements',
-  group: 'corgi-polish',
+  name: "corgi-polish/smoother-interactions",
+  displayName: "Smoother Interactions",
+  version: "0.1.0",
+  authors: ["aluminyoom"],
+  description:
+    "Subtle transitions on hover states, focus rings, and interactive elements",
+  group: "corgi-polish",
   css: `
     a:not(.ranked-box-overlay a) {
       transition: color 0.15s ease, opacity 0.15s ease;

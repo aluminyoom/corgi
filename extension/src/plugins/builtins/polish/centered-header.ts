@@ -1,12 +1,13 @@
-import { definePlugin } from '../../api';
+import { definePlugin } from "../../api";
 
 export const centeredHeaderPlugin = definePlugin({
-  name: 'corgi-polish/centered-header',
-  displayName: 'Centered Header',
-  version: '0.4.0',
-  authors: ['aluminyoom'],
-  description: 'Vertically centers the logo, apps, and control center buttons with the search bar in the SERP header',
-  group: 'corgi-polish',
+  name: "corgi-polish/centered-header",
+  displayName: "Centered Header",
+  version: "0.4.0",
+  authors: ["aluminyoom"],
+  description:
+    "Vertically centers the logo, apps, and control center buttons with the search bar in the SERP header",
+  group: "corgi-polish",
   css: `
     header.app-header > .flex .center-content-box .app-logo.--kagi {
       top: 28px !important;

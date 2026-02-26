@@ -2,7 +2,7 @@ const variableOverrides = new Map<string, string>();
 
 export function setVariable(name: string, value: string): void {
   variableOverrides.set(name, value);
-  document.documentElement.style.setProperty(name, value, 'important');
+  document.documentElement.style.setProperty(name, value, "important");
 }
 
 export function removeVariable(name: string): void {
@@ -28,5 +28,7 @@ export function getActiveOverrides(): Map<string, string> {
 }
 
 export function getComputedVariable(name: string): string {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
 }
