@@ -13,6 +13,7 @@ export type BridgeAction =
   | 'plugin:state'
   | 'plugin:settings:get'
   | 'plugin:settings:set'
+  | 'fetch:proxy'
   | 'ready';
 
 export interface BridgeRequest {

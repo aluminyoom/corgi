@@ -6,7 +6,7 @@ const BUTTON_ID = 'corgi-feeling-lucky';
 export const feelingLuckyPlugin = definePlugin({
   name: 'feeling-lucky',
   displayName: "I'm Feeling Lucky",
-  version: '0.1.0',
+  version: '0.2.0',
   authors: ['aluminyoom'],
   description: 'Adds an "I\'m Feeling Lucky" button to the landing page that takes you straight to the first result',
   defaultEnabled: false,
@@ -37,8 +37,8 @@ export const feelingLuckyPlugin = definePlugin({
     }
   `,
 
-  onStart() {
-    const page = document.documentElement.getAttribute('data-path');
+  onStart(api) {
+    const page = api.getPagePath();
 
     if (page === '/search') {
       return handleSerp();
