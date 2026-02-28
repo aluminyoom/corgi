@@ -1,5 +1,6 @@
 import type { Theme } from "@/utils/types";
 import { getThemeId } from "@/utils/types";
+import { mergeThemeVariables } from "@/utils/engine";
 
 const CONTAINER_TAG = "corgi-styles";
 
@@ -45,7 +46,7 @@ export function applyThemes(themes: Theme[], pagePath: string | null): void {
     const parts: string[] = [];
 
     const pageOverride = pagePath ? theme.pages?.[pagePath] : undefined;
-    const mergedVars = { ...theme.variables, ...pageOverride?.variables };
+    const mergedVars = mergeThemeVariables(theme, pagePath);
 
     if (Object.keys(mergedVars).length > 0) {
       const declarations = Object.entries(mergedVars)

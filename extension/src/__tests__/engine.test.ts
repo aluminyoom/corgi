@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildThemeCSS } from "@/utils/engine";
+import { buildThemeCSS, mergeThemeVariables } from "@/utils/engine";
 import type { Theme } from "@/utils/types";
 
 function makeTheme(overrides: Partial<Theme> = {}): Theme {
@@ -144,5 +144,49 @@ describe("buildThemeCSS", () => {
     expect(css).toContain("--x: 1 !important;");
     expect(css).toContain("/* t1 css */");
     expect(css).toContain("--y: 2 !important;");
+  });
+});
+
+describe("mergeThemeVariables", () => {
+  it("returns global variables when pagePath is null", () => {
+    const theme = makeTheme({ variables: { "--bg": "#000", "--fg": "#fff" } });
+    expect(mergeThemeVariables(theme, null)).toEqual({
+      "--bg": "#000",
+      "--fg": "#fff",
+    });
+  });
+
+  it("returns global variables when pagePath has no matching page", () => {
+    const theme = makeTheme({
+      variables: { "--bg": "#000" },
+      pages: { "/search": { variables: { "--bg": "#111" } } },
+    });
+    expect(mergeThemeVariables(theme, "/settings")).toEqual({ "--bg": "#000" });
+  });
+
+  it("merges page override variables over global variables", () => {
+    const theme = makeTheme({
+      variables: { "--bg": "#000", "--fg": "#fff" },
+      pages: { "/search": { variables: { "--bg": "#111" } } },
+    });
+    expect(mergeThemeVariables(theme, "/search")).toEqual({
+      "--bg": "#111",
+      "--fg": "#fff",
+    });
+  });
+
+  it("returns empty object when theme has no variables and no page match", () => {
+    const theme = makeTheme({ variables: {} });
+    expect(mergeThemeVariables(theme, null)).toEqual({});
+  });
+
+  it("override key overwrites global key", () => {
+    const theme = makeTheme({
+      variables: { "--color": "red", "--size": "12px" },
+      pages: { "/home": { variables: { "--color": "blue" } } },
+    });
+    const result = mergeThemeVariables(theme, "/home");
+    expect(result["--color"]).toBe("blue");
+    expect(result["--size"]).toBe("12px");
   });
 });
