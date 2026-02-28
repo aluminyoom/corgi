@@ -44,10 +44,24 @@ async function handleImport(
   themeListContainer: HTMLElement,
 ): Promise<void> {
   try {
-    const theme = JSON.parse(json) as Theme;
-    if (!theme.name || !theme.version || !theme.authors?.length) {
+    const raw = JSON.parse(json);
+    if (!raw.name || !raw.version || !raw.authors?.length) {
       throw new Error("Theme must have name, version, and authors fields");
     }
+
+    const theme: Theme = {
+      ...raw,
+      displayName: raw.displayName || raw.name,
+      description: raw.description || "",
+      tags: Array.isArray(raw.tags) ? raw.tags : [],
+      variables:
+        typeof raw.variables === "object" &&
+        raw.variables !== null &&
+        !Array.isArray(raw.variables)
+          ? raw.variables
+          : {},
+      css: typeof raw.css === "string" ? raw.css : "",
+    };
 
     const current = await themeState.getValue();
     const id = getThemeId(theme);

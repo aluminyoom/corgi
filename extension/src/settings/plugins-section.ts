@@ -57,12 +57,14 @@ export async function renderPluginList(container: HTMLElement): Promise<void> {
   const states = await pluginStates.getValue();
   const disabledSet = new Set(states.disabled);
   const groupedPlugins = new Set<string>();
+  const groups = getBuiltinGroups();
+  const metaMap = new Map(getBuiltinMeta().map((p) => [p.name, p]));
 
-  for (const group of getBuiltinGroups()) {
+  for (const group of groups) {
     for (const name of group.plugins) groupedPlugins.add(name);
   }
 
-  for (const group of getBuiltinGroups()) {
+  for (const group of groups) {
     const memberStates = group.plugins.map((name) => !disabledSet.has(name));
     const allEnabled = memberStates.every(Boolean);
     const isExpanded = expandedGroups.has(group.name);
@@ -98,7 +100,7 @@ export async function renderPluginList(container: HTMLElement): Promise<void> {
     container.appendChild(card);
 
     for (const pluginName of group.plugins) {
-      const meta = getBuiltinMeta().find((p) => p.name === pluginName);
+      const meta = metaMap.get(pluginName);
       if (!meta) continue;
 
       childContainer.appendChild(
@@ -111,6 +113,7 @@ export async function renderPluginList(container: HTMLElement): Promise<void> {
             if (nowEnabled) disabled.delete(pluginName);
             else disabled.add(pluginName);
             await pluginStates.setValue({ disabled: [...disabled] });
+            renderPluginList(container);
           }),
           pluginSettingsButton(meta),
         ),
@@ -120,7 +123,7 @@ export async function renderPluginList(container: HTMLElement): Promise<void> {
     container.appendChild(childContainer);
   }
 
-  for (const plugin of getBuiltinMeta()) {
+  for (const plugin of metaMap.values()) {
     if (groupedPlugins.has(plugin.name)) continue;
 
     container.appendChild(
@@ -133,6 +136,7 @@ export async function renderPluginList(container: HTMLElement): Promise<void> {
           if (nowEnabled) disabled.delete(plugin.name);
           else disabled.add(plugin.name);
           await pluginStates.setValue({ disabled: [...disabled] });
+          renderPluginList(container);
         }),
         pluginSettingsButton(plugin),
       ),
