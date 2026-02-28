@@ -41,18 +41,18 @@ export const infiniteScrollPlugin = definePlugin({
       loading = true;
       btn.click();
 
-      const observer = new MutationObserver(() => {
-        loading = false;
-        observer.disconnect();
-      });
-      observer.observe(document.body ?? document.documentElement, {
-        childList: true,
-        subtree: true,
-      });
+      const stopObserving = api.observeElement(
+        "document",
+        () => {
+          loading = false;
+          stopObserving();
+        },
+        { childList: true, subtree: true },
+      );
 
       setTimeout(() => {
         loading = false;
-        observer.disconnect();
+        stopObserving();
       }, 5_000);
     }
 
