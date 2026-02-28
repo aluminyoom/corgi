@@ -1,104 +1,10 @@
-import { themeState, extensionEnabled, pluginStates } from "@/utils/storage";
+import { extensionEnabled, pluginStates } from "@/utils/storage";
 import { getBuiltinMeta } from "@/plugins/builtins/discover";
-import { getThemeId, type Theme } from "@/utils/types";
-import { formatAuthors } from "@/authors";
 import { el, kagiToggle, settingsRow, sectionHeading } from "./dom";
 import { renderPluginList } from "./plugins-section";
+import { renderThemeList, createImportButton } from "./themes-section";
 
 const PAGE_CONTAINER_ID = "corgi-settings-page";
-
-async function renderThemeList(container: HTMLElement): Promise<void> {
-  container.innerHTML = "";
-  const state = await themeState.getValue();
-
-  if (state.themes.length === 0) {
-    container.appendChild(
-      settingsRow(
-        "No themes installed",
-        "Import a theme JSON file to get started.",
-        el("span"),
-      ),
-    );
-    return;
-  }
-
-  for (const theme of state.themes) {
-    const id = getThemeId(theme);
-    const isActive = state.activeThemeIds.includes(id);
-
-    container.appendChild(
-      settingsRow(
-        theme.displayName,
-        `${formatAuthors(theme.authors)} \u00B7 v${theme.version}${theme.description ? " \u2014 " + theme.description : ""}`,
-        kagiToggle(isActive, async (nowActive) => {
-          const current = await themeState.getValue();
-          const ids = new Set(current.activeThemeIds);
-          if (nowActive) ids.add(id);
-          else ids.delete(id);
-          await themeState.setValue({ ...current, activeThemeIds: [...ids] });
-          renderThemeList(container);
-        }),
-      ),
-    );
-  }
-}
-
-async function handleImport(
-  json: string,
-  themeListContainer: HTMLElement,
-): Promise<void> {
-  try {
-    const theme = JSON.parse(json) as Theme;
-    if (!theme.name || !theme.version || !theme.authors?.length) {
-      throw new Error("Theme must have name, version, and authors fields");
-    }
-
-    const current = await themeState.getValue();
-    const id = getThemeId(theme);
-    const existing = current.themes.findIndex((t) => getThemeId(t) === id);
-    const themes = [...current.themes];
-    if (existing >= 0) themes[existing] = theme;
-    else themes.push(theme);
-
-    await themeState.setValue({ ...current, themes });
-    renderThemeList(themeListContainer);
-  } catch (err) {
-    console.error("[corgi] failed to import theme:", err);
-  }
-}
-
-function createImportButton(onImport: (json: string) => void): HTMLElement {
-  const fileInput = document.createElement("input");
-  fileInput.type = "file";
-  fileInput.accept = ".json";
-  fileInput.style.display = "none";
-
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") onImport(reader.result);
-    };
-    reader.readAsText(file);
-    fileInput.value = "";
-  });
-
-  const btn = el(
-    "button",
-    {
-      className: "_0_k_ui_dropdown k_ui_dropdown __basic",
-      style: "cursor: pointer; padding: 6px 14px; font-size: 13px;",
-    },
-    "Import Theme (JSON)",
-  );
-  btn.addEventListener("click", () => fileInput.click());
-
-  const wrapper = el("div", { className: "mt-12 mb-16" });
-  wrapper.appendChild(btn);
-  wrapper.appendChild(fileInput);
-  return wrapper;
-}
 
 function createAdmonition(): HTMLElement {
   const box = el("div", { className: "alert" });
@@ -192,9 +98,7 @@ export async function buildSettingsPage(): Promise<HTMLElement> {
   const themeList = el("div", { id: "corgi-theme-list" });
   await renderThemeList(themeList);
   section.appendChild(themeList);
-  section.appendChild(
-    createImportButton((json) => handleImport(json, themeList)),
-  );
+  section.appendChild(createImportButton(themeList));
 
   const hint = el(
     "div",
