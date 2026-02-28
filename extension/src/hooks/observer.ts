@@ -31,8 +31,8 @@ export function observeElement(
     for (const fn of handlers) {
       try {
         fn(mutations);
-      } catch {
-        // observer handlers should not crash other handlers
+      } catch (error) {
+        console.debug("[corgi] observer handler error (non-fatal):", error);
       }
     }
   });

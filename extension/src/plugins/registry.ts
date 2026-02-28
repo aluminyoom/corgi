@@ -248,8 +248,8 @@ export function stopPlugin(name: string): void {
 
   try {
     instance.definition.onStop?.();
-  } catch {
-    // stop errors should not prevent cleanup
+  } catch (error) {
+    console.debug("[corgi] plugin onStop error (non-fatal):", error);
   }
 
   cleanupInstance(instance);
@@ -260,8 +260,8 @@ function cleanupInstance(instance: PluginInstance): void {
   for (const cleanup of instance.cleanups.reverse()) {
     try {
       cleanup();
-    } catch {
-      // cleanup errors should not prevent other cleanups
+    } catch (error) {
+      console.debug("[corgi] plugin cleanup error (non-fatal):", error);
     }
   }
   instance.cleanups = [];

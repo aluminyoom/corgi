@@ -7,7 +7,8 @@ const MEMBER_BADGE_SELECTOR = "div.member-number-badge";
 function getVersion(): string {
   try {
     return browser.runtime.getManifest().version ?? "0.0.0";
-  } catch {
+  } catch (error) {
+    console.debug("[corgi] version retrieval error (non-fatal):", error);
     return "0.0.0";
   }
 }

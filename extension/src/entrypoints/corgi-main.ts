@@ -49,8 +49,9 @@ export default defineUnlistedScript(() => {
 
       const pagePath = document.documentElement.getAttribute("data-path");
       applyThemes(result.themes, pagePath);
-    } catch {
+    } catch (error) {
       // bridge may not be ready yet, themes will apply on push
+      console.debug("[corgi] theme load error (non-fatal):", error);
     }
   }
 
@@ -60,7 +61,8 @@ export default defineUnlistedScript(() => {
         "plugin:state",
       );
       return new Set(states?.disabled ?? []);
-    } catch {
+    } catch (error) {
+      console.debug("[corgi] plugin state error (non-fatal):", error);
       return new Set();
     }
   }
@@ -132,8 +134,9 @@ export default defineUnlistedScript(() => {
       for (const cleanup of cleanups.reverse()) {
         try {
           cleanup();
-        } catch {
+        } catch (error) {
           /* noop */
+          console.debug("[corgi] destroy cleanup error (non-fatal):", error);
         }
       }
     },
