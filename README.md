@@ -13,7 +13,7 @@
 
 Corgi hooks into Kagi's page, patches its runtime, and gives you a plugin API to extend everything. Settings live inside Kagi's own settings page at `/settings/corgi`, so the whole experience feels native.
 
-It ships with **29 built-in plugins** across three categories: 12 visual polish, 4 customization, and 13 utilities. See the [full plugin list](https://aluminyoom.github.io/corgi/guide/using-plugins) in the docs.
+It ships with **29 built-in plugins** across three categories: 12 visual polish, 4 customization, and 13 utilities. See the [full plugin list](https://corgi.ryanaque.com/guide/using-plugins) in the docs.
 
 ## Build Requirements
 
@@ -93,7 +93,7 @@ export const myPlugin = definePlugin({
 });
 ```
 
-See [Creating Plugins](https://aluminyoom.github.io/corgi/guide/creating-plugins) for the full API reference.
+See [Creating Plugins](https://corgi.ryanaque.com/guide/creating-plugins) for the full API reference.
 
 ## Docs
 
