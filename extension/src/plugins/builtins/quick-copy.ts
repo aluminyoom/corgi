@@ -78,8 +78,9 @@ function addCopyButtons(api: PluginAPI): void {
           btn.innerHTML = COPY_ICON;
           btn.classList.remove(COPIED_CLASS);
         }, 1500);
-      } catch {
+      } catch (error) {
         /* clipboard blocked */
+        console.debug("[corgi] clipboard write error (non-fatal):", error);
       }
     });
 

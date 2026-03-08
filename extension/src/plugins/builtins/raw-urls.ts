@@ -15,8 +15,9 @@ function rewriteUrls(api: PluginAPI): void {
       const display =
         url.hostname + decodeURIComponent(url.pathname).replace(/\/$/, "");
       pathBox.textContent = display;
-    } catch {
+    } catch (error) {
       /* malformed URL, leave as-is */
+      console.debug("[corgi] URL parse error (non-fatal):", error);
     }
   }
 }

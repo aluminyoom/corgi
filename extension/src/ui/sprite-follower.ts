@@ -60,8 +60,9 @@ function loadPosition(storageKey: string): { x: number; y: number } | null {
       const y = Math.min(Math.max(parsed.y, 0), window.innerHeight);
       return { x, y };
     }
-  } catch {
+  } catch (error) {
     /* ignore corrupt data */
+    console.debug("[corgi] sprite position load error (non-fatal):", error);
   }
   return null;
 }

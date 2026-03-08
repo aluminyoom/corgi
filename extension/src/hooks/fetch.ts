@@ -34,8 +34,11 @@ function installFetchInterception(): void {
         }
         currentInput = result.input;
         currentInit = result.init;
-      } catch {
-        // request interceptor errors should not block fetch
+      } catch (error) {
+        console.debug(
+          "[corgi] fetch request interceptor error (non-fatal):",
+          error,
+        );
       }
     }
 
@@ -44,8 +47,11 @@ function installFetchInterception(): void {
     for (const interceptor of responseInterceptors) {
       try {
         response = await interceptor(response, currentInput, currentInit);
-      } catch {
-        // response interceptor errors should not corrupt the response
+      } catch (error) {
+        console.debug(
+          "[corgi] fetch response interceptor error (non-fatal):",
+          error,
+        );
       }
     }
 

@@ -24,8 +24,8 @@ function installEventInterception(): void {
         if (!current) break;
         try {
           current = interceptor(current.tag, current.data);
-        } catch {
-          // interceptor errors should not block event dispatch
+        } catch (error) {
+          console.debug("[corgi] event interceptor error (non-fatal):", error);
         }
       }
 
@@ -72,8 +72,8 @@ export function onProviderEvent(
       for (const fn of tagListeners) {
         try {
           fn(tag, event.detail);
-        } catch {
-          // listener errors should not crash the pipeline
+        } catch (error) {
+          console.debug("[corgi] event listener error (non-fatal):", error);
         }
       }
     }) as EventListenerOrEventListenerObject);
@@ -87,8 +87,8 @@ export function onAnyProviderEvent(listener: EventListener): () => void {
   return addEventInterceptor((tag, data) => {
     try {
       listener(tag, data);
-    } catch {
-      // passthrough
+    } catch (error) {
+      console.debug("[corgi] event listener error (non-fatal):", error);
     }
     return { tag, data };
   });

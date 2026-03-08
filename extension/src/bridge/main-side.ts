@@ -48,8 +48,8 @@ window.addEventListener("message", (event) => {
     for (const fn of listeners) {
       try {
         fn(event.data.payload);
-      } catch {
-        // plugin listeners should not crash the bridge
+      } catch (error) {
+        console.debug("[corgi] bridge push listener error (non-fatal):", error);
       }
     }
   }
@@ -100,7 +100,9 @@ export function onBridgePush(
   for (const queued of replay) {
     try {
       fn(queued.payload);
-    } catch {}
+    } catch (error) {
+      console.debug("[corgi] bridge push replay error (non-fatal):", error);
+    }
   }
 
   return () => set!.delete(fn);

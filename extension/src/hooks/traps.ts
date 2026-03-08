@@ -42,8 +42,8 @@ export function trapGlobal<T>(
           for (const cb of entry!.callbacks) {
             try {
               cb(val);
-            } catch {
-              // trap listeners should not crash page
+            } catch (error) {
+              console.debug("[corgi] trap callback error (non-fatal):", error);
             }
           }
         },
@@ -56,8 +56,8 @@ export function trapGlobal<T>(
   if (entry.captured && entry.value !== undefined) {
     try {
       callback(entry.value);
-    } catch {
-      // same safety
+    } catch (error) {
+      console.debug("[corgi] trap callback error (non-fatal):", error);
     }
   }
 

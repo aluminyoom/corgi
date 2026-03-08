@@ -158,7 +158,8 @@ handlers.set("fetch:proxy", async (payload) => {
   let parsed: URL;
   try {
     parsed = new URL(url);
-  } catch {
+  } catch (error) {
+    console.debug("[corgi] fetch proxy URL parse error (non-fatal):", error);
     throw new Error(`fetch:proxy invalid URL: ${url}`);
   }
   const allowed = FETCH_PROXY_ALLOWED_ORIGINS.some(

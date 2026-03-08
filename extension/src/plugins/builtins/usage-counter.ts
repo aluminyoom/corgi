@@ -51,7 +51,8 @@ function readCache(): BillingData | null {
     const data = JSON.parse(raw) as BillingData;
     if (Date.now() - data.ts > CACHE_TTL) return null;
     return data;
-  } catch {
+  } catch (error) {
+    console.debug("[corgi] billing cache read error (non-fatal):", error);
     return null;
   }
 }
@@ -59,8 +60,8 @@ function readCache(): BillingData | null {
 function writeCache(data: BillingData): void {
   try {
     sessionStorage.setItem(CACHE_KEY, JSON.stringify(data));
-  } catch {
-    // storage full or disabled
+  } catch (error) {
+    console.debug("[corgi] billing cache write error (non-fatal):", error);
   }
 }
 
@@ -79,7 +80,8 @@ async function fetchBillingData(): Promise<BillingData | null> {
     const data = parseBillingHTML(html);
     if (data) writeCache(data);
     return data;
-  } catch {
+  } catch (error) {
+    console.debug("[corgi] billing fetch error (non-fatal):", error);
     return null;
   }
 }

@@ -23,7 +23,8 @@ export async function copyToClipboard(text: string): Promise<boolean> {
   try {
     await navigator.clipboard.writeText(text);
     return true;
-  } catch {
+  } catch (error) {
+    console.debug("[corgi] clipboard write error (non-fatal):", error);
     return false;
   }
 }

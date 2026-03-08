@@ -2,6 +2,14 @@ import type { Theme } from "./types";
 
 const STYLE_ELEMENT_ID = "corgi-theme-styles";
 
+export function mergeThemeVariables(
+  theme: Theme,
+  pagePath: string | null,
+): Record<string, string> {
+  const pageOverride = pagePath ? theme.pages?.[pagePath] : undefined;
+  return { ...theme.variables, ...pageOverride?.variables };
+}
+
 export function buildThemeCSS(
   themes: Theme[],
   pagePath: string | null,
@@ -9,9 +17,8 @@ export function buildThemeCSS(
   const parts: string[] = [];
 
   for (const theme of themes) {
-    const globalVars = theme.variables;
+    const mergedVars = mergeThemeVariables(theme, pagePath);
     const pageOverride = pagePath ? theme.pages?.[pagePath] : undefined;
-    const mergedVars = { ...globalVars, ...pageOverride?.variables };
 
     if (Object.keys(mergedVars).length > 0) {
       const varDeclarations = Object.entries(mergedVars)
